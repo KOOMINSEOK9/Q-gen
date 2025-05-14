@@ -2,12 +2,15 @@ package com.s12p31b204.backend.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.openhtmltopdf.extend.FSSupplier;
+import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.s12p31b204.backend.domain.Test;
 import com.s12p31b204.backend.dto.AnswerDto;
@@ -234,9 +239,20 @@ public class TestPaperController {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.withHtmlContent(htmlContent, null);
 
+            ClassPathResource fontResource = new ClassPathResource("fonts/AppleSDGothicNeoB.ttf"); // 폰트 파일 위치
+
             builder.useFont(
-                    new File("src/main/resources/fonts/AppleSDGothicNeoB.ttf"),  // 폰트 파일 위치
-                    "AppleSDGothicNeoB"  // 폰트 이름
+                    () -> {
+                        try {
+                            return fontResource.getInputStream();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    "AppleSDGothicNeoB",
+                    400,
+                    BaseRendererBuilder.FontStyle.NORMAL,
+                    true
             );
 
             builder.toStream(stream);
