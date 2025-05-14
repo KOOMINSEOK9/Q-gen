@@ -32,6 +32,10 @@
             margin-bottom: 100px; /* 문제 사이 여백 */
             clear: both;
         }
+        .answer {
+            margin-bottom: 40px;
+            clear: both;
+        }
         .question-title {
             font-weight: bold;
             margin-bottom: 15px;
@@ -138,14 +142,14 @@
     <div class="page">
         <div class="container">
             <div class="left">
-                <div th:each="q : ${page.leftAnswers}" class="question">
+                <div th:each="q : ${page.leftAnswers}" class="answer">
                     <div class="question-title" th:text="${q.number} + '번 정답 : ' + ${q.answer}"></div>
                     <div th:text="${q.comment}"></div>
                 </div>
             </div>
 
             <div class="right">
-                <div th:each="q : ${page.rightAnswers}" class="question">
+                <div th:each="q : ${page.rightAnswers}" class="answer">
                     <div class="question-title" th:text="${q.number} + '번 정답 : ' + ${q.answer}"></div>
                     <div th:text="${q.comment}"></div>
                 </div>
