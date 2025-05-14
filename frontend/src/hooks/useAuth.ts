@@ -23,9 +23,10 @@ export const useAuth = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      setIsLoggedIn(false);
+      await checkLoginStatus();
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error);
+      setIsLoggedIn(false);
     }
   };
 
