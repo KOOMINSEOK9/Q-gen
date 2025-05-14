@@ -15,6 +15,7 @@ import lombok.ToString;
 @ToString
 public class FindNoteTestResponseDto {
     private Long testId;
+    private Test.Type type;
     private String question;
     private String option1;
     private String option2;
@@ -29,6 +30,7 @@ public class FindNoteTestResponseDto {
     public static FindNoteTestResponseDto from(Test test, List<TestHistoryDto> testHistoryList, int incorrectCount) {
         return FindNoteTestResponseDto.builder()
                 .testId(test.getTestId())
+                .type(test.getType())
                 .question(test.getQuestion())
                 .option1(test.getOption1())
                 .option2(test.getOption2())
