@@ -209,19 +209,22 @@ export default function List() {
   }, [numericWorkBookId]);
 
   // PDF 버튼 클릭 핸들러
-  const handlePdfClick = (paper: TestPaper) => {
-    setSelectedPaper(paper);
-    setIsPdfModalOpen(true);
+  const handlePdfClick = (testPaperId: string | number) => {
+    const paper = testPapers.find((p) => p.testPaperId === testPaperId);
+    if (paper) {
+      setSelectedPaper(paper);
+      setIsPdfModalOpen(true);
+    }
   };
 
   // 퀴즈 시작 핸들러
-  const handleQuizStart = (paper: TestPaper) => {
-    navigate(`/quiz/${paper.testPaperId}`);
+  const handleQuizStart = (testPaperId: string | number) => {
+    navigate(`/quiz/${testPaperId}`);
   };
 
   // 이력 확인 핸들러
-  const handleHistoryClick = (paper: TestPaper) => {
-    navigate(`/note/${numericWorkBookId}/${paper.testPaperId}`);
+  const handleHistoryClick = (testPaperId: string | number) => {
+    navigate(`/note/${testPaperId}`);
   };
 
   // 퀴즈 모드 시작 핸들러
@@ -249,9 +252,9 @@ export default function List() {
   };
 
   // List.tsx에 handleDeleteTestPaper 함수 추가
-  const handleDeleteTestPaper = async (testPaperId: number) => {
+  const handleDeleteTestPaper = async (testPaperId: string | number) => {
     try {
-      await removeTestPaper(testPaperId);
+      await removeTestPaper(Number(testPaperId)); // string이 들어올 경우를 대비해 Number로 변환
       // 삭제 후 시험지 목록 새로고침
       if (numericWorkBookId) {
         await getTestPapers(numericWorkBookId);
@@ -320,17 +323,37 @@ export default function List() {
   };
 
   return (
-    <div className='pb-8 flex flex-col gap-8'>
+    <div className='pb-8 flex flex-col gap-0'>
       {/* 인사 및 알림 카드 */}
-      <GradientTitle
-        highlight='Q-gen'
-        before='안녕하세요! 오늘도 '
-        after='에서 효율적인 공부를 시작하세요!'
-      ></GradientTitle>
-      <section className='max-w-[600px] '>
-        {/* <h1 className='text-2xl font-bold mb-3'></h1> */}
+      {/* <GradientTitle
+        highlight='문제집'
+        after='목록'
+        className='text-4xl mb-6'
+      ></GradientTitle> */}
+      <div className='flex gap-0'>
+        <div className='w-26 h-26 mt-6 ml-6'>
+          <img src='/images/dolpin-with-tablet.png' alt='돌고래 사진' />
+        </div>
+        <div className='flex flex-col items-start gap-1 justify-center bg-white rounded-2xl shadow p-4 max-w-[550px] ml-[1%] relative'>
+          <span className='text-2xl font-semibold '>
+            안녕하세요!{' '}
+            <strong className='bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text p-1'>
+              User
+            </strong>
+            님
+          </span>
+          <GradientTitle
+            className='inline-block text-2xl'
+            before='오늘도 '
+            highlight='Q-gen'
+            after='에서 효율적인 공부를 시작해볼까요!'
+          ></GradientTitle>
+          {/* 말풍선 꼭지 */}
+          {/* <div className='absolute -bottom-3 left-8 w-6 h-6 bg-white transform rotate-45 shadow-[2px_2px_2px_rgba(0,0,0,0.1)]'></div> */}
+        </div>
+      </div>
+      {/* <section className='max-w-[600px] '>
         <div className='bg-white rounded-2xl shadow p-6 flex items-center gap-4 '>
-          {/* 예시 이미지(아이콘) */}
           <div className='p-3 w-24 h-26 bg-gray-100 rounded-full flex items-center justify-center'>
             <img src='src/assets/images/dolpin-with-tablet.png' alt='' />
           </div>
@@ -346,15 +369,15 @@ export default function List() {
             </Button>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* 문제집 & 자료 업로드 */}
       <section className='flex gap-8'>
         {/* 문제집 리스트 */}
         <div className='flex-1 flex flex-col gap-0'>
           {/* 제목 파트 */}
-          <div className='flex justify-between py-4 items-center'>
-            <div className='flex items-center gap-2 h-[66px]'>
+          <div className='flex justify-between pt-4 pb-3 items-center'>
+            <div className='flex items-center gap-2 h-[40px]'>
               <button
                 onClick={handleBackToWorkbooks}
                 className='cursor-pointer text-2xl font-semibold hover:text-purple-600 transition-colors'
@@ -461,17 +484,12 @@ export default function List() {
                     <div className='text-red-500'>{papersError.message}</div>
                   ) : (
                     <TestPaperList
-                      papers={testPapers.map((paper) => ({
-                        ...paper,
-                        onPdfClick: () => handlePdfClick(paper),
-                        onSolveClick: () => handleQuizStart(paper),
-                        onDelete: (testPaperId) =>
-                          handleDeleteTestPaper(testPaperId),
-                        onHistoryClick: () => handleHistoryClick(paper),
-                      }))}
-                      onAddClick={() =>
-                        navigate(`/generate/${numericWorkBookId}`)
-                      }
+                      papers={testPapers}
+                      onAddClick={handleOpenAddModal}
+                      onPdfClick={handlePdfClick}
+                      onSolveClick={handleQuizStart}
+                      onHistoryClick={handleHistoryClick}
+                      onDelete={handleDeleteTestPaper}
                     />
                   )
                 ) : (

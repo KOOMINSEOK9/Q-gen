@@ -3,6 +3,7 @@
 import WorkBookCard from '@/components/workbook/WorkBookCard/WorkBookCard';
 import { WorkBook } from '@/types/workbook';
 import { useNavigate } from 'react-router-dom';
+import { formatDateTime } from '@/utils/dateFormat';
 
 interface WorkBookListProps {
   workbooks: WorkBook[];
@@ -51,7 +52,7 @@ function WorkBookList({
             key={workbook.workBookId}
             selectedId={Number(workbook.workBookId)}
             title={workbook.title}
-            date={workbook.createAt}
+            date={formatDateTime(workbook.createAt)}
             onClick={() => handleCardClick(String(workbook.workBookId))}
             onDelete={() => handleWorkBookDelete(String(workbook.workBookId))}
             onEdit={() => handleWorkBookEdit(String(workbook.workBookId))}
