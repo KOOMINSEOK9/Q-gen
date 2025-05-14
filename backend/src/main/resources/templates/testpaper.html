@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        body {
+            font-family: 'AppleSDGothicNeoB', sans-serif;
+            font-size: 12px;
+            margin: 40px;
+        }
+        .page {
+            page-break-after: always;
+        }
+        .container {
+            width: 100%;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .left, .right {
+            width: 48%;
+            padding: 0 20px;
+            float: left;
+            box-sizing: border-box;
+        }
+        .left {
+            border-right: 1px solid black;
+        }
+        .right {
+            margin-left: 20px;
+        }
+        .question {
+            margin-bottom: 100px; /* 문제 사이 여백 */
+            clear: both;
+        }
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .options {
+            margin-left: 10px;
+        }
+        .option-item {
+            width: 100%;
+            float: left;
+            padding: 2px 0;
+            box-sizing: border-box;
+        }
+        .ox-options {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .short-answer-line {
+            margin-top: 35px;
+            border-bottom: 1px solid black;
+            width: 70%;
+            margin-left: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div th:each="page : ${questions}">
+    <div class="page">
+        <div class="container">
+            <div class="left">
+                <div th:each="q : ${page.leftQuestions}" class="question">
+                    <div class="question-title" th:text="${q.number} + '. ' + ${q.text}"></div>
+
+                    <!-- 객관식 -->
+                    <div class="options" th:if="${q.type == 'TYPE_CHOICE'}" style="float: left; width: 100%">
+                        <div th:each="opt, iterStat : ${q.options}" style="width: 100%; padding: 2px 0;">
+                            <span th:text="${'①②③④'.charAt(iterStat.index)} + ' ' + ${opt}"></span>
+                        </div>
+                    </div>
+
+                    <!-- OX 문제 -->
+                    <div class="ox-options" th:if="${q.type == 'TYPE_OX'}">
+                        <table style="width: 100%">
+                            <tr>
+                                <td>
+                                    <span th:text="'O ('" style="margin-right: 10px"></span>
+                                    <span th:text="')'"></span>
+                                </td>
+                                <td>
+                                    <span th:text="'X ('" style="margin-right: 10px"></span>
+                                    <span th:text="')'"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 주관식 문제 -->
+                    <div th:if="${q.type == 'TYPE_SHORT'}">
+                        <div class="short-answer-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div th:each="q : ${page.rightQuestions}" class="question">
+                    <div class="question-title" th:text="${q.number} + '. ' + ${q.text}"></div>
+
+                    <!-- 객관식 -->
+                    <div class="options" th:if="${q.type == 'TYPE_CHOICE'}" style="float: left; width: 100%">
+                        <div th:each="opt, iterStat : ${q.options}" style="width: 100%; padding: 2px 0;">
+                            <span th:text="${'①②③④'.charAt(iterStat.index)} + ' ' + ${opt}"></span>
+                        </div>
+                    </div>
+
+                    <!-- OX 문제 -->
+                    <div class="ox-options" th:if="${q.type == 'TYPE_OX'}">
+                        <table style="width: 100%">
+                            <tr>
+                                <td>
+                                    <span th:text="'O ('" style="margin-right: 10px"></span>
+                                    <span th:text="')'"></span>
+                                </td>
+                                <td>
+                                    <span th:text="'X ('" style="margin-right: 10px"></span>
+                                    <span th:text="')'"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 주관식 문제 -->
+                    <div th:if="${q.type == 'TYPE_SHORT'}">
+                        <div class="short-answer-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:each="page : ${answers}">
+    <div class="page">
+        <div class="container">
+            <div class="left">
+                <div th:each="q : ${page.leftAnswers}" class="question">
+                    <div class="question-title" th:text="${q.number} + '번 정답 : ' + ${q.answer}"></div>
+                    <div th:text="${q.comment}"></div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div th:each="q : ${page.rightAnswers}" class="question">
+                    <div class="question-title" th:text="${q.number} + '번 정답 : ' + ${q.answer}"></div>
+                    <div th:text="${q.comment}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

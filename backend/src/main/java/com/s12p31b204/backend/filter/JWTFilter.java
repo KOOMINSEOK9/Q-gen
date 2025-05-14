@@ -11,6 +11,7 @@ import com.s12p31b204.backend.dto.UserDto;
 import com.s12p31b204.backend.oauth2.CustomOAuth2User;
 import com.s12p31b204.backend.util.JWTUtil;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -49,26 +50,34 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String token = authorizaiton;
 
-        if(jwtUtil.isExpired(token)) {
-            log.info("token expired");
+        try {
+            if (jwtUtil.isExpired(token)) {
+                log.info("token expired");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            String username = jwtUtil.getUsername(token);
+            Long userId = jwtUtil.getUserId(token);
+
+            UserDto userDto = new UserDto(userId, username, null);
+
+            CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDto);
+
+            // spring security 인증 토큰 생성
+            Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+
+            // 세션에 사용자 등록(stateless 로 요청 끝나면 소멸)
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
             filterChain.doFilter(request, response);
 
-            return;
+        } catch (ExpiredJwtException e) {
+            log.info("token expired (Exception catch)");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        } catch (Exception e) {
+            log.error("JWT processing error", e);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-
-        String username = jwtUtil.getUsername(token);
-        Long userId = jwtUtil.getUserId(token);
-
-        UserDto userDto = new UserDto(userId, username, null);
-
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDto);
-
-        // spring security 인증 토큰 생성
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
-
-        // 세션에 사용자 등록(stateless 로 요청 끝나면 소멸)
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        filterChain.doFilter(request, response);
     }
 }

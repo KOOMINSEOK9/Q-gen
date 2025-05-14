@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +36,10 @@ public class TestPaperService {
     private final WorkBookRepository workBookRepository;
     private final TestPaperRepository testPaperRepository;
     private final TestRepository testRepository;
+    private final EmitterService emitterService;
     private final WebClient webClient;
 
-    public TestPaperResponseDto createTestPaper(CreateTestPaperRequestDto createTestPaperRequestDto) throws Exception {
+    public TestPaperResponseDto createTestPaper(CreateTestPaperRequestDto createTestPaperRequestDto, Long userId) throws Exception {
         WorkBook workBook = workBookRepository.findById(createTestPaperRequestDto.getWorkBookId())
                 .orElseThrow(() -> new NoSuchElementException("해당 문제집을 찾을 수 없습니다"));
 
@@ -51,6 +53,8 @@ public class TestPaperService {
                 createTestPaperRequestDto.getQuantity());
         testPaper = testPaperRepository.save(testPaper);
 
+
+        AtomicBoolean isSaved = new AtomicBoolean(false);
 
         List<Test> tests = Collections.synchronizedList(new ArrayList<>());
 
@@ -83,15 +87,13 @@ public class TestPaperService {
                 rqQuantity -= rqShort;
             }
 
-            futures.add(createTest(testPaper, tests, rqChoice, rqOx, rqShort));
+            futures.add(createTest(userId, testPaper, tests, rqChoice, rqOx, rqShort, testPaper.getQuantity(), isSaved));
         }
         if(choiceAns + oxAns + shortAns > 0) {
-            futures.add(createTest(testPaper, tests, choiceAns, oxAns, shortAns));
+            futures.add(createTest(userId, testPaper, tests, choiceAns, oxAns, shortAns, testPaper.getQuantity(), isSaved));
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-        testRepository.saveAll(tests);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
         return TestPaperResponseDto.from(testPaper);
     }
@@ -121,7 +123,7 @@ public class TestPaperService {
         return TestPaperResponseDto.from(testPaper);
     }
 
-    public CompletableFuture<Void> createTest(TestPaper testPaper, List<Test> tests, int choiceAns, int oxAns, int shortAns) {
+    public CompletableFuture<Void> createTest(Long userId, TestPaper testPaper, List<Test> tests, int choiceAns, int oxAns, int shortAns, int quantity, AtomicBoolean isSaved) {
         return CompletableFuture.runAsync(() -> {
             log.info("Test Generate Request");
             CreateTestResponseDto response = webClient.post()
@@ -141,6 +143,12 @@ public class TestPaperService {
                     tests.add(new Test(testPaper, data.getType(), data.getQuestion(),
                             data.getAnswer(), data.getComment()));
                 }
+            }
+
+            // 문제를 모두 모으면 저장 -> 동시성 해결(Atomic Type) , synchronyzed 사용도 가능
+            if (tests.size() == quantity && isSaved.compareAndSet(false, true)) {
+                testRepository.saveAll(tests);
+                emitterService.sendEvent(userId, "testpaper created", testPaper.getTestPaperId());
             }
         });
     }

@@ -34,7 +34,7 @@ public class TestService {
         return FindTestResponseDto.from(test);
     }
 
-    public List<Long> findTestAll(Long testPaperId) {
+    public List<Long> findIdTestAll(Long testPaperId) {
         List<Test> tests = testRepository.findAllByTestPaper_TestPaperId(testPaperId);
         if(tests.isEmpty()) {
             throw new NoSuchElementException("해당 시험지를 찾을 수 없습니다.");
@@ -44,6 +44,14 @@ public class TestService {
             testIds.add(t.getTestId());
         }
         return testIds;
+    }
+
+    public List<Test> findTestAll(Long testPaperId) {
+        List<Test> tests = testRepository.findAllByTestPaper_TestPaperId(testPaperId);
+        if(tests.isEmpty()) {
+            throw new NoSuchElementException("해당 시험지를 찾을 수 없습니다.");
+        }
+        return tests;
     }
 
     public SolvingTestResponseDto solvingTest(SolvingTestRequestDto solvingTestRequestDto) {

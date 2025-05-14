@@ -40,7 +40,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        GrantedAuthority auth = iterator.next();
 //        String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(username, userId,60 * 60 * 60L);
+        String token = jwtUtil.createJwt(username, userId,3 * 60 * 60 * 1000L);
 
         response.addCookie(createCookie("Authorization", token));
         response.sendRedirect("https://q-generator.com/"); // 로그인 성공 시 리다이렉션(서버)

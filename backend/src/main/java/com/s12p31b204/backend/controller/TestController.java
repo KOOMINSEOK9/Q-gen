@@ -68,7 +68,7 @@ public class TestController {
 //                return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
 //            }
             log.info("getting testIds...");
-            List<Long> testIds = testService.findTestAll(testPaperId);
+            List<Long> testIds = testService.findIdTestAll(testPaperId);
             return ApiResponse.success(testIds, "전체 문제 조회 성공", HttpStatus.OK, request.getRequestURI());
         } catch (NoSuchElementException e) {
             return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
