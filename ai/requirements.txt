@@ -5,8 +5,11 @@ openai
 environs
 
 faiss-cpu
-sentence-transformers
-langchain
-docling
 numpy
-python-multipart
+
+httpx
+requests
+python-dotenv
+tqdm
+
+pdfplumber
