@@ -1,4 +1,4 @@
-import QuestionList from '../../components/quiz/QuestionList/QuestionList';
+import QuestionList from './QuestionList';
 import ExamInfo from '../../components/ExamInfo/ExamInfo';
 
 type AnswerStatus = 'none' | 'correct' | 'wrong';
@@ -21,7 +21,7 @@ function ExamSidebar({
   onQuestionClick,
 }: ExamSidebarProps) {
   return (
-    <div className='w-[415px] h-[calc(100% + 40px)] flex flex-col gap-[30px] pt-[58px]'>
+    <div className='flex flex-col h-full min-h-0 gap-4'>
       <QuestionList
         currentNumber={currentNumber}
         totalQuestions={totalQuestions}

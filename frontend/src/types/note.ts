@@ -48,7 +48,7 @@ export interface NoteTestHistory {
 export interface NoteTestDetail {
   testId: number;
   question: string;
-  // type 추가
+  type: 'choiceAns' | 'shortAns' | 'oxAns';
   option1: string | null;
   option2: string | null;
   option3: string | null;

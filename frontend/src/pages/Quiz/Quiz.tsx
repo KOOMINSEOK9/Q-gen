@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import QuestionFrame from '../../components/quiz/QuestionFrame/QuestionFrame';
+import QuestionFrame from './QuestionFrame';
 import ExamSidebar from './ExamSidebar';
 import {
   getTestQuestion,
@@ -185,43 +185,45 @@ function QuizPage() {
   }
 
   return (
-    <div className='w-full'>
-      <div className='flex gap-[40px] items-start'>
-        <div className='w-[1315px]'>
-          <div className='flex items-center gap-2 mb-4'>
-            <img
-              src='/src/assets/images/chart.png'
-              alt='시험 아이콘'
-              className='w-11 h-11'
-            />
-            <h1 className='text-2xl font-bold'>정보처리기사 필기 1회</h1>
-          </div>
-          <QuestionFrame
-            currentNumber={current + 1}
-            totalNumber={totalQuestions}
-            question={currentQuestion?.question || ''}
-            options={
-              currentQuestion?.type === 'oxAns'
-                ? ['O', 'X']
-                : [
-                    currentQuestion?.option1 || '',
-                    currentQuestion?.option2 || '',
-                    currentQuestion?.option3 || '',
-                    currentQuestion?.option4 || '',
-                  ]
-            }
-            selectedOption={selected}
-            isSubmitted={isSubmitted}
-            answerIndex={resultArr[current]?.correctAnswer || ''}
-            explanation={resultArr[current]?.comment || ''}
-            onSelect={handleSelect}
-            onSubmit={handleSubmit}
-            onNext={handleNext}
-            questionType={
-              currentQuestion?.type as 'choiceAns' | 'shortAns' | 'oxAns'
-            }
+    <div className='flex gap-4 h-full'>
+      {/* QuestionFrame (4/5) */}
+      <div style={{ flex: 4 }} className='flex flex-col h-full min-h-0'>
+        {/* <div className='flex items-center mb-4'>
+          <img
+            src='/src/assets/images/chart.png'
+            alt='시험 아이콘'
+            className='w-11 h-11'
           />
-        </div>
+          <h1 className='text-2xl font-bold'>정보처리기사 필기 1회</h1>
+        </div> */}
+        <QuestionFrame
+          currentNumber={current + 1}
+          totalNumber={totalQuestions}
+          question={currentQuestion?.question || ''}
+          options={
+            currentQuestion?.type === 'oxAns'
+              ? ['O', 'X']
+              : [
+                  currentQuestion?.option1 || '',
+                  currentQuestion?.option2 || '',
+                  currentQuestion?.option3 || '',
+                  currentQuestion?.option4 || '',
+                ]
+          }
+          selectedOption={selected}
+          isSubmitted={isSubmitted}
+          answerIndex={resultArr[current]?.correctAnswer || ''}
+          explanation={resultArr[current]?.comment || ''}
+          onSelect={handleSelect}
+          onSubmit={handleSubmit}
+          onNext={handleNext}
+          questionType={
+            currentQuestion?.type as 'choiceAns' | 'shortAns' | 'oxAns'
+          }
+        />
+      </div>
+      {/* ExamSidebar (1/5) */}
+      <div style={{ flex: 1 }} className='flex flex-col h-full min-h-0'>
         <ExamSidebar
           currentNumber={current + 1}
           totalQuestions={totalQuestions}

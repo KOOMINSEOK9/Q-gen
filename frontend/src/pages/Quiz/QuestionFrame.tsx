@@ -103,30 +103,30 @@ function QuestionFrame({
   // OX 문제 렌더링
   const renderOXQuestion = () => {
     return (
-      <div className='flex gap-4 justify-center mb-2'>
+      <div className='flex gap-6 justify-center h-full'>
         {['O', 'X'].map((option) => {
           let optionStyle = 'border-gray-200';
           let textStyle = '';
           if (isSubmitted) {
             if (selectedOption === option && option === answerIndex) {
-              optionStyle = 'border-green-500 bg-green-50';
-              textStyle = 'font-bold text-green-700';
+              optionStyle = 'border-[#009d77]/20 bg-[#009d77]/10 py-3 border-2';
+              textStyle = 'font-base';
             } else if (selectedOption === option) {
-              optionStyle = 'border-red-400 bg-red-50';
-              textStyle = 'font-bold text-red-500';
+              optionStyle = 'border-[#ff4339]/20 bg-[#ff4339]/10 py-3 border-2';
+              textStyle = 'font-base';
             } else if (option === answerIndex) {
-              optionStyle = 'border-green-500 bg-green-50';
-              textStyle = 'font-bold text-green-700';
+              optionStyle = 'border-[#009d77]/20 bg-[#009d77]/10 py-3 border-2';
+              textStyle = 'font-base';
             }
           } else if (selectedOption === option) {
-            optionStyle = 'border-gray-400 bg-gray-100';
-            textStyle = 'font-bold text-gray-700';
+            optionStyle = 'border-[#754AFF]/20 bg-[#754AFF]/10 py-3 border-2';
+            textStyle = 'font-base';
           }
           return (
             <div
               key={option}
               onClick={() => !isSubmitted && onSelect(option)}
-              className={`w-[469px] h-[272px] border-2 rounded-[24px] cursor-pointer transition-colors flex items-center justify-center text-6xl font-bold ${optionStyle}`}
+              className={`w-full border-1 rounded-3xl cursor-pointer transition-colors flex items-center justify-center text-9xl font-base ${optionStyle}`}
             >
               <span className={textStyle}>{option}</span>
             </div>
@@ -141,28 +141,29 @@ function QuestionFrame({
     return (
       <div className='space-y-3 mb-2'>
         {options.map((option, index) => {
-          let optionStyle = 'border-gray-200';
-          let textStyle = '';
+          let optionStyle = 'border-gray-200 py-3';
+          let textStyle = 'flex items-center';
           if (isSubmitted) {
             if ((index + 1).toString() === answerIndex) {
-              optionStyle = 'border-green-500 bg-green-50';
-              textStyle = 'font-bold text-green-700';
+              optionStyle = 'border-[#009d77]/20 bg-[#009d77]/10 py-3';
+              textStyle = 'font-bold';
             } else if (selectedOption === (index + 1).toString()) {
-              optionStyle = 'border-red-400 bg-red-50';
-              textStyle = 'font-bold text-red-500';
+              optionStyle = 'border-[#ff4339]/20 bg-[#ff4339]/10 py-3';
+              textStyle = 'font-bold';
             }
           } else if (selectedOption === (index + 1).toString()) {
-            optionStyle = 'border-gray-400 bg-gray-100';
-            textStyle = 'font-bold text-gray-700';
+            optionStyle = 'border-[#754AFF]/20 bg-[#754AFF]/10 py-3';
+            textStyle = 'font-bold';
           }
           return (
             <div
               key={index}
               onClick={() => !isSubmitted && onSelect((index + 1).toString())}
-              className={`p-4 border-2 rounded-[24px] cursor-pointer transition-colors ${optionStyle}`}
+              className={`p-4 border-1 rounded-2xl cursor-pointer transition-colors ${optionStyle}`}
             >
               <span className={textStyle}>
-                {index + 1}. {option}
+                <span className='mr-4'>{index + 1}</span>
+                <span>{option}</span>
               </span>
             </div>
           );
@@ -177,7 +178,7 @@ function QuestionFrame({
       <div className='mb-2'>
         <input
           type='text'
-          className='w-full p-4 border-2 rounded-[24px] focus:outline-none focus:border-purple-500'
+          className='w-full p-4 border-1 rounded-2xl border-gray-200'
           placeholder='답을 입력하세요'
           value={selectedOption || ''}
           disabled={isSubmitted}
@@ -205,11 +206,11 @@ function QuestionFrame({
     <div
       ref={frameRef}
       tabIndex={0}
-      className='transition-opacity duration-300 opacity-100 w-full h-[537px] bg-white rounded-[24px] p-6 shadow-sm overflow-y-auto'
+      className='w-full h-full min-h-0 bg-white rounded-3xl p-6 shadow-sm flex flex-col'
     >
-      <div>
+      <div className='flex-shrink-0 mb-2'>
         {/* 문제 번호 */}
-        <div className='flex justify-between items-center mb-3'>
+        <div className='flex items-center justify-between'>
           <p className='text-base font-bold'>
             문제 {currentNumber}/{totalNumber}
           </p>
@@ -227,30 +228,30 @@ function QuestionFrame({
             </Button>
           )}
         </div>
-
+      </div>
+      <div className='flex-1 min-h-0 flex flex-col'>
         {/* 문제 내용 */}
-        <div className='mb-8'>
+        <div className='mb-6'>
           <h2 className='text-lg font-bold'>{question}</h2>
         </div>
-
         {/* 문제 유형에 따른 렌더링 */}
         {renderQuestion()}
-
+        {/* 정답 표시 */}
+        {isSubmitted && (
+          <div className='mt-2 text-gray-700 bg-[#009d77]/10 border border-[#009d77]/20 rounded-xl p-4 text-sm'>
+            정답: <span className='font-bold'>{answerIndex}</span>
+          </div>
+        )}
         {/* 해설 */}
-        <div
-          className='transition-all duration-500 ease-in-out overflow-hidden mt-6'
+        <SimpleBar
+          className='my-6 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'
           style={{
-            maxHeight: isSubmitted ? 220 : 0,
             opacity: isSubmitted ? 1 : 0,
           }}
         >
-          <div className='font-semibold mb-2'>해설</div>
-          <SimpleBar style={{ maxHeight: 180 }}>
-            <div className='bg-purple-50 rounded-lg text-gray-700 p-4 max-h-[180px] overflow-y-auto'>
-              {explanation}
-            </div>
-          </SimpleBar>
-        </div>
+          <div className='font-semibold mb-2 text-gray-700'>해설</div>
+          <div className='text-gray-700'>{explanation}</div>
+        </SimpleBar>
       </div>
     </div>
   );

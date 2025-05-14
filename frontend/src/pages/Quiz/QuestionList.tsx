@@ -1,3 +1,5 @@
+import Button from '@/components/common/Button/Button';
+
 type AnswerStatus = 'none' | 'correct' | 'wrong';
 
 interface QuestionListProps {
@@ -14,48 +16,39 @@ function QuestionList({
   onQuestionClick,
 }: QuestionListProps) {
   return (
-    <div>
+    <div className='h-full min-h-[0] flex flex-col bg-white rounded-3xl p-6 shadow-sm'>
       <h3 className='text-lg font-bold mb-4'>문제 목록</h3>
-      <div className='grid grid-cols-5 gap-3'>
+      <div className='grid grid-cols-5 gap-2'>
         {Array.from(
           { length: Math.min(totalQuestions, 30) },
           (_, i) => i + 1
         ).map((number) => {
           let btnClass = '';
-          let dotClass = '';
           if (answerStatus[number - 1] === 'correct') {
-            btnClass = 'bg-green-100 text-green-700 border border-green-300';
-            dotClass = 'text-green-500';
+            btnClass =
+              'bg-[#009d77]/10 border border-[#009d77]/20 text-gray-700 hover:bg-[#009d77]/50 border hover:border-transparent';
           } else if (answerStatus[number - 1] === 'wrong') {
-            btnClass = 'bg-red-100 text-red-700 border border-red-300';
-            dotClass = 'text-red-500';
+            btnClass =
+              'bg-[#ff4339]/10 border border-[#ff4339]/20 text-gray-700 hover:bg-[#ff4339]/50 border hover:border-transparent';
           } else if (answerStatus[number - 1] !== 'none') {
-            btnClass = 'bg-purple-100 text-purple-700 border border-purple-300';
-            dotClass = 'text-purple-500';
+            btnClass =
+              'bg-[#754AFF]/10 border border-[#754AFF]/20 text-gray-700 hover:bg-[#754AFF]/50 border hover:border-transparent';
           } else {
             btnClass =
-              'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200';
+              'bg-white text-gray-700 border border-gray-200 hover:bg-[#754AFF]/50 border hover:border-transparent';
           }
           return (
-            <button
+            <Button
               key={number}
               onClick={() => onQuestionClick(number)}
-              className={`aspect-square rounded-[12px] md:rounded-[6px] flex items-center justify-center text-sm md:text-xs font-medium relative transition-colors duration-200 ease-in-out min-w-[32px] cursor-pointer p-4 md:p-2 ${
+              className={`flex items-center justify-center text-sm font-medium relative transition-colors duration-200 ease-in-out min-w-[32px] cursor-pointer p-4 md:p-2 ${
                 number === currentNumber
                   ? 'bg-gradient-to-r from-[#754AFF] to-[#A34BFF] text-white shadow-sm'
                   : btnClass
               }`}
             >
               {number}
-              {answerStatus[number - 1] !== 'none' &&
-                number !== currentNumber && (
-                  <span
-                    className={`absolute top-1 right-1 text-[10px] leading-none ${dotClass}`}
-                  >
-                    ●
-                  </span>
-                )}
-            </button>
+            </Button>
           );
         })}
       </div>

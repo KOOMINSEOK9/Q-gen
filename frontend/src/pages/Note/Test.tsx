@@ -18,10 +18,12 @@ function Test({
   onNext,
   onPrev,
   testHistoryList,
+  type,
   answer,
 }: Omit<NoteProps, 'onSelect'> & {
   testHistoryList: NoteTestHistory[];
   answer: string;
+  type: 'choiceAns' | 'shortAns' | 'oxAns';
 }) {
   const explanationRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -47,10 +49,113 @@ function Test({
     return `${yy}.${mm}.${dd}`;
   };
 
+  // OX 문제 렌더링
+  const renderOXQuestion = () => (
+    <div className='flex gap-6 justify-center h-full'>
+      {['O', 'X'].map((option, idx) => {
+        let optionStyle = 'border-gray-200 py-20';
+        let textStyle = '';
+        const isAnswer = answerIndex === idx;
+        const isSelected = selectedOption === idx;
+        if (isSubmitted) {
+          if (isSelected && isAnswer) {
+            optionStyle = 'border-[#009d77]/20 bg-[#009d77]/10 border-2 py-20';
+            textStyle = 'font-base';
+          } else if (isSelected) {
+            optionStyle = 'border-[#ff4339]/20 bg-[#ff4339]/10 border-2 py-20';
+            textStyle = 'font-base';
+          } else if (isAnswer) {
+            optionStyle = 'border-[#009d77]/20 bg-[#009d77]/10 border-2 py-20';
+            textStyle = 'font-base';
+          }
+        } else if (isSelected) {
+          optionStyle = 'border-[#754AFF]/20 bg-[#754AFF]/10 border-2 py-20';
+          textStyle = 'font-base';
+        }
+        return (
+          <div
+            key={option}
+            className={`w-full border-1 rounded-3xl cursor-pointer transition-colors flex items-center justify-center text-8xl font-base ${optionStyle}`}
+          >
+            <span className={textStyle}>{option}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  // 객관식 문제 렌더링
+  const renderMultipleChoice = () => (
+    <div className='space-y-3 mb-2'>
+      {options.map((option, index) => {
+        let optionStyle = 'border-gray-200 py-3';
+        let textStyle = 'flex items-center';
+        if (isSubmitted) {
+          if (index === answerIndex) {
+            optionStyle = 'border-[#009d77]/20 bg-[#009d77]/10 py-3';
+            textStyle = 'font-bold';
+          } else if (index === selectedOption) {
+            optionStyle = 'border-[#ff4339]/20 bg-[#ff4339]/10 py-3';
+            textStyle = 'font-bold';
+          }
+        }
+        return (
+          <div
+            key={index}
+            className={`p-4 border-1 rounded-2xl cursor-pointer transition-colors ${optionStyle}`}
+          >
+            <span className={textStyle}>
+              <span className='mr-4'>{index + 1}</span>
+              <span>{option}</span>
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  // 주관식 문제 렌더링
+  const renderShortAnswer = () => {
+    const isWrong =
+      isSubmitted &&
+      typeof selectedOption === 'string' &&
+      selectedOption !== answer;
+    return (
+      <div className='mb-2'>
+        <input
+          type='text'
+          className={`w-full p-4 border-1 rounded-2xl ${isWrong ? 'border-[#ff4339]/20 font-bold bg-[#ff4339]/10' : 'border-gray-200'} `}
+          placeholder='문제를 풀어보세요'
+          value={typeof selectedOption === 'string' ? selectedOption : ''}
+          disabled={isSubmitted}
+          readOnly
+        />
+        {isSubmitted && (
+          <div className='mt-2 text-gray-700 bg-[#009d77]/10 border border-[#009d77]/20 rounded-xl p-4 text-sm'>
+            정답: <span className='font-bold'>{answer}</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // 문제 유형에 따른 렌더링
+  const renderQuestion = () => {
+    switch (type) {
+      case 'oxAns':
+        return renderOXQuestion();
+      case 'shortAns':
+        return renderShortAnswer();
+      case 'choiceAns':
+      default:
+        return renderMultipleChoice();
+    }
+  };
+
   return (
     <div className='w-full h-full min-h-0 bg-white rounded-3xl p-6 shadow-sm'>
       <div>
-        <div className='flex justify-between mb-4'>
+        <div className='flex justify-between mb-2'>
           {/* 문제 번호 */}
           <div className='flex items-center gap-2'>
             <p className='text-base font-bold'>
@@ -83,35 +188,8 @@ function Test({
         <div className='mb-6'>
           <h2 className='text-lg font-bold'>{test}</h2>
         </div>
-
-        {/* 보기 목록 */}
-        <div className='space-y-3 mb-2'>
-          {options.map((option, index) => {
-            let optionStyle = 'border-gray-200 py-3';
-            let textStyle = 'flex items-center';
-            if (isSubmitted) {
-              if (index === answerIndex) {
-                optionStyle = 'border-[#009d77]/20 bg-[#009d77]/10 py-3';
-                textStyle = 'font-bold';
-              } else if (index === selectedOption) {
-                optionStyle = 'border-[#ff4339]/20 bg-[#ff4339]/10 py-3';
-                textStyle = 'font-bold';
-              }
-            }
-            return (
-              <div
-                key={index}
-                className={`p-4 border-1 rounded-2xl transition-colors ${optionStyle}`}
-              >
-                <span className={textStyle}>
-                  <span className='mr-4'>{index + 1}</span>
-                  <span>{option}</span>
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
+        {/* 문제 유형에 따른 렌더링 */}
+        {renderQuestion()}
         {/* 해설 */}
         <SimpleBar className='my-6 h-full min-h-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'>
           <div className='font-semibold mb-2 text-gray-700'>해설</div>

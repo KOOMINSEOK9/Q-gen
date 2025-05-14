@@ -111,7 +111,7 @@ const Note = () => {
   return (
     <div className='flex gap-4 h-full'>
       {/* TestList (1/5) */}
-      <div style={{ flex: 1 }} className='flex flex-col gap-4 h-full min-h-0'>
+      <div style={{ flex: 1 }} className='flex flex-col gap-4 h-full'>
         <SimpleBar
           style={{ flex: 3.3, height: '0', minHeight: 0 }}
           className='bg-white rounded-3xl p-6 shadow-sm'
@@ -123,7 +123,7 @@ const Note = () => {
               <Button
                 key={exam.testPaperId}
                 variant='filled'
-                className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/10 hover:border-[#754AFF]/80'}`}
+                className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/50 hover:border-transparent'}`}
                 onClick={() => {
                   setActiveTestPaperIndex(idx);
                   navigate(`/note/${workBookId}/${exam.testPaperId}`);
@@ -135,17 +135,14 @@ const Note = () => {
           </div>
         </SimpleBar>
 
-        <SimpleBar
-          style={{ flex: 1.7, height: '0', minHeight: 0 }}
-          className='bg-white rounded-3xl p-6 shadow-sm'
-        >
+        <div className='bg-white rounded-3xl p-6 shadow-sm'>
           <TestList
             currentNumber={currentNumber}
             totalTests={totalTests}
             onTestClick={handleTestClick}
             testDetails={testDetails}
           />
-        </SimpleBar>
+        </div>
       </div>
 
       {/* Test (3/5) */}
@@ -160,45 +157,84 @@ const Note = () => {
           </div>
         ) : currentTestDetail ? (
           (() => {
-            const options = [
-              currentTestDetail.option1,
-              currentTestDetail.option2,
-              currentTestDetail.option3,
-              currentTestDetail.option4,
-            ].filter(Boolean) as string[];
-
-            // answer가 "1", "2" 등 숫자 string일 때와 보기 내용일 때 모두 대응
-            let answerIndex = -1;
-            if (
-              currentTestDetail.answer &&
-              /^\d+$/.test(currentTestDetail.answer.trim()) &&
-              Number(currentTestDetail.answer) >= 1 &&
-              Number(currentTestDetail.answer) <= options.length
-            ) {
-              answerIndex = Number(currentTestDetail.answer) - 1;
-            } else {
-              answerIndex = options.findIndex(
-                (opt) => opt === currentTestDetail.answer
-              );
-            }
-
-            const lastHistory = currentTestDetail.testHistoryList?.slice(-1)[0];
-            let selectedOption = -1;
-            if (lastHistory) {
-              if (
-                lastHistory.userAnswer &&
-                /^\d+$/.test(lastHistory.userAnswer.trim()) &&
-                Number(lastHistory.userAnswer) >= 1 &&
-                Number(lastHistory.userAnswer) <= options.length
-              ) {
-                selectedOption = Number(lastHistory.userAnswer) - 1;
-              } else {
-                selectedOption = options.findIndex(
-                  (opt) => opt === lastHistory.userAnswer
-                );
+            function convertType(
+              type: string
+            ): 'choiceAns' | 'shortAns' | 'oxAns' {
+              switch (type) {
+                case 'TYPE_CHOICE':
+                  return 'choiceAns';
+                case 'TYPE_SHORT':
+                  return 'shortAns';
+                case 'TYPE_OX':
+                  return 'oxAns';
+                default:
+                  return 'choiceAns';
               }
             }
+
+            const rawType = currentTestDetail.type;
+            const type = convertType(rawType);
+            const { answer, testHistoryList } = currentTestDetail;
+            let options: string[] = [];
+            let answerIndex: any = null;
+            let selectedOption: any = null;
+
+            if (type === 'choiceAns') {
+              options = [
+                currentTestDetail.option1,
+                currentTestDetail.option2,
+                currentTestDetail.option3,
+                currentTestDetail.option4,
+              ].filter(Boolean) as string[];
+              if (
+                answer &&
+                /^\d+$/.test(answer.trim()) &&
+                Number(answer) >= 1 &&
+                Number(answer) <= options.length
+              ) {
+                answerIndex = Number(answer) - 1;
+              } else {
+                answerIndex = options.findIndex((opt) => opt === answer);
+              }
+              const lastHistory = testHistoryList?.slice(-1)[0];
+              if (lastHistory) {
+                if (
+                  lastHistory.userAnswer &&
+                  /^\d+$/.test(lastHistory.userAnswer.trim()) &&
+                  Number(lastHistory.userAnswer) >= 1 &&
+                  Number(lastHistory.userAnswer) <= options.length
+                ) {
+                  selectedOption = Number(lastHistory.userAnswer) - 1;
+                } else {
+                  selectedOption = options.findIndex(
+                    (opt) => opt === lastHistory.userAnswer
+                  );
+                }
+              }
+            } else if (type === 'oxAns') {
+              options = ['O', 'X'];
+              answerIndex = answer === 'O' ? 0 : 1;
+              const lastHistory = testHistoryList?.slice(-1)[0];
+              selectedOption = lastHistory
+                ? lastHistory.userAnswer === 'O'
+                  ? 0
+                  : 1
+                : null;
+            } else if (type === 'shortAns') {
+              options = [];
+              answerIndex = answer;
+              const lastHistory = testHistoryList?.slice(-1)[0];
+              selectedOption = lastHistory ? lastHistory.userAnswer : '';
+            }
+
             const isSubmitted = true;
+            // 디버깅용 로그
+            console.log('[NOTE->TEST] type:', type);
+            console.log('[NOTE->TEST] options:', options);
+            console.log('[NOTE->TEST] answerIndex:', answerIndex);
+            console.log('[NOTE->TEST] selectedOption:', selectedOption);
+            console.log('[NOTE->TEST] answer:', answer);
+            console.log('[NOTE->TEST] testHistoryList:', testHistoryList);
             return (
               <Test
                 currentNumber={currentNumber}
@@ -214,6 +250,7 @@ const Note = () => {
                 onPrev={handlePrev}
                 testHistoryList={currentTestDetail.testHistoryList}
                 answer={currentTestDetail.answer}
+                type={type}
               />
             );
           })()
