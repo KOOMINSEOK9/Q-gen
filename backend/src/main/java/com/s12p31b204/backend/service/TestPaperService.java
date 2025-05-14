@@ -12,14 +12,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.s12p31b204.backend.domain.Document;
 import com.s12p31b204.backend.domain.Test;
 import com.s12p31b204.backend.domain.TestPaper;
 import com.s12p31b204.backend.domain.WorkBook;
 import com.s12p31b204.backend.dto.CreateTestPaperRequestDto;
 import com.s12p31b204.backend.dto.CreateTestRequestDto;
 import com.s12p31b204.backend.dto.CreateTestResponseDto;
+import com.s12p31b204.backend.dto.GenerateTestPaperRequestDto;
+import com.s12p31b204.backend.dto.GenerateTestRequestDto;
 import com.s12p31b204.backend.dto.TestPaperResponseDto;
 import com.s12p31b204.backend.dto.UpdateTestPaperRequestDto;
+import com.s12p31b204.backend.repository.DocumentRepository;
 import com.s12p31b204.backend.repository.TestPaperRepository;
 import com.s12p31b204.backend.repository.TestRepository;
 import com.s12p31b204.backend.repository.WorkBookRepository;
@@ -35,11 +39,71 @@ public class TestPaperService {
 
     private final WorkBookRepository workBookRepository;
     private final TestPaperRepository testPaperRepository;
+    private final DocumentRepository documentRepository;
     private final TestRepository testRepository;
     private final EmitterService emitterService;
     private final WebClient webClient;
 
-    public TestPaperResponseDto createTestPaper(CreateTestPaperRequestDto createTestPaperRequestDto, Long userId) throws Exception {
+    public TestPaperResponseDto createTestPaperWithRAG(GenerateTestPaperRequestDto generateTestPaperRequestDto, Long userId) throws Exception {
+        WorkBook workBook = workBookRepository.findById(generateTestPaperRequestDto.getWorkBookId())
+                .orElseThrow(() -> new NoSuchElementException("해당 문제집을 찾을 수 없습니다"));
+
+        TestPaper testPaper = new TestPaper(
+                workBook,
+                generateTestPaperRequestDto.getTitle(),
+                generateTestPaperRequestDto.getChoiceAns(),
+                generateTestPaperRequestDto.getShortAns(),
+                generateTestPaperRequestDto.getOxAns(),
+                generateTestPaperRequestDto.getWordAns(),
+                generateTestPaperRequestDto.getQuantity());
+        testPaper = testPaperRepository.save(testPaper);
+
+        List<String> s3Urls = new ArrayList<>();
+        for(Long documentId : generateTestPaperRequestDto.getDocumentIds()) {
+            Document document = documentRepository.findById(documentId).orElseThrow(() -> {
+                throw new NoSuchElementException("해당 자료를 찾을 수 없습니다. " + documentId);
+            });
+            s3Urls.add(document.getDocumentURL());
+        }
+
+        List<Test> tests = Collections.synchronizedList(new ArrayList<>());
+        TestPaper savedTestPaper = testPaper;
+
+        try {
+            CompletableFuture.runAsync(() -> {
+                log.info("Test Generate Request");
+                CreateTestResponseDto response = webClient.post()
+                        .uri("/api/ai/search/{testPaperId}/", savedTestPaper.getTestPaperId())
+                        .bodyValue(new GenerateTestRequestDto(s3Urls, savedTestPaper.getChoiceAns(), savedTestPaper.getOxAns(), savedTestPaper.getShortAns()))
+                        .retrieve()
+                        .bodyToMono(CreateTestResponseDto.class)
+                        .timeout(Duration.ofMinutes(5))
+                        .block();
+                for(CreateTestResponseDto.Data data : response.getData()) {
+                    if(data.getType() == Test.Type.TYPE_CHOICE) {
+                        tests.add(new Test(savedTestPaper, data.getType(), data.getQuestion(),
+                                data.getOption().get(0), data.getOption().get(1),
+                                data.getOption().get(2), data.getOption().get(3),
+                                data.getAnswer(), data.getComment()));
+                    } else {
+                        tests.add(new Test(savedTestPaper, data.getType(), data.getQuestion(),
+                                data.getAnswer(), data.getComment()));
+                    }
+                }
+
+
+                testRepository.saveAll(tests);
+                emitterService.sendEvent(userId, "testpaper created", savedTestPaper.getTestPaperId());
+            });
+        } catch (Exception e) {
+            emitterService.sendEvent(userId, "failed create", savedTestPaper.getTestPaperId());
+        }
+
+        return TestPaperResponseDto.from(testPaper);
+    }
+
+
+    public TestPaperResponseDto createTestPaper(CreateTestPaperRequestDto createTestPaperRequestDto, Long userId) {
         WorkBook workBook = workBookRepository.findById(createTestPaperRequestDto.getWorkBookId())
                 .orElseThrow(() -> new NoSuchElementException("해당 문제집을 찾을 수 없습니다"));
 
@@ -125,30 +189,34 @@ public class TestPaperService {
 
     public CompletableFuture<Void> createTest(Long userId, TestPaper testPaper, List<Test> tests, int choiceAns, int oxAns, int shortAns, int quantity, AtomicBoolean isSaved) {
         return CompletableFuture.runAsync(() -> {
-            log.info("Test Generate Request");
-            CreateTestResponseDto response = webClient.post()
-                    .uri("/api/ai/chatgpt/{testPaperId}/", testPaper.getTestPaperId())
-                    .bodyValue(new CreateTestRequestDto(choiceAns, oxAns, shortAns))
-                    .retrieve()
-                    .bodyToMono(CreateTestResponseDto.class)
-                    .timeout(Duration.ofMinutes(5))
-                    .block();
-            for(CreateTestResponseDto.Data data : response.getData()) {
-                if(data.getType() == Test.Type.TYPE_CHOICE) {
-                    tests.add(new Test(testPaper, data.getType(), data.getQuestion(),
-                            data.getOption().get(0), data.getOption().get(1),
-                            data.getOption().get(2), data.getOption().get(3),
-                            data.getAnswer(), data.getComment()));
-                } else {
-                    tests.add(new Test(testPaper, data.getType(), data.getQuestion(),
-                            data.getAnswer(), data.getComment()));
+            try {
+                log.info("Test Generate Request");
+                CreateTestResponseDto response = webClient.post()
+                        .uri("/api/ai/chatgpt/{testPaperId}/", testPaper.getTestPaperId())
+                        .bodyValue(new CreateTestRequestDto(choiceAns, oxAns, shortAns))
+                        .retrieve()
+                        .bodyToMono(CreateTestResponseDto.class)
+                        .timeout(Duration.ofMinutes(5))
+                        .block();
+                for(CreateTestResponseDto.Data data : response.getData()) {
+                    if(data.getType() == Test.Type.TYPE_CHOICE) {
+                        tests.add(new Test(testPaper, data.getType(), data.getQuestion(),
+                                data.getOption().get(0), data.getOption().get(1),
+                                data.getOption().get(2), data.getOption().get(3),
+                                data.getAnswer(), data.getComment()));
+                    } else {
+                        tests.add(new Test(testPaper, data.getType(), data.getQuestion(),
+                                data.getAnswer(), data.getComment()));
+                    }
                 }
-            }
 
-            // 문제를 모두 모으면 저장 -> 동시성 해결(Atomic Type) , synchronyzed 사용도 가능
-            if (tests.size() == quantity && isSaved.compareAndSet(false, true)) {
-                testRepository.saveAll(tests);
-                emitterService.sendEvent(userId, "testpaper created", testPaper.getTestPaperId());
+                // 문제를 모두 모으면 저장 -> 동시성 해결(Atomic Type) , synchronyzed 사용도 가능
+                if (tests.size() == quantity && isSaved.compareAndSet(false, true)) {
+                    testRepository.saveAll(tests);
+                    emitterService.sendEvent(userId, "testpaper created", testPaper.getTestPaperId());
+                }
+            } catch (Exception e) {
+                emitterService.sendEvent(userId, "failed create", testPaper.getTestPaperId());
             }
         });
     }
