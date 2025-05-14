@@ -44,3 +44,5 @@ jenkins_home/
 *.log
 
 **/application.properties
+
+**/bin
