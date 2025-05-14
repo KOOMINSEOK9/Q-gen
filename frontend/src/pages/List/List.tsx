@@ -224,7 +224,7 @@ export default function List() {
 
   // 이력 확인 핸들러
   const handleHistoryClick = (testPaperId: string | number) => {
-    navigate(`/note/${testPaperId}`);
+    navigate(`/note/${numericWorkBookId}/${testPaperId}`);
   };
 
   // 퀴즈 모드 시작 핸들러
@@ -235,11 +235,6 @@ export default function List() {
     // TODO: 선택된 모드와 타이머로 퀴즈 페이지로 이동
     console.log('Quiz mode:', mode, 'Timer:', timer);
     setIsQuizStartModalOpen(false);
-  };
-
-  // 오답 노트 이동 핸들러
-  const handleNoteClick = () => {
-    navigate(`/note/${numericWorkBookId}`);
   };
 
   // 시험지 생성 페이지 이동 핸들러
@@ -277,21 +272,6 @@ export default function List() {
       alert('문제집 삭제에 실패했습니다.');
     }
   };
-
-  // 문제집 이름 수정
-  // const handleWorkBookEdit = async (workBookId: string) => {
-  //   if (!workBookId) return;
-  //   const newTitle = window.prompt('새로운 문제집 이름을 입력하세요.');
-  //   if (!newTitle || !newTitle.trim()) return;
-  //   try {
-  //     await editWorkBook(Number(workBookId), newTitle.trim());
-  //     // 수정 후 목록 새로고침
-  //     await fetchWorkBooks(userId);
-  //     setMiniModalOpen(false);
-  //   } catch (error) {
-  //     alert('문제집 이름 수정에 실패했습니다.');
-  //   }
-  // };
 
   // 문제집 추가 버튼 클릭 시
   const handleOpenAddModal = () => {
@@ -334,7 +314,7 @@ export default function List() {
         <div className='w-26 h-26 mt-6 ml-6'>
           <img src='/images/dolpin-with-tablet.png' alt='돌고래 사진' />
         </div>
-        <div className='flex flex-col items-start gap-1 justify-center bg-white rounded-2xl shadow p-4 max-w-[550px] ml-[1%] relative'>
+        <div className='flex flex-col items-start gap-1 justify-center bg-white rounded-2xl shadow p-4 px-8 max-w-[600px] ml-[1%] relative cursor-default'>
           <span className='text-2xl font-semibold '>
             안녕하세요!{' '}
             <strong className='bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text p-1'>
@@ -342,12 +322,13 @@ export default function List() {
             </strong>
             님
           </span>
-          <GradientTitle
-            className='inline-block text-2xl'
-            before='오늘도 '
-            highlight='Q-gen'
-            after='에서 효율적인 공부를 시작해볼까요!'
-          ></GradientTitle>
+          <span className='text-2xl font-semibold'>
+            오늘도{' '}
+            <strong className='bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text p-1'>
+              Q-gen
+            </strong>{' '}
+            에서 효율적인 공부를 시작해볼까요!
+          </span>
           {/* 말풍선 꼭지 */}
           {/* <div className='absolute -bottom-3 left-8 w-6 h-6 bg-white transform rotate-45 shadow-[2px_2px_2px_rgba(0,0,0,0.1)]'></div> */}
         </div>
@@ -453,7 +434,7 @@ export default function List() {
                   <Button
                     variant='outlined'
                     className=''
-                    onClick={handleNoteClick}
+                    onClick={() => handleHistoryClick(numericWorkBookId)}
                   >
                     문제 노트
                   </Button>

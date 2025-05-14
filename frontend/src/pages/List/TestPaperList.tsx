@@ -71,7 +71,7 @@ function TestPaperList({
                   variant='filled'
                   className='px-0 py-1 text-xs bg-none border-none text-gray-400'
                 >
-                  <span className=''>이력 확인</span>
+                  <span className=''>문제 노트</span>
                   <IconBox
                     className='opacity-[0.5]'
                     name='chevronDown'

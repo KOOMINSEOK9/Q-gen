@@ -12,7 +12,7 @@ export default function GradientTitle({
   className,
 }: GradientTitleProps) {
   return (
-    <h2 className={` font-extrabold flex items-end ${className ?? ''}`}>
+    <h2 className={`text-4xl font-extrabold flex items-end ${className ?? ''}`}>
       {before && <span className='text-black '>{before}</span>}
       <span className=' bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text px-1'>
         {highlight}
