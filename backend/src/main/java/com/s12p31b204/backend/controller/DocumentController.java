@@ -107,4 +107,37 @@ public class DocumentController {
             return ApiResponse.failure(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI());
         }
     }
+
+    // document-04: 파일 상세 조회
+    @GetMapping("/{documentId}")
+    public ResponseEntity<ResponseData<DocumentDto>> getDocument(
+            @PathVariable Long documentId,
+            @AuthenticationPrincipal CustomOAuth2User user,
+            HttpServletRequest request
+    ) {
+        DocumentDto document = documentService.getDocument(documentId);
+        return ApiResponse.success(document, "파일 상세 조회 성공", HttpStatus.OK, request.getRequestURI());
+    }
+    
+    // document-05: 텍스트 입력 txt파일 변환
+    @PostMapping("/text")
+    public ResponseEntity<ResponseData<DocumentDto>> convertTextToTxt(
+            @RequestParam("workBookId") Long workBookId,
+            @RequestParam("text") String text,
+            HttpServletRequest request
+    ) {
+        DocumentDto document = documentService.convertTextToTxt(workBookId, text);
+        return ApiResponse.success(document, "txt파일 변환 성공", HttpStatus.OK, request.getRequestURI());
+    }
+
+    // document-06: url txt파일 변환
+    @PostMapping("/url")
+    public ResponseEntity<ResponseData<DocumentDto>> convertUrlToTxt(
+            @RequestParam("workBookId") Long workBookId,
+            @RequestParam("url") String url,
+            HttpServletRequest request
+    ) {
+        DocumentDto document = documentService.convertUrlToTxt(workBookId, url);
+        return ApiResponse.success(document, "url txt파일 변환 성공", HttpStatus.OK, request.getRequestURI());
+    }
 }
