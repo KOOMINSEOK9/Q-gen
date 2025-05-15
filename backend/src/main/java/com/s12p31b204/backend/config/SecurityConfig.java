@@ -45,7 +45,7 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173/", "https://q-generator.com/"));
+                        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "https://q-generator.com"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
