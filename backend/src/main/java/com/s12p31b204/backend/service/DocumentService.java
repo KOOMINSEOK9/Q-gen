@@ -5,10 +5,10 @@ import com.s12p31b204.backend.domain.WorkBook;
 import com.s12p31b204.backend.dto.DocumentDto;
 import com.s12p31b204.backend.repository.DocumentRepository;
 import com.s12p31b204.backend.repository.WorkBookRepository;
+import com.s12p31b204.backend.util.CustomMultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,12 +82,7 @@ public class DocumentService {
             }
 
             // 2. MultipartFile로 변환
-            MultipartFile multipartFile = new MockMultipartFile(
-                fileName,
-                fileName,
-                "text/plain",
-                text.getBytes()
-            );
+            MultipartFile multipartFile = new CustomMultipartFile(tempFile, fileName, "text/plain");
 
             String url = s3Service.upload(multipartFile, "documents");
             Long documentId = createDocument(multipartFile, workBookId, url);
@@ -121,12 +116,7 @@ public class DocumentService {
                 try (FileWriter writer = new FileWriter(tempFile)) {
                     writer.write(text);
                 }
-                MultipartFile multipartFile = new MockMultipartFile(
-                    fileName,
-                    fileName,
-                    "text/plain",
-                    text.getBytes()
-                );
+                MultipartFile multipartFile = new CustomMultipartFile(tempFile, fileName, "text/plain");
                 String uploadedUrl = s3Service.upload(multipartFile, "documents");
                 Long documentId = createDocument(multipartFile, workBookId, uploadedUrl);
                 return getDocument(documentId);
