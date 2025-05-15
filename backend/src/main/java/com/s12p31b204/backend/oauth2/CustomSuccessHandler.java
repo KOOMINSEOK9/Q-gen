@@ -43,8 +43,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String token = jwtUtil.createJwt(username, userId,3 * 60 * 60 * 1000L);
 
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("https://q-generator.com/"); // 로그인 성공 시 리다이렉션(서버)
-//        response.sendRedirect("http://localhost:5173/"); // 로그인 성공 시 리다이렉션(로컬)
+
+        String redirectUrl;
+
+        String serverName = request.getServerName();
+
+        if ("localhost".equals(serverName)) {
+            redirectUrl = "http://localhost:5173/"; // 로그인 성공 시 리다이렉션(로컬)
+        } else {
+            redirectUrl = "https://" + serverName + "/"; // 로그인 성공 시 리다이렉션(서버)
+        }
+
+        response.sendRedirect(redirectUrl);
         log.info("Authentication Success");
     }
 
