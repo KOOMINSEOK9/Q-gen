@@ -53,14 +53,12 @@ public class WorkBookController {
             @RequestBody WorkBookRequestDto requestDto,
             @AuthenticationPrincipal CustomOAuth2User user,
             HttpServletRequest request) {
-//        if(authorizationService.checkWorkBookAuthorization(user.getUserId(), workBookId)) {
-//            workBookService.updateWorkBookTitle(workBookId, requestDto.getTitle());
-//            return ApiResponse.success(null, "문제집 변경 성공", HttpStatus.NO_CONTENT, request.getRequestURI());
-//        } else {
-//            return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
-//        }
-        workBookService.updateWorkBookTitle(workBookId, requestDto.getTitle());
-        return ApiResponse.success(null, "문제집 변경 성공", HttpStatus.NO_CONTENT, request.getRequestURI());
+        if(authorizationService.checkWorkBookAuthorization(user.getUserId(), workBookId)) {
+            workBookService.updateWorkBookTitle(workBookId, requestDto.getTitle());
+            return ApiResponse.success(null, "문제집 변경 성공", HttpStatus.NO_CONTENT, request.getRequestURI());
+        } else {
+            return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
+        }
     }
     
     @DeleteMapping("/{workBookId}")
@@ -69,14 +67,12 @@ public class WorkBookController {
             @AuthenticationPrincipal CustomOAuth2User user,
             HttpServletRequest request
     ) {
-//        if(authorizationService.checkWorkBookAuthorization(user.getUserId(), workBookId)) {
-//            workBookService.deleteWorkBook(workBookId);
-//            return ApiResponse.success(null, "문제집 삭제 성공", HttpStatus.NO_CONTENT, request.getRequestURI());
-//        } else {
-//            return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
-//        }
-        workBookService.deleteWorkBook(workBookId);
-        return ApiResponse.success(null, "문제집 삭제 성공", HttpStatus.NO_CONTENT, request.getRequestURI());
+        if(authorizationService.checkWorkBookAuthorization(user.getUserId(), workBookId)) {
+            workBookService.deleteWorkBook(workBookId);
+            return ApiResponse.success(null, "문제집 삭제 성공", HttpStatus.NO_CONTENT, request.getRequestURI());
+        } else {
+            return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
+        }
     }
 
 }

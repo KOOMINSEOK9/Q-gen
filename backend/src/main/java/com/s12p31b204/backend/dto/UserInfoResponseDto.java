@@ -11,4 +11,5 @@ public class UserInfoResponseDto {
     private boolean login;
     private String nickname;
     private String googleEmail;
+    private Long userId;
 }

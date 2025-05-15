@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,6 +47,7 @@ public class MainController {
                 .login(true)
                 .googleEmail(user.getGoogleEmail())
                 .nickname(user.getNickname())
+                .userId(user.getUserId())
                 .build();
         return ApiResponse.success(response, "사용자 로그인 확인", HttpStatus.OK, request.getRequestURI());
     }
@@ -67,11 +69,11 @@ public class MainController {
         }
     }
 
-    @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter getEmitter(@AuthenticationPrincipal CustomOAuth2User user) {
+    @GetMapping(value = "/sse/{userId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter getEmitter(@PathVariable Long userId) {
         try {
             log.info("Try SSE Connect...");
-            return emitterService.addEmitter(user.getUserId());
+            return emitterService.addEmitter(userId);
         } catch (Exception e) {
             log.info(e.getMessage());
             return null;

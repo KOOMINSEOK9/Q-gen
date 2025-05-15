@@ -49,21 +49,15 @@ public class DocumentController {
         HttpServletRequest request
     ) {
         try {
-//            if(authorizationService.checkWorkBookAuthorization(user.getUserId(), workBookId)) {
-//                String url = s3Service.upload(file, "documents");
-//
-//                Long documentId = documentService.createDocument(file, workBookId, url);
-//
-//                return ApiResponse.success(documentId, "파일 업로드 성공", HttpStatus.CREATED, request.getRequestURI());
-//
-//            } else {
-//                return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
-//            }
+            if(authorizationService.checkWorkBookAuthorization(user.getUserId(), workBookId)) {
                 String url = s3Service.upload(file, "documents");
 
                 Long documentId = documentService.createDocument(file, workBookId, url);
 
                 return ApiResponse.success(documentId, "파일 업로드 성공", HttpStatus.CREATED, request.getRequestURI());
+            } else {
+                return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
+            }
         } catch (Exception e) {
             return ApiResponse.failure(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI());
         }
@@ -76,15 +70,13 @@ public class DocumentController {
             @PathVariable Long workBookId,
             @AuthenticationPrincipal CustomOAuth2User user,
             HttpServletRequest request) {
-//        if(authorizationService.checkWorkBookAuthorization(user.getUserId(), workBookId)) {
-//            List<DocumentDto> documents = documentService.getDocumentsByWorkBookId(workBookId);
-//            return ApiResponse.success(documents, "파일 전체 조회 성공", HttpStatus.OK, request.getRequestURI());
-//        }
-//        else {
-//            return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
-//        }
-        List<DocumentDto> documents = documentService.getDocumentsByWorkBookId(workBookId);
-        return ApiResponse.success(documents, "파일 전체 조회 성공", HttpStatus.OK, request.getRequestURI());
+        if(authorizationService.checkWorkBookAuthorization(user.getUserId(), workBookId)) {
+            List<DocumentDto> documents = documentService.getDocumentsByWorkBookId(workBookId);
+            return ApiResponse.success(documents, "파일 전체 조회 성공", HttpStatus.OK, request.getRequestURI());
+        }
+        else {
+            return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
+        }
     }
 
     // document-03: 파일 삭제
@@ -95,14 +87,12 @@ public class DocumentController {
             HttpServletRequest request
     ) {
         try {
-//            if(authorizationService.checkDocumentAuthorization(user.getUserId(), documentId)) {
-//                documentService.deleteDocumentWithS3File(documentId);
-//                return ResponseEntity.noContent().build();
-//            } else {
-//                return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
-//            }
-            documentService.deleteDocumentWithS3File(documentId);
-            return ResponseEntity.noContent().build();
+            if(authorizationService.checkDocumentAuthorization(user.getUserId(), documentId)) {
+                documentService.deleteDocumentWithS3File(documentId);
+                return ResponseEntity.noContent().build();
+            } else {
+                return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
+            }
         } catch (Exception e) {
             return ApiResponse.failure(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI());
         }
