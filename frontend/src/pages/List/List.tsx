@@ -18,6 +18,9 @@ import PdfModal from '@/components/testpaper/PdfModal';
 import QuizStartModal from '@/components/testpaper/QuizStartModal';
 import WorkBookTitleModal from '@/components/workbook/WorkBookTitleModal/WorkBookTitleModal';
 import GradientTitle from '@/components/common/GradientTitle/GradientTitle';
+import { useTestPaperCreationStore } from '@/stores/testPaperCreationStore';
+import { connectSSE } from '@/utils/sse';
+import { useAuth } from '@/hooks/useAuth';
 
 const userId = 1;
 
@@ -25,6 +28,7 @@ export default function List() {
   const { workBookId } = useParams(); // URL 파라미터에서 workBookId 추출
   const numericWorkBookId = workBookId ? Number(workBookId) : null;
 
+  console.log('Hi');
   // 커스텀 훅 사용
   const {
     workbooks,
@@ -82,10 +86,18 @@ export default function List() {
   const [editTargetId, setEditTargetId] = useState<number | null>(null);
   const [editTargetTitle, setEditTargetTitle] = useState('');
 
+  const creatingTestPaperIds = useTestPaperCreationStore(
+    (s) => s.creatingTestPaperIds
+  );
+
+  const { isLoggedIn, userId } = useAuth();
+
   // 문제집 목록 불러오기
   useEffect(() => {
-    fetchWorkBooks(userId);
-  }, []);
+    if (userId !== null) {
+      fetchWorkBooks(userId);
+    }
+  }, [userId]);
   // console.log('3. 문제집 목록 불러오기 :::: ', workbooks);
 
   // 선택된 워크북 정보
@@ -261,7 +273,7 @@ export default function List() {
 
   // 문제집 삭제
   const handleWorkBookDelete = async (workBookId: string) => {
-    if (!workBookId) return;
+    if (!workBookId || userId === null) return;
     if (!window.confirm('이 문제집을 삭제하시겠습니까?')) return;
     try {
       await removeWorkBook(Number(workBookId));
@@ -291,6 +303,7 @@ export default function List() {
 
   // 모달에서 submit 시
   const handleTitleModalSubmit = async (title: string) => {
+    if (userId === null) return;
     if (titleModalMode === 'add') {
       setIsTitleModalOpen(false);
       await createNewWorkBook(userId, title);
@@ -301,6 +314,20 @@ export default function List() {
     }
     setIsTitleModalOpen(false);
   };
+
+  useEffect(() => {
+    if (isLoggedIn && userId) {
+      console.log(
+        '🔥 List 페이지 마운트, SSE 연결 시도! (userId:',
+        userId,
+        ')'
+      );
+      const eventSource = connectSSE(userId);
+      return () => {
+        eventSource?.close();
+      };
+    }
+  }, [isLoggedIn, userId]);
 
   return (
     <div className='pb-8 flex flex-col gap-0'>
@@ -465,7 +492,15 @@ export default function List() {
                     <div className='text-red-500'>{papersError.message}</div>
                   ) : (
                     <TestPaperList
-                      papers={testPapers}
+                      papers={testPapers.map((paper) => {
+                        const isCreating = creatingTestPaperIds.includes(
+                          paper.testPaperId
+                        );
+                        return {
+                          ...paper,
+                          isCreating,
+                        };
+                      })}
                       onAddClick={handleOpenAddModal}
                       onPdfClick={handlePdfClick}
                       onSolveClick={handleQuizStart}

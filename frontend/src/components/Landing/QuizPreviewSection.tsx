@@ -8,14 +8,15 @@ import {
   FaCheck,
   FaTimes,
   FaPen,
+  FaListUl,
 } from 'react-icons/fa';
 
 const quizExamples = [
   {
     type: '객관식',
-    question: '다음 중 컴퓨터의 5대 구성 요소에 해당하지 않는 것은?',
-    choices: ['입력장치', '제어장치', '연산장치', '프린터'],
-    answer: '프린터',
+    question: 'C Class에 속하는 IP address는?',
+    choices: ['200.168.30.1', '10.3.2.1', '225.2.4.1', '172.16.98.3'],
+    answer: '200.168.30.1',
   },
   {
     type: 'OX',
@@ -41,10 +42,10 @@ const quizExamples = [
 ];
 
 function Arrow(props: any) {
-  const { className, style, onClick, direction } = props;
+  const { style, onClick, direction } = props;
   return (
     <button
-      className={`absolute top-1/2 z-10 -translate-y-1/2 bg-white/80 border border-gray-200 rounded-full p-2 shadow hover:bg-purple-100 transition-colors ${direction === 'left' ? 'left-0' : 'right-0'}`}
+      className={`absolute top-1/2 z-10 -translate-y-1/2 bg-white/80 border border-gray-200 rounded-full p-2 shadow hover:bg-purple-100 transition-colors cursor-pointer ${direction === 'left' ? 'left-0' : 'right-0'}`}
       style={{ ...style }}
       onClick={onClick}
       aria-label={direction === 'left' ? '이전' : '다음'}
@@ -93,7 +94,8 @@ function renderQuizCard(quiz: any, idx: number) {
       <div className='bg-white rounded-2xl shadow border border-gray-200 p-8 w-full max-w-xs mx-auto flex flex-col justify-between min-h-[340px] h-[340px] items-center'>
         {/* 유형 표시 */}
         <div className='flex items-center gap-2 mb-2 text-sm text-purple-500 font-semibold'>
-          {quiz.type === '객관식' && <FaPen />}
+          {quiz.type === '객관식' && <FaListUl />}
+          {quiz.type === '주관식' && <FaPen />}
           {quiz.type === 'OX' &&
             (quiz.answer === 'O' ? <FaCheck /> : <FaTimes />)}
           {quiz.type} 문제
@@ -146,9 +148,12 @@ function renderQuizCard(quiz: any, idx: number) {
           </div>
         )}
         {/* 정답 */}
-        <div className='mt-auto text-right text-xs text-gray-400 w-full'>
-          정답: <span className='font-bold text-purple-500'>{quiz.answer}</span>
-        </div>
+        {!(quiz.type === '객관식' && idx === 0) && (
+          <div className='mt-auto text-right text-xs text-gray-400 w-full'>
+            정답:{' '}
+            <span className='font-bold text-purple-500'>{quiz.answer}</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -158,7 +163,9 @@ export default function QuizPreviewSection() {
   return (
     <section className='py-20 bg-gray-50 min-h-[80vh] flex items-center scroll-snap-start rounded-[24px]'>
       <div className='container mx-auto px-4'>
-        <h2 className='text-4xl font-bold text-center mb-12'>퀴즈 미리보기</h2>
+        <h2 className='text-4xl font-bold text-center mb-12'>
+          시험지 미리보기
+        </h2>
         <Slider {...settings} className='max-w-5xl mx-auto relative'>
           {quizExamples.map((quiz, idx) => renderQuizCard(quiz, idx))}
         </Slider>

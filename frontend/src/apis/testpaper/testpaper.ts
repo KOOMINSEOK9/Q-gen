@@ -37,3 +37,16 @@ export const createTestPaper = async (
   const response = await axiosInstance.post('/api/testpaper', data);
   return response.data;
 };
+
+// PDF 변환 API
+export const convertToPdf = async (
+  testPaperId: number,
+  includeAnswer: boolean
+) => {
+  const response = await axiosInstance.post(
+    '/api/testpaper/convert-pdf',
+    { testPaperId, includeAnswer },
+    { responseType: 'blob' }
+  );
+  return response.data;
+};

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { generate } from '@/apis/generate/generate';
 import { GenerateRequest, GenerateResponse } from '@/types/generate';
+import { useTestPaperCreationStore } from '@/stores/testPaperCreationStore';
 
 interface UseGenerationReturn {
   isLoading: boolean;
@@ -11,6 +12,9 @@ interface UseGenerationReturn {
 export const useGeneration = (): UseGenerationReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const addCreatingTestPaper = useTestPaperCreationStore(
+    (s) => s.addCreatingTestPaper
+  );
 
   const generatePaper = async (request: GenerateRequest) => {
     setIsLoading(true);
@@ -18,7 +22,14 @@ export const useGeneration = (): UseGenerationReturn => {
 
     try {
       const response = await generate(request);
-      if (!response.success) {
+      if (response.success && response.data) {
+        addCreatingTestPaper(response.data.Id);
+        console.log('생성중 추가:', response.data.Id);
+        console.log(
+          '현재 생성중:',
+          useTestPaperCreationStore.getState().creatingTestPaperIds
+        );
+      } else if (!response.success) {
         setError(response.message);
       }
       return response;
