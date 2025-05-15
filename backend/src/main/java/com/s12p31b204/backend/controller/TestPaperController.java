@@ -167,6 +167,25 @@ public class TestPaperController {
         }
     }
 
+    @GetMapping("/{testPaperId}/workbook")
+    public ResponseEntity<ResponseData<Long>> getWorkBookId(
+            @PathVariable Long testPaperId,
+            @AuthenticationPrincipal CustomOAuth2User user,
+            HttpServletRequest request
+    ) {
+        try {
+            if(authorizationService.checkTestPaperAuthorization(user.getUserId(), testPaperId)) {
+                log.info("getting WorkBook By testPaper...");
+                Long workBookId = testPaperService.findWorkBookByTestPaperId(testPaperId);
+                return ApiResponse.success(workBookId, "문제집ID 반환 성공", HttpStatus.OK, request.getRequestURI());
+            } else {
+                return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
+            }
+        } catch (Exception e) {
+            return ApiResponse.failure("문제집 조회 중 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI());
+        }
+    }
+
     @PostMapping("/convert-pdf")
     public void convertPdf(
             @RequestBody ConvertPdfRequestDto convertPdfRequestDto,

@@ -186,6 +186,11 @@ public class TestPaperService {
             return response;
     }
 
+    @Transactional(readOnly = true)
+    public Long findWorkBookByTestPaperId(Long testPaperId) {
+        return testPaperRepository.findWorkBookIdByTestPaperId(testPaperId);
+    }
+
     public void removeTestPaper(Long testPaperId) {
         testPaperRepository.deleteById(testPaperId);
     }
