@@ -22,7 +22,6 @@ public class AuthorizationService {
     private final TestPaperRepository testPaperRepository;
     private final TestRepository testRepository;
     private final DocumentRepository documentRepository;
-    private final TestHistoryRepository testHistoryRepository;
 
     public boolean checkWorkBookAuthorization(Long userId, Long workBookId) {
         return userId == workBookRepository.findUserIdByWorkBookId(workBookId);
@@ -38,10 +37,6 @@ public class AuthorizationService {
 
     public boolean checkDocumentAuthorization(Long userId, Long documentId) {
         return userId == documentRepository.findUserIdByDocumentId(documentId);
-    }
-
-    public boolean checkTestHistoryAuthorization(Long userId, Long testHistoryId) {
-        return userId == testHistoryRepository.findUserIdByTestHistoryId(testHistoryId);
     }
 
 }

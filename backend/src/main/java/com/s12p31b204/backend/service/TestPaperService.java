@@ -175,7 +175,7 @@ public class TestPaperService {
     @Transactional(readOnly = true)
     public List<TestPaperResponseDto> findTestPaperByWorkBookId(Long workBookId) throws Exception {
             WorkBook workBook = workBookRepository.findById(workBookId).orElseThrow(() -> new NoSuchElementException("해당 문제집을 찾을 수 없습니다"));
-            List<TestPaper> testPapers = testPaperRepository.findByWorkBook_WorkBookId(workBookId);
+            List<TestPaper> testPapers = testPaperRepository.findAllByWorkBook_WorkBookId(workBookId);
             if(testPapers.isEmpty()) {
                 return null;
             }
