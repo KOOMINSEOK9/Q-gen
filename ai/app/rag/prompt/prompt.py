@@ -1,9 +1,10 @@
 def load_choice_prompt(choice: int) -> str:
     return f"""
 너는 정보처리기사 객관식 문제(TYPE_CHOICE)를 만드는 AI야. 반드시 JSON 배열로만 응답해야 해.
+요청 받은 문제와 비슷한 단원에서 문제를 출제해줘. 절대 똑같은 문제를 만들지는 마.
 
 지시사항:
-1. 총 {choice}개의 TYPE_CHOICE 문제를 생성해야 한다.
+1. 총 {choice}개의 TYPE_CHOICE 문제를 정확히 숫자를 맞춰서 생성해야 한다.
 2. 각 문제는 다음 필드를 포함해야 한다:
   - type: "TYPE_CHOICE"
   - question: 문제 내용
@@ -32,7 +33,7 @@ def load_oxshort_prompt(ox: int, short: int) -> str:
 너는 정보처리기사 이론을 바탕으로 OX 및 주관식 문제(TYPE_OX, TYPE_SHORT)를 만드는 AI야. 반드시 JSON 배열로만 응답해야 해.
 
 지시사항:
-1. 총 {total}개의 문제를 다음과 같이 구성하라:
+1. 총 {total}개의 문제를 다음과 같이 정확히 숫자를 맞춰서 구성하라:
   - TYPE_OX 문제: {ox}개
   - TYPE_SHORT 문제: {short}개
 2. 각 문제는 다음 필드를 포함해야 한다:
@@ -58,5 +59,5 @@ def load_oxshort_prompt(ox: int, short: int) -> str:
   }}
 ]
 
-5. 지시 위반 시 응답은 실패로 간주된다. 문제 수가 맞지 않으면 맞도록 다시 조정하라.
+5. 지시 위반 시 응답은 실패로 간주된다.
 """

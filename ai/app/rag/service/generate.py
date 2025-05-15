@@ -17,20 +17,31 @@ client = OpenAI()
 
 MAX_RETRY = 3
 
-def call_openai(client: OpenAI, prompt: str, context: str, total: int) -> str:
-    logger.info("\n🧠 [GPT 요청 컨텍스트]\n" + context[:1000])  # 너무 길면 앞 1000자만
+def call_openai(client: OpenAI, prompt: str, context: str, total: int, q_type: str) -> str:
+    logger.info(f"\n🧠 [GPT 요청 컨텍스트 - {q_type.upper()}]\n" + context[:1000])
+
+    if q_type == "choice":
+        user_message = (
+            f"반드시 JSON 문자열로만 응답해야 돼. 아래 내용과 유사한 변형 문제를 만들어줘:\n\n{context}"
+        )
+    elif q_type == "oxshort":
+        user_message = (
+            f"반드시 JSON 문자열로만 응답해야 돼. 다음 내용을 근거로 문제를 만들어줘:\n\n{context}"
+        )
+    else:
+        raise ValueError(f"알 수 없는 문제 유형: {q_type}")
 
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
             {"role": "system", "content": prompt},
-            {"role": "user", "content": f"다음 내용과 관련된 혹은 유사한 문제를 생성해줘:\n\n{context}"}
+            {"role": "user", "content": user_message}
         ],
         temperature=1
     )
 
     raw = response.choices[0].message.content
-    logger.info("\n📦 [GPT 응답 결과]\n" + raw[:1000])  # 길면 일부만 출력
+    logger.info(f"\n📦 [GPT 응답 결과 - {q_type.upper()}]\n" + raw[:1000])
     return raw
 
 async def generate_problem(choice_chunks: list[str], oxshort_chunks: list[str], choice: int, ox: int, short: int):
@@ -44,7 +55,7 @@ async def generate_problem(choice_chunks: list[str], oxshort_chunks: list[str], 
         for count, context_chunk in zip(choice_batches, chunk_batches):
             prompt = load_choice_prompt(count)
             context = "\n".join(context_chunk)
-            tasks.append(_run_gpt(prompt, context, count))
+            tasks.append(_run_gpt(prompt, context, count, "choice"))
 
     #OX + 주관식 문제 요청 분할 ---
     total_oxshort = ox + short
@@ -61,7 +72,7 @@ async def generate_problem(choice_chunks: list[str], oxshort_chunks: list[str], 
 
             prompt = load_oxshort_prompt(ox_count, short_count)
             context = "\n".join(context_chunk)
-            tasks.append(_run_gpt(prompt, context, count))
+            tasks.append(_run_gpt(prompt, context, count, "oxshort"))
 
     # GPT 요청 실행
     gpt_outputs = await asyncio.gather(*tasks)
@@ -81,7 +92,7 @@ async def generate_problem(choice_chunks: list[str], oxshort_chunks: list[str], 
 
     return results
 
-async def _run_gpt(prompt: str, context: str, total: int) -> str:
+async def _run_gpt(prompt: str, context: str, total: int, q_type: str) -> str:
     for attempt in range(1, MAX_RETRY + 1):
         try:
             loop = asyncio.get_running_loop()
@@ -91,12 +102,13 @@ async def _run_gpt(prompt: str, context: str, total: int) -> str:
                 client,
                 prompt,
                 context,
-                total
+                total,
+                q_type
             )
         except Exception as e:
-            logger.warning(f"[GPT 시도 {attempt}] 실패: {e}")
+            logger.warning(f"[GPT 시도 {attempt} - {q_type}] 실패: {e}")
             if attempt == MAX_RETRY:
-                raise RuntimeError("GPT 호출 최대 재시도 초과")
+                raise RuntimeError(f"{q_type.upper()} GPT 호출 최대 재시도 초과")
             
 def _split_batches(total: int, max_batch_size: int) -> list[int]:
     """
