@@ -44,7 +44,7 @@ public class TestPaperService {
     private final EmitterService emitterService;
     private final WebClient webClient;
 
-    public TestPaperResponseDto createTestPaperWithRAG(GenerateTestPaperRequestDto generateTestPaperRequestDto, Long userId) throws Exception {
+    public TestPaperResponseDto generateTestPaper(GenerateTestPaperRequestDto generateTestPaperRequestDto, Long userId) throws Exception {
         WorkBook workBook = workBookRepository.findById(generateTestPaperRequestDto.getWorkBookId())
                 .orElseThrow(() -> new NoSuchElementException("해당 문제집을 찾을 수 없습니다"));
 

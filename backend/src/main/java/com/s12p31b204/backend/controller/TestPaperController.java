@@ -33,6 +33,7 @@ import com.s12p31b204.backend.dto.AnswerDto;
 import com.s12p31b204.backend.dto.AnswerToHtmlDto;
 import com.s12p31b204.backend.dto.ConvertPdfRequestDto;
 import com.s12p31b204.backend.dto.CreateTestPaperRequestDto;
+import com.s12p31b204.backend.dto.GenerateTestPaperRequestDto;
 import com.s12p31b204.backend.dto.QuestionDto;
 import com.s12p31b204.backend.dto.TestPaperResponseDto;
 import com.s12p31b204.backend.dto.QuestionToHtmlDto;
@@ -100,6 +101,31 @@ public class TestPaperController {
 //            }
             log.info("creating TestPaper...");
             TestPaperResponseDto response = testPaperService.createTestPaper(createTestPaperRequestDto, user.getUserId());
+            return ApiResponse.success(response, "시험지 생성 성공", HttpStatus.CREATED, request.getRequestURI());
+        } catch (NoSuchElementException e) {
+            return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ApiResponse.failure("시험지 생성 중 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI());
+        }
+    }
+
+    @PostMapping("/generate")
+    public ResponseEntity<ResponseData<TestPaperResponseDto>> generateTestPaper(
+            @RequestBody GenerateTestPaperRequestDto generateTestPaperRequestDto,
+            @AuthenticationPrincipal CustomOAuth2User user,
+            HttpServletRequest request
+    ) {
+        try {
+//            if(authorizationService.checkWorkBookAuthorization(user.getUserId(), createTestPaperRequestDto.getWorkBookId())) {
+//                log.info("creating TestPaper...");
+//                TestPaperResponseDto response = testPaperService.createTestPaper(createTestPaperRequestDto);
+//                return ApiResponse.success(response, "시험지 생성 성공", HttpStatus.CREATED, request.getRequestURI());
+//            } else {
+//                return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
+//            }
+            log.info("generating TestPaper...");
+            TestPaperResponseDto response = testPaperService.generateTestPaper(generateTestPaperRequestDto, user.getUserId());
             return ApiResponse.success(response, "시험지 생성 성공", HttpStatus.CREATED, request.getRequestURI());
         } catch (NoSuchElementException e) {
             return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
