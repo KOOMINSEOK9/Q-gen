@@ -2,6 +2,8 @@ import re
 import requests
 import tempfile
 import pdfplumber
+import io
+from docx import Document
 from app.rag.util.clean_text import clean_text
 
 def split_text_by_sentence(text: str, chunk_size: int = 256, overlap: int = 25) -> list[str]:
@@ -48,6 +50,11 @@ def extract_text_from_bytes(content: bytes, filename: str = "") -> list[str]:
                     if page_text:
                         texts.append(page_text)
             return texts
+
+        # DOCX 파일 처리
+        elif filename.endswith(".docx"):
+            doc = Document(io.BytesIO(content))
+            return [p.text for p in doc.paragraphs if p.text.strip()]
 
         else:
             print(f"지원되지 않는 파일 형식: {filename}")
