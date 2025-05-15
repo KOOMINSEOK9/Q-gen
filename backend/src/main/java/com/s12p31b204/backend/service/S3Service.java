@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.UUID;
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +44,30 @@ public class S3Service {
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, objectKey));
         } catch (AmazonS3Exception e) {
             throw new RuntimeException("S3 delete failed: " + e.getMessage(), e);
+        }
+    }
+
+    public String readTxtFileFromS3(String fileUrl) {
+        try {
+            URI uri = URI.create(fileUrl);
+            String objectKey = uri.getPath().substring(1); // "/" 제거
+            try (InputStream is = amazonS3.getObject(bucket, objectKey).getObjectContent()) {
+                return new String(is.readAllBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("S3 txt 파일 읽기 실패: " + e.getMessage(), e);
+        }
+    }
+
+    public byte[] readFileFromS3AsBytes(String fileUrl) {
+        try {
+            URI uri = URI.create(fileUrl);
+            String objectKey = uri.getPath().substring(1);
+            try (InputStream is = amazonS3.getObject(bucket, objectKey).getObjectContent()) {
+                return is.readAllBytes();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("S3 파일 읽기 실패: " + e.getMessage(), e);
         }
     }
 }

@@ -2,7 +2,7 @@ package com.s12p31b204.backend.service;
 
 import com.s12p31b204.backend.domain.Document;
 import com.s12p31b204.backend.domain.WorkBook;
-import com.s12p31b204.backend.dto.DocumentDto;
+import com.s12p31b204.backend.dto.FindDocumentResponseDto;
 import com.s12p31b204.backend.repository.DocumentRepository;
 import com.s12p31b204.backend.repository.WorkBookRepository;
 import com.s12p31b204.backend.util.CustomMultipartFile;
@@ -28,10 +28,10 @@ public class DocumentService {
     private final S3Service s3Service;
 
     @Transactional(readOnly = true)
-    public List<DocumentDto> getDocumentsByWorkBookId(Long workBookId) {
+    public List<FindDocumentResponseDto> getDocumentsByWorkBookId(Long workBookId) {
         return documentRepository.findAllByWorkBook_WorkBookId(workBookId)
                 .stream()
-                .map(DocumentDto::new)
+                .map(document -> FindDocumentResponseDto.from(document, s3Service))
                 .collect(Collectors.toList());
     }
 
@@ -64,14 +64,14 @@ public class DocumentService {
     }
 
     @Transactional(readOnly = true)
-    public DocumentDto getDocument(Long documentId) {
+    public FindDocumentResponseDto getDocument(Long documentId) {
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("문서를 찾을 수 없습니다."));
-        return new DocumentDto(document);
+        return FindDocumentResponseDto.from(document, s3Service);
     }
 
     @Transactional
-    public DocumentDto convertTextToTxt(Long workBookId, String text) {
+    public FindDocumentResponseDto convertTextToTxt(Long workBookId, String text) {
         // 1. 텍스트를 임시 파일로 저장
         String fileName = "입력한 텍스트" + ".txt";
         File tempFile = null;
@@ -98,7 +98,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public DocumentDto convertUrlToTxt(Long workBookId, String url) {
+    public FindDocumentResponseDto convertUrlToTxt(Long workBookId, String url) {
         try {
             // 1. Jsoup으로 웹페이지 크롤링 및 텍스트 추출
             org.jsoup.nodes.Document doc = Jsoup.connect(url).get();
@@ -128,5 +128,11 @@ public class DocumentService {
         } catch (IOException e) {
             throw new RuntimeException("웹페이지 크롤링/업로드 실패: " + e.getMessage());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Document getDocumentEntity(Long documentId) {
+        return documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("문서를 찾을 수 없습니다."));
     }
 }

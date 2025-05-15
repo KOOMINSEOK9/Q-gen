@@ -61,6 +61,7 @@ public class WorkBookController {
         } else {
             return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
         }
+
     }
     
     @DeleteMapping("/{workBookId}")
