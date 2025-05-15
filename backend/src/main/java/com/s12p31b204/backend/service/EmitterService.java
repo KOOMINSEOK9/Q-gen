@@ -29,6 +29,7 @@ public class EmitterService {
         emitter.onTimeout(() -> emitters.remove(userId));
 
         emitter.send("SSE Connection Success");
+        log.info("SSE Connection Success : " + userId);
 
         return emitter;
     }

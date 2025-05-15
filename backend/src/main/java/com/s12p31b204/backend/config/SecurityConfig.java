@@ -50,7 +50,6 @@ public class SecurityConfig {
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setMaxAge(3600L);
-                        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
                         configuration.setExposedHeaders(Collections.singletonList("Authorization"));
                         return configuration;
                     }
@@ -65,7 +64,7 @@ public class SecurityConfig {
                         .successHandler(customSuccessHandler)) // 성공 핸들러 설정(JWT 발급)
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class) // JWT 필터 적용
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/api/userinfo", "/actuator/**").permitAll() // 메인, 로그인 페이지 대상 요청 인증 없이 허용
+                        .requestMatchers("/", "/login", "/oauth2/**", "/api/userinfo", "/actuator/**", "/api/sse/**").permitAll() // 메인, 로그인 페이지 대상 요청 인증 없이 허용
                         .anyRequest().authenticated()) // 그 외 요청 인증 필요
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
