@@ -26,22 +26,24 @@ public class WorkBookController {
     private final WorkBookService workBookService;
     private final AuthorizationService authorizationService;
 
-    @PostMapping("/{userId}")
+    @PostMapping
     public ResponseEntity<ResponseData<WorkBookResponseDto>> createWorkBook(
-            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomOAuth2User user,
             @RequestBody WorkBookRequestDto requestDto,
             HttpServletRequest request) {
         return ApiResponse.success(
-                workBookService.createWorkBook(userId, requestDto),
+                workBookService.createWorkBook(user.getUserId(), requestDto),
                 "문제집 생성 성공",
                 HttpStatus.CREATED,
                 request.getRequestURI());
     }
     
-    @GetMapping("/{userId}")
-    public ResponseEntity<ResponseData<List<WorkBookResponseDto>>> getAllWorkBooks(@PathVariable Long userId, HttpServletRequest request) {
+    @GetMapping
+    public ResponseEntity<ResponseData<List<WorkBookResponseDto>>> getAllWorkBooks(
+            @AuthenticationPrincipal CustomOAuth2User user,
+            HttpServletRequest request) {
         return ApiResponse.success(
-                workBookService.getAllWorkBooksByUser(userId),
+                workBookService.getAllWorkBooksByUser(user.getUserId()),
                 "문제집 조회 성공",
                 HttpStatus.OK,
                 request.getRequestURI());
