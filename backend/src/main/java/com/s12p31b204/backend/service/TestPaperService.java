@@ -16,6 +16,7 @@ import com.s12p31b204.backend.domain.Document;
 import com.s12p31b204.backend.domain.Test;
 import com.s12p31b204.backend.domain.TestPaper;
 import com.s12p31b204.backend.domain.WorkBook;
+import com.s12p31b204.backend.dto.CreateTestPaperEventDto;
 import com.s12p31b204.backend.dto.CreateTestPaperRequestDto;
 import com.s12p31b204.backend.dto.CreateTestRequestDto;
 import com.s12p31b204.backend.dto.CreateTestResponseDto;
@@ -28,6 +29,7 @@ import com.s12p31b204.backend.repository.TestPaperRepository;
 import com.s12p31b204.backend.repository.TestRepository;
 import com.s12p31b204.backend.repository.WorkBookRepository;
 
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,6 +45,7 @@ public class TestPaperService {
     private final TestRepository testRepository;
     private final EmitterService emitterService;
     private final WebClient webClient;
+    private final EntityManager entityManager;
 
     public TestPaperResponseDto generateTestPaper(GenerateTestPaperRequestDto generateTestPaperRequestDto, Long userId) throws Exception {
         WorkBook workBook = workBookRepository.findById(generateTestPaperRequestDto.getWorkBookId())
@@ -68,6 +71,7 @@ public class TestPaperService {
 
         List<Test> tests = Collections.synchronizedList(new ArrayList<>());
         TestPaper savedTestPaper = testPaper;
+        entityManager.flush();
 
         try {
             CompletableFuture.runAsync(() -> {
@@ -93,10 +97,16 @@ public class TestPaperService {
 
 
                 testRepository.saveAll(tests);
-                emitterService.sendEvent(userId, "testpaper created", savedTestPaper.getTestPaperId());
+                emitterService.sendEvent(userId,
+                        "testpaper created",
+                        new CreateTestPaperEventDto(savedTestPaper.getTestPaperId(),
+                                savedTestPaper.getTitle()));
             });
         } catch (Exception e) {
-            emitterService.sendEvent(userId, "failed create", savedTestPaper.getTestPaperId());
+            emitterService.sendEvent(userId,
+                    "failed create",
+                    new CreateTestPaperEventDto(savedTestPaper.getTestPaperId(),
+                            savedTestPaper.getTitle()));
         }
 
         return TestPaperResponseDto.from(testPaper);
@@ -116,7 +126,7 @@ public class TestPaperService {
                 createTestPaperRequestDto.getWordAns(),
                 createTestPaperRequestDto.getQuantity());
         testPaper = testPaperRepository.save(testPaper);
-
+        entityManager.flush();
 
         AtomicBoolean isSaved = new AtomicBoolean(false);
 
@@ -213,10 +223,17 @@ public class TestPaperService {
                 // 문제를 모두 모으면 저장 -> 동시성 해결(Atomic Type) , synchronyzed 사용도 가능
                 if (tests.size() == quantity && isSaved.compareAndSet(false, true)) {
                     testRepository.saveAll(tests);
-                    emitterService.sendEvent(userId, "testpaper created", testPaper.getTestPaperId());
+                    emitterService.sendEvent(
+                            userId,
+                            "testpaper created",
+                            new CreateTestPaperEventDto(testPaper.getTestPaperId(),
+                                    testPaper.getTitle()));
                 }
             } catch (Exception e) {
-                emitterService.sendEvent(userId, "failed create", testPaper.getTestPaperId());
+                emitterService.sendEvent(userId,
+                        "failed create",
+                        new CreateTestPaperEventDto(testPaper.getTestPaperId(),
+                        testPaper.getTitle()));
             }
         });
     }
