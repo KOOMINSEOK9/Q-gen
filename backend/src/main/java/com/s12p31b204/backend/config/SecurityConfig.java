@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.s12p31b204.backend.filter.JWTFilter;
+import com.s12p31b204.backend.oauth2.CustomAuthenticationEntryPoint;
 import com.s12p31b204.backend.oauth2.CustomSuccessHandler;
 import com.s12p31b204.backend.service.CustomOAuth2UserService;
 import com.s12p31b204.backend.util.JWTUtil;
@@ -56,6 +57,8 @@ public class SecurityConfig {
                 })) // CORS 설정
                 .formLogin((auth) -> auth.disable()) // Form 로그인 방식 비활성화
                 .httpBasic((auth) -> auth.disable()) // HTTP Basic 인증 방식 비활성화
+                .exceptionHandling((exception) -> exception
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService)) // OAuth2 기반 로그인 설정
