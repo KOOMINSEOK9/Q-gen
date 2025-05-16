@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,7 @@ import com.s12p31b204.backend.service.DocumentService;
 import com.s12p31b204.backend.service.S3Service;
 import com.s12p31b204.backend.util.ApiResponse;
 import com.s12p31b204.backend.util.ResponseData;
+import com.s12p31b204.backend.dto.ConvertTxtRequestDto; 
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -118,13 +120,9 @@ public class DocumentController {
     
     // document-05: 텍스트 입력 txt파일 변환
     @PostMapping("/text")
-    public ResponseEntity<ResponseData<FindDocumentResponseDto>> convertTextToTxt(
-            @RequestParam("workBookId") Long workBookId,
-            @RequestParam("text") String text,
-            HttpServletRequest request
-    ) {
-        FindDocumentResponseDto document = documentService.convertTextToTxt(workBookId, text);
-        return ApiResponse.success(document, "txt파일 변환 성공", HttpStatus.OK, request.getRequestURI());
+    public ResponseEntity<ResponseData<FindDocumentResponseDto>> convertTextToTxt(@RequestBody ConvertTxtRequestDto requestDto, HttpServletRequest request) {
+        FindDocumentResponseDto response = documentService.convertTextToTxt(requestDto.getWorkBookId(), requestDto.getText());
+        return ApiResponse.success(response, "txt파일 변환 성공", HttpStatus.OK, request.getRequestURI());
     }
 
     // document-06: url txt파일 변환
