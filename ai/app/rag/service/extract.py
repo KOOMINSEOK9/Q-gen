@@ -6,11 +6,12 @@ import io
 from docx import Document
 from app.rag.util.clean_text import clean_text
 
-def split_text_by_sentence(text: str, chunk_size: int = 256, overlap: int = 25) -> list[str]:
+def split_text_by_sentence(text: str, chunk_size: int = 256, overlap: int = 1) -> list[str]:
     sentences = re.split(r'(?<=[.?!])\s+', text)
     chunks = []
     current = ""
 
+    # 1차 청크 분리: chunk_size 기준
     for sentence in sentences:
         if len(current) + len(sentence) <= chunk_size:
             current += sentence + " "
@@ -21,10 +22,10 @@ def split_text_by_sentence(text: str, chunk_size: int = 256, overlap: int = 25) 
     if current:
         chunks.append(current.strip())
 
-    # 겹침 처리
+    # 겹침 처리: overlap 개수만큼 앞 청크와 함께 결합
     final_chunks = []
-    for i in range(0, len(chunks)):
-        start = max(0, i - 1)
+    for i in range(len(chunks)):
+        start = max(0, i - overlap)
         combined = " ".join(chunks[start:i+1])
         final_chunks.append(combined.strip())
 

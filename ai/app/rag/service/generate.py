@@ -17,7 +17,7 @@ client = OpenAI()
 
 MAX_RETRY = 3
 
-def call_openai(client: OpenAI, prompt: str, context: str, total: int, q_type: str) -> str:
+def call_openai(client: OpenAI, prompt: str, context: str, q_type: str) -> str:
     logger.info(f"\n🧠 [GPT 요청 컨텍스트 - {q_type.upper()}]\n" + context[:1000])
 
     if q_type == "choice":
@@ -44,55 +44,7 @@ def call_openai(client: OpenAI, prompt: str, context: str, total: int, q_type: s
     logger.info(f"\n📦 [GPT 응답 결과 - {q_type.upper()}]\n" + raw[:1000])
     return raw
 
-async def generate_problem(choice_chunks: list[str], oxshort_chunks: list[str], choice: int, ox: int, short: int):
-    tasks = []
-
-    # 객관식 문제 요청 분할
-    if choice > 0:
-        choice_batches = _split_batches(choice, max_batch_size=10)
-        chunk_batches = _split_chunks(choice_chunks, len(choice_batches))
-
-        for count, context_chunk in zip(choice_batches, chunk_batches):
-            prompt = load_choice_prompt(count)
-            context = "\n".join(context_chunk)
-            tasks.append(_run_gpt(prompt, context, count, "choice"))
-
-    #OX + 주관식 문제 요청 분할 ---
-    total_oxshort = ox + short
-    if total_oxshort > 0:
-        oxshort_batches = _split_batches(total_oxshort, max_batch_size=10)
-        chunk_batches = _split_chunks(oxshort_chunks, len(oxshort_batches))
-
-        # 첫 번째 요청은 OX 위주, 그 다음은 SHORT 위주로 분배
-        for i, (count, context_chunk) in enumerate(zip(oxshort_batches, chunk_batches)):
-            ox_count = min(count, ox) if ox > 0 else 0
-            short_count = count - ox_count
-            ox -= ox_count
-            short -= short_count
-
-            prompt = load_oxshort_prompt(ox_count, short_count)
-            context = "\n".join(context_chunk)
-            tasks.append(_run_gpt(prompt, context, count, "oxshort"))
-
-    # GPT 요청 실행
-    gpt_outputs = await asyncio.gather(*tasks)
-
-    # 결과 파싱
-    results = []
-    for raw in gpt_outputs:
-        try:
-            if not isinstance(raw, str):
-                raise ValueError("GPT 응답이 문자열이 아님")
-            parsed = json.loads(raw)
-            assert isinstance(parsed, list)
-            results.extend(parsed)
-        except Exception as e:
-            logger.error(f"⚠️ GPT 응답 파싱 실패: {e}\n원문:\n{raw[:1000]}")
-            raise ValueError(f"GPT 응답 파싱 실패: {e}")
-
-    return results
-
-async def _run_gpt(prompt: str, context: str, total: int, q_type: str) -> str:
+async def _run_gpt(prompt: str, context: str, q_type: str) -> str:
     for attempt in range(1, MAX_RETRY + 1):
         try:
             loop = asyncio.get_running_loop()
@@ -102,7 +54,6 @@ async def _run_gpt(prompt: str, context: str, total: int, q_type: str) -> str:
                 client,
                 prompt,
                 context,
-                total,
                 q_type
             )
         except Exception as e:
@@ -127,3 +78,51 @@ def _split_chunks(chunks: list[str], num_parts: int) -> list[list[str]]:
         return []
     avg = len(chunks) / num_parts
     return [chunks[round(i * avg): round((i + 1) * avg)] for i in range(num_parts)]
+
+async def generate_problem(choice_chunks: list[str], oxshort_chunks: list[str], choice: int, ox: int, short: int):
+    tasks = []
+
+    # 객관식 문제 요청 분할
+    if choice > 0:
+        choice_batches = _split_batches(choice, max_batch_size=10)
+        chunk_batches = _split_chunks(choice_chunks, len(choice_batches))
+
+        for count, context_chunk in zip(choice_batches, chunk_batches):
+            prompt = load_choice_prompt(count)
+            context = "\n".join(context_chunk)
+            tasks.append(_run_gpt(prompt, context, "choice"))
+
+    #OX + 주관식 문제 요청 분할 ---
+    total_oxshort = ox + short
+    if total_oxshort > 0:
+        oxshort_batches = _split_batches(total_oxshort, max_batch_size=10)
+        chunk_batches = _split_chunks(oxshort_chunks, len(oxshort_batches))
+
+        # 첫 번째 요청은 OX 위주, 그 다음은 SHORT 위주로 분배
+        for i, (count, context_chunk) in enumerate(zip(oxshort_batches, chunk_batches)):
+            ox_count = min(count, ox) if ox > 0 else 0
+            short_count = count - ox_count
+            ox -= ox_count
+            short -= short_count
+
+            prompt = load_oxshort_prompt(ox_count, short_count)
+            context = "\n".join(context_chunk)
+            tasks.append(_run_gpt(prompt, context, "oxshort"))
+
+    # GPT 요청 실행
+    gpt_outputs = await asyncio.gather(*tasks)
+
+    # 결과 파싱
+    results = []
+    for raw in gpt_outputs:
+        try:
+            if not isinstance(raw, str):
+                raise ValueError("GPT 응답이 문자열이 아님")
+            parsed = json.loads(raw)
+            assert isinstance(parsed, list)
+            results.extend(parsed)
+        except Exception as e:
+            logger.error(f"⚠️ GPT 응답 파싱 실패: {e}\n원문:\n{raw[:1000]}")
+            raise ValueError(f"GPT 응답 파싱 실패: {e}")
+
+    return results
