@@ -76,7 +76,7 @@ public class DocumentService {
     public FindDocumentResponseDto convertTextToTxt(Long workBookId, String text) {
         // 1. 텍스트를 임시 파일로 저장
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String fileName = "입력한 텍스트_" + today + ".txt";
+        String fileName = "입력한 텍스트 " + today + ".txt";
         File tempFile = null;
         try {
             tempFile = File.createTempFile("user_text_", ".txt");

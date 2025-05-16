@@ -18,7 +18,7 @@ public class CustomMultipartFile implements MultipartFile {
     public String getName() { return name; }
 
     @Override
-    public String getOriginalFilename() { return file.getName(); }
+    public String getOriginalFilename() { return name; }
 
     @Override
     public String getContentType() { return contentType; }
