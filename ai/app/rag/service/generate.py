@@ -22,7 +22,7 @@ def call_openai(client: OpenAI, prompt: str, context: str, q_type: str) -> str:
 
     if q_type == "choice":
         user_message = (
-            f"반드시 JSON 문자열로만 응답해야 돼. 아래 컨텍스트는 여러 개의 문제 자료로 구성되어 있으며, 각 자료는 '--- 문제 구분 ---' 으로 나뉘어 있어. 각 구분자 단위를 독립된 문제로 간주해서 아래 내용과 유사한 변형 문제를 만들어줘:\n\n{context}"
+            f"반드시 JSON 문자열로만 응답해야 돼. 아래 컨텍스트는 여러 개의 문제 자료로 구성되어 있으며, 각 자료는 '--- 문제 구분 ---' 으로 나뉘어 있어. 각 구분자 단위를 독립된 문제로 간주해. 해당 내용을 참고해서 문제를 만들어봐:\n\n{context}"
         )
     elif q_type == "oxshort":
         user_message = (
