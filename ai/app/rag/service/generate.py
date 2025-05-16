@@ -22,7 +22,7 @@ def call_openai(client: OpenAI, prompt: str, context: str, q_type: str) -> str:
 
     if q_type == "choice":
         user_message = (
-            f"반드시 JSON 문자열로만 응답해야 돼. 아래 내용과 유사한 변형 문제를 만들어줘:\n\n{context}"
+            f"반드시 JSON 문자열로만 응답해야 돼. 아래 컨텍스트는 여러 개의 문제 자료로 구성되어 있으며, 각 자료는 '--- 문제 구분 ---' 으로 나뉘어 있어. 각 구분자 단위를 독립된 문제로 간주해서 아래 내용과 유사한 변형 문제를 만들어줘:\n\n{context}"
         )
     elif q_type == "oxshort":
         user_message = (
@@ -89,7 +89,7 @@ async def generate_problem(choice_chunks: list[str], oxshort_chunks: list[str], 
 
         for count, context_chunk in zip(choice_batches, chunk_batches):
             prompt = load_choice_prompt(count)
-            context = "\n".join(context_chunk)
+            context = "\n--- 문제 구분 ---\n".join(context_chunk)
             tasks.append(_run_gpt(prompt, context, "choice"))
 
     #OX + 주관식 문제 요청 분할 ---
