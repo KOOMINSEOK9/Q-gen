@@ -2,10 +2,11 @@ import React, { useState, ChangeEvent } from 'react';
 import Button from '@/components/common/Button/Button';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useDocuments } from '@/hooks/useDocument';
+import { DocumentInfo } from '@/types/document';
 
 interface LinkUploadModalProps {
   onClose: () => void;
-  onSubmit: (url: string) => void;
+  onSubmit: (result: DocumentInfo) => void;
   workBookId: number;
 }
 
@@ -21,12 +22,14 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
   const handleSubmit = async () => {
     if (!url.trim()) return;
     setLoading(true);
+    console.log('handleSubmit called', { workBookId, url, convertUrlToTxt });
     try {
       const result = await convertUrlToTxt(workBookId, url);
-      console.log('URL 업로드 결과:', result);
-      onSubmit(url);
+      console.log('API result:', result);
+      onSubmit(result);
       onClose();
     } catch (e) {
+      console.error('API error:', e);
       alert('URL 업로드에 실패했습니다.');
     } finally {
       setLoading(false);
@@ -46,13 +49,13 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
           </button>
         </div>
 
-        <div className='flex flex-col gap-6'>
+        <div className='flex flex-col gap-4'>
           <p className='text-lg text-gray-700'>
             소스로 업로드할 웹 URL을 아래에 붙여넣으세요
           </p>
 
           <div className='flex items-center border border-gray-200 rounded-lg p-3 bg-gray-50'>
-            <IconBox name='link' size={20} className='mr-2' />
+            <IconBox name='link' size={18} className='mr-2' />
             <input
               type='text'
               placeholder='URL 붙여넣기'

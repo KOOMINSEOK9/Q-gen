@@ -2,13 +2,14 @@
 import React from 'react';
 import FileUploader from '@/components/upload/FileUpload/FileUploader';
 import IconBox from '@/components/common/IconBox/IconBox';
+import { DocumentInfo } from '@/types/document';
 
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onFileUpload: (file: File) => void;
-  onLinkSubmit: (url: string) => void;
-  onTextSubmit: (text: string) => void;
+  onLinkSubmit: (result: DocumentInfo) => void;
+  onTextSubmit: (result: DocumentInfo) => void;
   workBookId?: number;
 }
 

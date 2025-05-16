@@ -6,12 +6,13 @@ import TextUploadModal from './TextUploadModal';
 import { useDocuments } from '@/hooks/useDocument';
 import GlobalSpinner from '@/components/common/GlobalSpinner/GlobalSpinner';
 import { useParams } from 'react-router-dom';
+import { DocumentInfo } from '@/types/document';
 import LinkUploadModal from './LinkUploadModal';
 
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
-  onLinkSubmit: (url: string) => void;
-  onTextSubmit: (text: string) => void;
+  onLinkSubmit: (result: DocumentInfo) => void;
+  onTextSubmit: (result: DocumentInfo) => void;
   className?: string;
 }
 
@@ -108,14 +109,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         문제 생성에 사용할 자료를 업로드하세요.
       </p>
 
-      <div className='flex-1 flex flex-col gap-6'>
+      <div className='flex-1 flex flex-col gap-4'>
         {/* 파일 선택 영역 - flex-1 */}
         <div
           className={`border-2 border-dashed rounded-lg p-12 mb-0 flex flex-col items-center justify-center min-h-[200px] flex-1 cursor-pointer group transition-all duration-300 select-none
             ${
               isDragging
                 ? 'border-purple-500'
-                : 'border-gray-200 hover:border-gray-400'
+                : 'border-gray-200 hover:border-gray-300'
             }`}
           style={{
             animation: isDragging ? 'bgPulse 1.2s infinite' : 'none',
@@ -152,10 +153,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           />
         </div>
 
-        <div className='flex flex-row gap-6'>
+        <div className='flex flex-row gap-4'>
           {/* Link Input Option */}
           <div
-            className='bg-white rounded-lg p-8 border border-gray-200 hover:border-gray-400 flex flex-col items-center flex-1 cursor-pointer group select-none'
+            className='bg-white rounded-lg p-8 border border-gray-200 hover:border-gray-300 flex flex-col items-center flex-1 cursor-pointer group select-none'
             onClick={() => setShowLinkModal(true)}
           >
             <img
@@ -174,7 +175,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
           {/* Direct Text Input Option */}
           <div
-            className='bg-white rounded-lg p-8 border border-gray-200 hover:border-gray-400 flex flex-col items-center flex-1 cursor-pointer group select-none'
+            className='bg-white rounded-lg p-8 border border-gray-200 hover:border-gray-300 flex flex-col items-center flex-1 cursor-pointer group select-none'
             onClick={() => setShowTextModal(true)}
           >
             <img
@@ -197,8 +198,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       {showLinkModal && numericWorkBookId !== undefined && (
         <LinkUploadModal
           onClose={() => setShowLinkModal(false)}
-          onSubmit={(url: string) => {
-            if (onLinkSubmit) onLinkSubmit(url);
+          onSubmit={(result) => {
+            if (onLinkSubmit) onLinkSubmit(result);
             setShowLinkModal(false);
           }}
           workBookId={numericWorkBookId}
@@ -208,8 +209,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       {showTextModal && numericWorkBookId !== undefined && (
         <TextUploadModal
           onClose={() => setShowTextModal(false)}
-          onSubmit={(text: string) => {
-            if (onTextSubmit) onTextSubmit(text);
+          onSubmit={(result) => {
+            if (onTextSubmit) onTextSubmit(result);
             setShowTextModal(false);
           }}
           workBookId={numericWorkBookId}

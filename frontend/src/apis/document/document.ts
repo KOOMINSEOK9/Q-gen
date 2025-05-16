@@ -44,8 +44,15 @@ export const fetchDocumentByDocumentId = async (documentId: number) => {
 
 // 텍스트 입력 txt파일 변환
 export const convertTextToTxt = async (workBookId: number, text: string) => {
+  console.log('텍스트 업로드 시작:', workBookId, text);
   const response = await axiosInstance.post(
-    `/api/document/text?workBookId=${workBookId}&text=${text}`
+    `/api/document/text`,
+    { workBookId, text },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
   );
   console.log('텍스트 업로드 결과:', response.data.data);
   return response.data.data;

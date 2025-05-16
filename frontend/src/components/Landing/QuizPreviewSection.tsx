@@ -128,7 +128,7 @@ function renderQuizCard(quiz: any, idx: number) {
           </div>
         )}
         {quiz.type === 'OX' && (
-          <div className='mb-4 flex gap-6 justify-center'>
+          <div className='mb-4 flex gap-4 justify-center'>
             {['O', 'X'].map((option) => {
               let optionStyle = 'border-gray-200 bg-white';
               let textStyle = 'text-gray-700';

@@ -51,7 +51,7 @@ function Test({
 
   // OX 문제 렌더링
   const renderOXQuestion = () => (
-    <div className='flex gap-6 justify-center h-full'>
+    <div className='flex gap-4 justify-center h-full'>
       {['O', 'X'].map((option, idx) => {
         let optionStyle = 'border-gray-200 py-20';
         let textStyle = '';

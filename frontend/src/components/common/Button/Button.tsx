@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({
       'bg-gradient-to-r from-[#754AFF] to-[#A34BFF] text-white px-6 py-3 hover:from-[#6642E6] hover:to-[#9343E6]',
     outlined:
       'border border-[#754AFF] text-[#754AFF] px-6 py-3 hover:bg-[#754AFF] hover:text-white hover:border-transparent',
-    basic: 'bg-[#754AFF] text-white px-6 py-3 hover:bg-[#6642E6]',
+    basic: 'bg-[#754AFF] text-white px-5 py-3 hover:bg-[#6642E6]',
     small: 'bg-[#754AFF] text-white px-4 py-2 text-sm hover:bg-[#6642E6]',
   };
 

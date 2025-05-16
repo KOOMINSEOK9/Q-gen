@@ -2,10 +2,11 @@ import Button from '@/components/common/Button/Button';
 import IconBox from '@/components/common/IconBox/IconBox';
 import React, { useState, ChangeEvent } from 'react';
 import { useDocuments } from '@/hooks/useDocument';
+import { DocumentInfo } from '@/types/document';
 
 interface TextUploadModalProps {
   onClose: () => void;
-  onSubmit: (text: string) => void;
+  onSubmit: (result: DocumentInfo) => void;
   workBookId: number;
 }
 
@@ -23,7 +24,7 @@ const TextUploadModal: React.FC<TextUploadModalProps> = ({
     setLoading(true);
     try {
       const result = await convertTextToTxt(workBookId, text);
-      onSubmit(text); // 부모에서 리스트 갱신
+      onSubmit(result);
       onClose();
     } catch (e) {
       alert('텍스트 업로드에 실패했습니다.');
@@ -49,7 +50,7 @@ const TextUploadModal: React.FC<TextUploadModalProps> = ({
           </button>
         </div>
 
-        <div className='flex flex-col gap-6'>
+        <div className='flex flex-col gap-4'>
           <p className='text-lg text-gray-700'>
             소스로 업로드할 텍스트를 아래에 추가해주세요
           </p>

@@ -5,6 +5,8 @@ import {
   deleteDocumentByDocumentId,
   fetchDocumentByDocumentId,
   downloadDocumentByDocumentId,
+  convertTextToTxt as apiConvertTextToTxt,
+  convertUrlToTxt as apiConvertUrlToTxt,
 } from '@/apis/document/document';
 import { DocumentInfo } from '@/types/document';
 export function useDocuments() {
@@ -75,7 +77,7 @@ export function useDocuments() {
       setIsLoading(true);
       setError(null);
       try {
-        const doc = await convertTextToTxt(workBookId, text);
+        const doc = await apiConvertTextToTxt(workBookId, text);
         return doc;
       } catch (err: any) {
         setError(err);
@@ -93,7 +95,7 @@ export function useDocuments() {
       setIsLoading(true);
       setError(null);
       try {
-        const doc = await convertUrlToTxt(workBookId, url);
+        const doc = await apiConvertUrlToTxt(workBookId, url);
         return doc;
       } catch (err: any) {
         setError(err);

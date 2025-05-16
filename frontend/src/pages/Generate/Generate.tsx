@@ -4,7 +4,7 @@ import Button from '@/components/common/Button/Button';
 import UploadedList from '@/components/upload/UploadedList/UploadedList';
 import FileUploader from '@/components/upload/FileUpload/FileUploader';
 import { TestType } from '@/types/generate';
-import { UploadedFile } from '@/types/document';
+import { UploadedFile, DocumentInfo } from '@/types/document';
 import { useGeneration } from '@/hooks/useGeneration';
 import { useGenerateStore } from '@/stores/generateStore';
 import ProblemTypeSelector from './ProblemTypeSelector';
@@ -106,22 +106,26 @@ const Generate = () => {
     }
   };
 
-  const handleLinkSubmit = (url: string) => {
-    const newFile: UploadedFile = {
-      id: Date.now().toString(),
-      title: url,
-      type: 'URL',
-    };
-    setUploadedFiles((prev) => [...prev, newFile]);
+  const handleLinkSubmit = (result: DocumentInfo) => {
+    setUploadedFiles((prev) => [
+      ...prev,
+      {
+        id: result.documentId.toString(),
+        title: result.documentName,
+        type: result.documentType,
+      },
+    ]);
   };
 
-  const handleTextSubmit = (text: string) => {
-    const newFile: UploadedFile = {
-      id: Date.now().toString(),
-      title: '직접 입력한 텍스트',
-      type: 'Text',
-    };
-    setUploadedFiles((prev) => [...prev, newFile]);
+  const handleTextSubmit = (result: DocumentInfo) => {
+    setUploadedFiles((prev) => [
+      ...prev,
+      {
+        id: result.documentId.toString(),
+        title: result.documentName,
+        type: result.documentType,
+      },
+    ]);
   };
 
   const handleFileDelete = async (id: string) => {
@@ -185,14 +189,14 @@ const Generate = () => {
 
   return (
     <div>
-      <div className='flex flex-col items-start justify-start min-h-screen w-full mx-auto gap-6'>
+      <div className='flex flex-col items-start justify-start min-h-screen w-full mx-auto gap-4'>
         {/* Title Section + Button */}
         <div className='flex justify-between items-center w-full'>
           <GradientTitle highlight='시험지' after='생성하기' />
           <div className='flex gap-3'>
             <Button
               variant='outlined'
-              className='px-8 py-3 text-lg font-semibold relative overflow-hidden'
+              className='px-6 py-2 text-lg font-semibold relative overflow-hidden'
               onClick={() => navigate(`/list/${numericWorkBookId}`)}
             >
               취소
@@ -200,7 +204,7 @@ const Generate = () => {
             <Button
               onClick={handleGenerate}
               variant='filled'
-              className={`px-8 py-3 text-lg font-semibold relative overflow-hidden
+              className={`px-6 py-3 text-lg font-semibold relative overflow-hidden
               ${totalProblems !== 0 && uploadedFiles.length !== 0 && !isLoading ? 'btn-gradient-move text-white' : ''}
             `}
               disabled={
@@ -230,7 +234,7 @@ const Generate = () => {
         </div>
 
         {/* File Upload and List Section */}
-        <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-6 '>
+        <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-4 '>
           <div className='flex md:col-span-2 p-6 bg-white rounded-3xl shadow-sm'>
             <FileUploader
               onFileUpload={handleFileUpload}
@@ -240,7 +244,7 @@ const Generate = () => {
               // workBookId={numericWorkBookId ?? 0}
             />
           </div>
-          <div className='flex flex-col gap-6'>
+          <div className='flex flex-col gap-4'>
             <UploadedList
               files={uploadedFiles}
               maxFiles={10}

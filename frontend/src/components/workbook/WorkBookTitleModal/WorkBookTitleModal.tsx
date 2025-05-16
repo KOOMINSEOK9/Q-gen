@@ -64,7 +64,7 @@ export default function WorkBookTitleModal({
                   handleSubmit(e);
                 }
               }}
-              placeholder='워크북 제목을 입력해주세요'
+              placeholder='제목을 입력해주세요'
               className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent'
             />
           </div>

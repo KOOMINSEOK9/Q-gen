@@ -9,7 +9,7 @@ import IconBox from '@/components/common/IconBox/IconBox';
 import Button from '@/components/common/Button/Button';
 import { useWorkBook } from '@/hooks/useWorkBooks';
 import UploadModal from '@/components/upload/UploadModal/UploadModal';
-import { UploadedFile } from '@/types/document';
+import { UploadedFile, DocumentInfo } from '@/types/document';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTestPaper } from '@/hooks/useTestPaper';
 import { useDocuments } from '@/hooks/useDocument';
@@ -159,27 +159,27 @@ export default function List() {
     setIsUploadModalOpen(false);
   };
 
-  // 링크 추가 함수 (예시)
-  const handleLinkSubmit = (url: string) => {
+  // 링크 추가 함수 (DocumentInfo 기반)
+  const handleLinkSubmit = (result: DocumentInfo) => {
     setFiles((prev) => [
       ...prev,
       {
-        id: `${Date.now()}`,
-        title: url,
-        type: 'LINK',
+        id: result.documentId.toString(),
+        title: result.documentName,
+        type: result.documentType,
       },
     ]);
     setIsUploadModalOpen(false);
   };
 
-  // 텍스트 추가 함수 (예시)
-  const handleTextSubmit = (text: string) => {
+  // 텍스트 추가 함수 (DocumentInfo 기반)
+  const handleTextSubmit = (result: DocumentInfo) => {
     setFiles((prev) => [
       ...prev,
       {
-        id: `${Date.now()}`,
-        title: text,
-        type: 'TEXT',
+        id: result.documentId.toString(),
+        title: result.documentName,
+        type: result.documentType,
       },
     ]);
     setIsUploadModalOpen(false);

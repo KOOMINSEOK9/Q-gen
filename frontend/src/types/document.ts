@@ -8,7 +8,6 @@ export interface UploadedFile {
 export interface DocumentInfo {
   documentId: number;
   documentName: string;
-  documentSize: number;
   documentType: string;
-  createAt: string;
+  documentContent: string;
 }

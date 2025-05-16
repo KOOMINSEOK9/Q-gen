@@ -103,7 +103,7 @@ function QuestionFrame({
   // OX 문제 렌더링
   const renderOXQuestion = () => {
     return (
-      <div className='flex gap-6 justify-center h-full'>
+      <div className='flex gap-4 justify-center h-full'>
         {['O', 'X'].map((option) => {
           let optionStyle = 'border-gray-200';
           let textStyle = '';
@@ -225,12 +225,12 @@ function QuestionFrame({
             <Button
               onClick={onSubmit}
               disabled={selectedOption === null}
-              variant='small'
+              variant='basic'
             >
               제출
             </Button>
           ) : (
-            <Button onClick={onNext} variant='small'>
+            <Button onClick={onNext} variant='basic'>
               다음
             </Button>
           )}

@@ -87,7 +87,7 @@ const Memo = ({ testId, initialMemo }: MemoProps) => {
       <div className='flex items-center justify-between mb-2'>
         <div className='text-lg font-bold'>문제별 노트</div>
       </div>
-      <div className='flex items-center gap-6 mb-2'>
+      <div className='flex items-center gap-4 mb-2'>
         <button
           type='button'
           className='text-gray-700 hover:text-[#754AFF] text-lg cursor-pointer'
