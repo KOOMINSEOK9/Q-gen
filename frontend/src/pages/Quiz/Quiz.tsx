@@ -219,6 +219,7 @@ function QuizPage() {
           questionType={
             currentQuestion?.type as 'choiceAns' | 'shortAns' | 'oxAns'
           }
+          isCorrect={resultArr[current]?.correct}
         />
       </div>
       {/* ExamSidebar (1/5) */}

@@ -16,6 +16,7 @@ interface QuestionFrameProps {
   onSubmit: () => void;
   onNext: () => void;
   questionType?: 'choiceAns' | 'shortAns' | 'oxAns';
+  isCorrect?: boolean;
 }
 
 function QuestionFrame({
@@ -31,6 +32,7 @@ function QuestionFrame({
   onSubmit,
   onNext,
   questionType = 'choiceAns',
+  isCorrect,
 }: QuestionFrameProps) {
   const explanationRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -103,7 +105,7 @@ function QuestionFrame({
   // OX 문제 렌더링
   const renderOXQuestion = () => {
     return (
-      <div className='flex gap-4 justify-center h-full'>
+      <div className='flex gap-6 justify-center h-full'>
         {['O', 'X'].map((option) => {
           let optionStyle = 'border-gray-200';
           let textStyle = '';
@@ -209,6 +211,30 @@ function QuestionFrame({
     }
   };
 
+  // 정답 표시 렌더링 (shortAns만)
+  const renderAnswer = () => {
+    const convertedType = convertQuestionType(questionType || '');
+    if (
+      !isSubmitted ||
+      convertedType !== 'shortAns' ||
+      isCorrect === undefined ||
+      isCorrect === null
+    )
+      return null;
+    let bg = 'bg-[#009d77]/10 border-[#009d77]/20 text-[#009d77]';
+    let border = 'border';
+    let text = '정답';
+    if (isCorrect === false) {
+      bg = 'bg-[#ff4339]/10 border-[#ff4339]/20 text-[#ff4339]';
+      text = '오답';
+    }
+    return (
+      <div className={`mt-2 ${bg} ${border} rounded-xl p-4 text-sm`}>
+        {text}: <span className='font-bold'>{answerIndex}</span>
+      </div>
+    );
+  };
+
   return (
     <div
       ref={frameRef}
@@ -243,22 +269,35 @@ function QuestionFrame({
         </div>
         {/* 문제 유형에 따른 렌더링 */}
         {renderQuestion()}
-        {/* 정답 표시 */}
-        {isSubmitted && (
-          <div className='mt-2 text-gray-700 bg-[#009d77]/10 border border-[#009d77]/20 rounded-xl p-4 text-sm'>
-            정답: <span className='font-bold'>{answerIndex}</span>
-          </div>
-        )}
-        {/* 해설 */}
-        <SimpleBar
-          className='my-6 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'
-          style={{
-            opacity: isSubmitted ? 1 : 0,
-          }}
-        >
-          <div className='font-semibold mb-2 text-gray-700'>해설</div>
-          <div className='text-gray-700'>{explanation}</div>
-        </SimpleBar>
+        {/* 해설: shortAns는 정답 칸이 렌더링될 때만, 나머지는 제출 후 바로 */}
+        {(() => {
+          const convertedType = convertQuestionType(questionType || '');
+          if (convertedType === 'shortAns') {
+            return (
+              renderAnswer() && (
+                <SimpleBar
+                  className='my-6 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'
+                  style={{ opacity: 1 }}
+                >
+                  <div className='font-semibold mb-2 text-gray-700'>해설</div>
+                  <div className='text-gray-700'>{explanation}</div>
+                </SimpleBar>
+              )
+            );
+          } else {
+            return (
+              isSubmitted && (
+                <SimpleBar
+                  className='my-6 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'
+                  style={{ opacity: 1 }}
+                >
+                  <div className='font-semibold mb-2 text-gray-700'>해설</div>
+                  <div className='text-gray-700'>{explanation}</div>
+                </SimpleBar>
+              )
+            );
+          }
+        })()}
       </div>
     </div>
   );
