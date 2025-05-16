@@ -12,4 +12,5 @@ import lombok.ToString;
 public class CreateTestPaperEventDto {
     private Long testPaperId;
     private String title;
+    private String status;
 }

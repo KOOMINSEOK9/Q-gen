@@ -100,13 +100,15 @@ public class TestPaperService {
                 emitterService.sendEvent(userId,
                         "testpaper created",
                         new CreateTestPaperEventDto(savedTestPaper.getTestPaperId(),
-                                savedTestPaper.getTitle()));
+                                savedTestPaper.getTitle(),
+                                "COMPLETED"));
             });
         } catch (Exception e) {
             emitterService.sendEvent(userId,
-                    "failed create",
+                    "testpaper created",
                     new CreateTestPaperEventDto(savedTestPaper.getTestPaperId(),
-                            savedTestPaper.getTitle()));
+                            savedTestPaper.getTitle(),
+                            "FAILED"));
         }
 
         return TestPaperResponseDto.from(testPaper);
@@ -232,13 +234,16 @@ public class TestPaperService {
                             userId,
                             "testpaper created",
                             new CreateTestPaperEventDto(testPaper.getTestPaperId(),
-                                    testPaper.getTitle()));
+                                    testPaper.getTitle(),
+                                    "COMPLETED"));
                 }
             } catch (Exception e) {
-                emitterService.sendEvent(userId,
-                        "failed create",
+                emitterService.sendEvent(
+                        userId,
+                        "testpaper created",
                         new CreateTestPaperEventDto(testPaper.getTestPaperId(),
-                        testPaper.getTitle()));
+                                testPaper.getTitle(),
+                                "FAILED"));
             }
         });
     }
