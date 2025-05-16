@@ -123,7 +123,7 @@ const Note = () => {
               <Button
                 key={exam.testPaperId}
                 variant='filled'
-                className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/50 hover:border-transparent'}`}
+                className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/10 hover:border-transparent'}`}
                 onClick={() => {
                   setActiveTestPaperIndex(idx);
                   navigate(`/note/${workBookId}/${exam.testPaperId}`);

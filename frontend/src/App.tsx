@@ -16,7 +16,7 @@ function App() {
   const location = useLocation();
   const isArcPage = arcPages.some((path) => location.pathname.startsWith(path));
 
-  // mainPageType: 'default' | 'fixed' 두 가지 타입만 사용
+  // mainPageType: 'default' | 'fixed' 두 가지 타입 사용
   let mainPageType: 'default' | 'fixed' = 'default';
   if (
     location.pathname.startsWith('/quiz') ||

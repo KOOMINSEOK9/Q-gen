@@ -10,6 +10,5 @@ export interface DocumentInfo {
   documentName: string;
   documentSize: number;
   documentType: string;
-  documentURL: string;
   createAt: string;
 }

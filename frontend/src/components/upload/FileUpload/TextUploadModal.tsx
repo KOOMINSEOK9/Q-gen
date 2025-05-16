@@ -1,21 +1,35 @@
 import Button from '@/components/common/Button/Button';
 import IconBox from '@/components/common/IconBox/IconBox';
 import React, { useState, ChangeEvent } from 'react';
+import { useDocuments } from '@/hooks/useDocument';
 
-interface LinkUploadModalProps {
+interface TextUploadModalProps {
   onClose: () => void;
-  onSubmit: (url: string) => void;
+  onSubmit: (text: string) => void;
+  workBookId: number;
 }
 
-const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
+const TextUploadModal: React.FC<TextUploadModalProps> = ({
   onClose,
   onSubmit,
+  workBookId,
 }) => {
   const [text, setText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { convertTextToTxt } = useDocuments();
 
-  const handleSubmit = () => {
-    onSubmit(text);
-    onClose();
+  const handleSubmit = async () => {
+    if (!text.trim()) return;
+    setLoading(true);
+    try {
+      const result = await convertTextToTxt(workBookId, text);
+      onSubmit(text); // 부모에서 리스트 갱신
+      onClose();
+    } catch (e) {
+      alert('텍스트 업로드에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,9 +55,6 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
           </p>
 
           <div className='flex flex-col border border-gray-200 rounded-lg p-3 bg-gray-50'>
-            {/* <div className='flex items-center mb-2'>
-              <IconBox name='text' size={21} className='mr-2' />
-            </div> */}
             <textarea
               value={text}
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
@@ -51,7 +62,7 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
               }
               placeholder='텍스트를 입력해주세요'
               rows={3}
-              className='w-full h-[72px] resize-none bg-transparent text-base placeholder-gray-500 focus:outline-none'
+              className='w-full h-[150px] resize-none bg-transparent text-base placeholder-gray-500 focus:outline-none'
             />
           </div>
         </div>
@@ -59,12 +70,13 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
         <Button
           onClick={handleSubmit}
           className='w-full font-semibold text-base'
+          disabled={loading}
         >
-          삽입
+          {loading ? '업로드 중...' : '삽입'}
         </Button>
       </div>
     </div>
   );
 };
 
-export default LinkUploadModal;
+export default TextUploadModal;

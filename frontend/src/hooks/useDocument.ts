@@ -3,8 +3,10 @@ import {
   uploadDocumentByWorkBookId,
   fetchDocumentsByWorkBook,
   deleteDocumentByDocumentId,
+  fetchDocumentByDocumentId,
+  downloadDocumentByDocumentId,
 } from '@/apis/document/document';
-
+import { DocumentInfo } from '@/types/document';
 export function useDocuments() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -52,11 +54,81 @@ export function useDocuments() {
     }
   }, []);
 
+  // 문서 상세 조회
+  const getDocument = useCallback(async (documentId: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const doc = await fetchDocumentByDocumentId(documentId);
+      return doc;
+    } catch (err: any) {
+      setError(err);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // 텍스트 입력 txt파일 변환
+  const convertTextToTxt = useCallback(
+    async (workBookId: number, text: string): Promise<DocumentInfo> => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const doc = await convertTextToTxt(workBookId, text);
+        return doc;
+      } catch (err: any) {
+        setError(err);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  // url txt파일 변환
+  const convertUrlToTxt = useCallback(
+    async (workBookId: number, url: string): Promise<DocumentInfo> => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const doc = await convertUrlToTxt(workBookId, url);
+        return doc;
+      } catch (err: any) {
+        setError(err);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  // 파일 다운로드
+  const downloadDocument = useCallback(async (documentId: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const blob = await downloadDocumentByDocumentId(documentId);
+      return blob;
+    } catch (err: any) {
+      setError(err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   return {
     isLoading,
     error,
     getDocuments,
     uploadDocument,
     deleteDocument,
+    getDocument,
+    convertTextToTxt,
+    convertUrlToTxt,
+    downloadDocument,
   };
 }

@@ -1,21 +1,36 @@
 import React, { useState, ChangeEvent } from 'react';
 import Button from '@/components/common/Button/Button';
 import IconBox from '@/components/common/IconBox/IconBox';
+import { useDocuments } from '@/hooks/useDocument';
 
 interface LinkUploadModalProps {
   onClose: () => void;
   onSubmit: (url: string) => void;
+  workBookId: number;
 }
 
 const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
   onClose,
   onSubmit,
+  workBookId,
 }) => {
   const [url, setUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { convertUrlToTxt } = useDocuments();
 
-  const handleSubmit = () => {
-    onSubmit(url);
-    onClose();
+  const handleSubmit = async () => {
+    if (!url.trim()) return;
+    setLoading(true);
+    try {
+      const result = await convertUrlToTxt(workBookId, url);
+      console.log('URL 업로드 결과:', result);
+      onSubmit(url);
+      onClose();
+    } catch (e) {
+      alert('URL 업로드에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,8 +78,9 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
         <Button
           onClick={handleSubmit}
           className='w-full font-semibold text-base'
+          disabled={loading}
         >
-          삽입
+          {loading ? '업로드 중...' : '삽입'}
         </Button>
       </div>
     </div>

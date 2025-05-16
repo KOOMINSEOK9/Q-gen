@@ -6,6 +6,7 @@ import LinkUploadModal from './LinkUploadModal';
 import TextUploadModal from './TextUploadModal';
 import { useDocuments } from '@/hooks/useDocument';
 import GlobalSpinner from '@/components/common/GlobalSpinner/GlobalSpinner';
+import { useParams } from 'react-router-dom';
 
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
@@ -37,6 +38,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const [showTextModal, setShowTextModal] = useState(false);
   const { isLoading } = useDocuments();
   const [isDragging, setIsDragging] = useState(false);
+  const { workBookId } = useParams();
+  const numericWorkBookId = workBookId ? Number(workBookId) : undefined;
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
@@ -105,7 +108,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         문제 생성에 사용할 자료를 업로드하세요.
       </p>
 
-      {/* 업로드 옵션 전체를 flex-col로 묶음 */}
       <div className='flex-1 flex flex-col gap-6'>
         {/* 파일 선택 영역 - flex-1 */}
         <div
@@ -113,7 +115,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             ${
               isDragging
                 ? 'border-purple-500'
-                : 'border-gray-300 hover:border-gray-400'
+                : 'border-gray-200 hover:border-gray-400'
             }`}
           style={{
             animation: isDragging ? 'bgPulse 1.2s infinite' : 'none',
@@ -134,7 +136,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             }}
             draggable='false'
           />
-          <h2 className='text-xl font-semibold mb-2 select-none'>파일 선택</h2>
+          <h2 className='text-xl font-semibold mb-2 select-none'>
+            파일 선택하기
+          </h2>
           <p className='text-gray-500 mb-4 text-center select-none'>
             파일을 드래그하거나 선택하여 업로드하세요. <br />
             PDF, DOCX, TXT 파일을 지원합니다.
@@ -148,11 +152,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           />
         </div>
 
-        {/* 링크/텍스트 입력 옵션 - flex-row */}
         <div className='flex flex-row gap-6'>
           {/* Link Input Option */}
           <div
-            className='bg-white rounded-lg p-8 border border-gray-300 flex flex-col items-center flex-1 cursor-pointer group select-none'
+            className='bg-white rounded-lg p-8 border border-gray-200 hover:border-gray-400 flex flex-col items-center flex-1 cursor-pointer group select-none'
             onClick={() => setShowLinkModal(true)}
           >
             <img
@@ -171,7 +174,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
           {/* Direct Text Input Option */}
           <div
-            className='bg-white rounded-lg p-8 border border-gray-300 flex flex-col items-center flex-1 cursor-pointer group select-none'
+            className='bg-white rounded-lg p-8 border border-gray-200 hover:border-gray-400 flex flex-col items-center flex-1 cursor-pointer group select-none'
             onClick={() => setShowTextModal(true)}
           >
             <img
@@ -181,7 +184,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               draggable='false'
             />
             <h3 className='text-lg font-semibold select-none'>
-              텍스트 직접 입력
+              텍스트 입력하기
             </h3>
             <p className='text-sm text-gray-500 text-center mb-4 select-none'>
               텍스트를 직접 입력하여 문제를 생성합니다.
@@ -201,13 +204,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         />
       )}
       {/* Text Upload Modal */}
-      {showTextModal && (
+      {showTextModal && numericWorkBookId !== undefined && (
         <TextUploadModal
           onClose={() => setShowTextModal(false)}
           onSubmit={(text: string) => {
             if (onTextSubmit) onTextSubmit(text);
             setShowTextModal(false);
           }}
+          workBookId={numericWorkBookId}
         />
       )}
     </div>

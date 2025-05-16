@@ -1,9 +1,11 @@
 // src/components/UploadedList/UploadedList.tsx
-'use client';
-
 import { twMerge } from 'tailwind-merge';
 import IconBox from '../../common/IconBox/IconBox';
 import Button from '@/components/common/Button/Button';
+import { useState } from 'react';
+import { useDocuments } from '@/hooks/useDocument';
+import UploadedListDetailModal from './UploadedDetailModal';
+import PDFPreviewModal from './PDFPreviewModal';
 
 interface UploadedFile {
   id: string;
@@ -40,6 +42,61 @@ function UploadedList({
 }: UploadedListProps) {
   // files가 null이거나 undefined일 경우를 대비해 기본값 처리
   const safeFiles = files ?? [];
+  const { getDocument, downloadDocument } = useDocuments();
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [detailData, setDetailData] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
+  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
+  const [pdfFileName, setPdfFileName] = useState<string>('');
+
+  // 파일 상세 조회 핸들러
+  const handleDetailOpen = async (file: UploadedFile) => {
+    setDetailLoading(true);
+    setDetailModalOpen(true);
+    try {
+      const doc = await getDocument(Number(file.id));
+      setDetailData(doc);
+    } catch (e) {
+      setDetailData(null);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const handleDownloadFromPreview = () => {
+    if (!pdfBlobUrl) return;
+    const link = document.createElement('a');
+    link.href = pdfBlobUrl;
+    link.setAttribute('download', pdfFileName);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+  };
+
+  const handleClosePreview = () => {
+    setPdfPreviewOpen(false);
+    if (pdfBlobUrl) {
+      window.URL.revokeObjectURL(pdfBlobUrl);
+      setPdfBlobUrl(null);
+    }
+  };
+
+  const handlePreviewPdf = async (file: UploadedFile) => {
+    try {
+      const blob = await downloadDocument(Number(file.id));
+      const url = window.URL.createObjectURL(
+        new Blob([blob], { type: 'application/pdf' })
+      );
+      setPdfBlobUrl(url);
+      setPdfFileName(
+        file.title.endsWith('.pdf') ? file.title : file.title + '.pdf'
+      );
+      setPdfPreviewOpen(true);
+    } catch (e) {
+      alert('PDF 미리보기에 실패했습니다.');
+    }
+  };
 
   return (
     <div className='flex-1 bg-white rounded-3xl p-6 shadow-sm '>
@@ -92,7 +149,13 @@ function UploadedList({
                       ? 'border-purple-500 bg-purple-50'
                       : 'border-gray-200 bg-white hover:border-gray-300'
                   }`}
-                onClick={() => !showAddButton && onSelect?.(file.id)}
+                onClick={() => {
+                  if (file.type.toLowerCase().includes('pdf')) {
+                    handlePreviewPdf(file);
+                  } else {
+                    handleDetailOpen(file);
+                  }
+                }}
               >
                 <div className='flex items-start gap-3'>
                   {!showAddButton && (
@@ -139,6 +202,20 @@ function UploadedList({
           )}
         </div>
       </div>
+      {/* 상세 모달 */}
+      <UploadedListDetailModal
+        isOpen={detailModalOpen}
+        onClose={() => setDetailModalOpen(false)}
+        detailData={detailData}
+        isLoading={detailLoading}
+      />
+      <PDFPreviewModal
+        isOpen={pdfPreviewOpen}
+        onClose={handleClosePreview}
+        blobUrl={pdfBlobUrl}
+        onDownload={handleDownloadFromPreview}
+        fileName={pdfFileName}
+      />
     </div>
   );
 }
