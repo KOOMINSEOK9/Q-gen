@@ -11,4 +11,16 @@ def load_index_and_store(index_id: str):
 
 def search_with_index(index, store, query_np, k: int):
     D, I = index.search(query_np, k=k)
-    return [store[i] for i in I[0] if 0 <= i < len(store)]
+    
+    results = [store[i] for i in I[0] if 0 <= i < len(store)]
+    
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"[🔍 벡터 검색 결과] top-{k} 거리: {D[0]}")
+    for i, idx in enumerate(I[0]):
+        if 0 <= idx < len(store):
+            logger.info(f"[🔎 검색 {i+1}] 인덱스 {idx} → 내용 일부: {str(store[idx])[:300]}")
+        else:
+            logger.warning(f"[⚠️ 검색 {i+1}] 유효하지 않은 인덱스: {idx}")
+    
+    return results
