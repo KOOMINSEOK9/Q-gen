@@ -15,8 +15,12 @@ export const useAuth = () => {
   const checkLoginStatus = async () => {
     try {
       const response = await getUserInfo();
-      setIsLoggedIn(response.data?.data?.login === true);
-      setUserId(response.data?.data?.userId ?? null);
+      console.log('userinfo 응답:', response.data);
+      const login = response.data?.data?.login === true;
+      const userId = response.data?.data?.userId ?? null;
+      console.log('setIsLoggedIn:', login, 'setUserId:', userId);
+      setIsLoggedIn(login);
+      setUserId(userId);
     } catch (error) {
       setIsLoggedIn(false);
       setUserId(null);

@@ -1,9 +1,11 @@
 import SmallBtn from '@/components/common/SmallBtn/SmallBtn';
 import { Link } from 'react-router-dom';
+import { useUserStore } from '@/stores/userStore';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Header() {
-  const { isLoggedIn, handleLogout } = useAuth();
+  const userId = useUserStore((s) => s.userId);
+  const { handleLogout } = useAuth();
 
   return (
     <header className='w-full flex items-center justify-between px-8 py-4 bg-white rounded-full shadow-[0_0_24px_0_rgba(0,0,0,0.08)]'>
@@ -17,7 +19,7 @@ export default function Header() {
         >
           문제집 목록
         </Link>
-        {isLoggedIn ? (
+        {userId ? (
           <SmallBtn text='로그아웃' onClick={handleLogout} />
         ) : (
           <Link to='/login'>

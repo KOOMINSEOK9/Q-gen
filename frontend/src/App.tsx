@@ -8,8 +8,10 @@ import ScrollToTop from './components/Scroll/ScrollToTop';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { twMerge } from 'tailwind-merge';
+import { useAuth } from '@/hooks/useAuth';
 
 function App() {
+  useAuth(); // 앱 전체에서 한 번만 인증 동기화
   const arcPages = ['/quiz', '/note'];
   const location = useLocation();
   const isArcPage = arcPages.some((path) => location.pathname.startsWith(path));

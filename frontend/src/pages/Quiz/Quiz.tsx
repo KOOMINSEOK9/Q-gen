@@ -76,11 +76,10 @@ function QuizPage() {
     const fetchQuestion = async () => {
       if (!problemIds.length) return;
       try {
+        // setIsLoading(true);                      [다음] 버튼 클릭 시, 리랜더링되는 코드
         const response = await getTestQuestion(problemIds[current]);
         setCurrentQuestion(response.data);
         setIsLoading(false);
-        // 문제 로드 후 스크롤 최상단으로
-        window.scrollTo(0, 0);
       } catch (error) {
         setCurrentQuestion(null);
       } finally {

@@ -20,15 +20,17 @@ import WorkBookTitleModal from '@/components/workbook/WorkBookTitleModal/WorkBoo
 import GradientTitle from '@/components/common/GradientTitle/GradientTitle';
 import { useTestPaperCreationStore } from '@/stores/testPaperCreationStore';
 import { connectSSE } from '@/utils/sse';
-import { useAuth } from '@/hooks/useAuth';
-
-const userId = 1;
+import { useUserStore } from '@/stores/userStore';
+import { convertToPdf } from '@/apis/testpaper/testpaper';
+import { downloadPdf } from '@/utils/file';
 
 export default function List() {
   const { workBookId } = useParams(); // URL 파라미터에서 workBookId 추출
   const numericWorkBookId = workBookId ? Number(workBookId) : null;
+  const userId = useUserStore((s) => s.userId);
+  const isLoggedIn = userId !== null;
+  const navigate = useNavigate();
 
-  console.log('Hi');
   // 커스텀 훅 사용
   const {
     workbooks,
@@ -68,8 +70,6 @@ export default function List() {
   // files 상태를 상위에서 관리
   const [files, setFiles] = useState<UploadedFile[]>([]);
 
-  const navigate = useNavigate();
-
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [selectedPaper, setSelectedPaper] = useState<TestPaper | null>(null);
   const [isQuizStartModalOpen, setIsQuizStartModalOpen] = useState(false);
@@ -90,15 +90,19 @@ export default function List() {
     (s) => s.creatingTestPaperIds
   );
 
-  const { isLoggedIn, userId } = useAuth();
+  // 로그인 체크
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    }
+  }, [isLoggedIn, navigate]);
 
   // 문제집 목록 불러오기
   useEffect(() => {
-    if (userId !== null) {
-      fetchWorkBooks(userId);
+    if (isLoggedIn) {
+      fetchWorkBooks();
     }
-  }, [userId]);
-  // console.log('3. 문제집 목록 불러오기 :::: ', workbooks);
+  }, [isLoggedIn]);
 
   // 선택된 워크북 정보
   const selectedWorkbookData =
@@ -273,12 +277,14 @@ export default function List() {
 
   // 문제집 삭제
   const handleWorkBookDelete = async (workBookId: string) => {
-    if (!workBookId || userId === null) return;
+    if (!workBookId || !isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     if (!window.confirm('이 문제집을 삭제하시겠습니까?')) return;
     try {
       await removeWorkBook(Number(workBookId));
-      // 삭제 후 목록 새로고침
-      await fetchWorkBooks(userId);
+      await fetchWorkBooks();
       setMiniModalOpen(false);
     } catch (error) {
       alert('문제집 삭제에 실패했습니다.');
@@ -287,6 +293,10 @@ export default function List() {
 
   // 문제집 추가 버튼 클릭 시
   const handleOpenAddModal = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     setTitleModalMode('add');
     setEditTargetId(null);
     setEditTargetTitle('');
@@ -303,31 +313,46 @@ export default function List() {
 
   // 모달에서 submit 시
   const handleTitleModalSubmit = async (title: string) => {
-    if (userId === null) return;
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     if (titleModalMode === 'add') {
       setIsTitleModalOpen(false);
-      await createNewWorkBook(userId, title);
-      await fetchWorkBooks(userId);
+      await createNewWorkBook(title);
+      await fetchWorkBooks();
     } else if (titleModalMode === 'edit' && editTargetId) {
       await editWorkBook(editTargetId, title);
-      await fetchWorkBooks(userId);
+      await fetchWorkBooks();
     }
     setIsTitleModalOpen(false);
   };
 
+  // SSE 연결
   useEffect(() => {
     if (isLoggedIn && userId) {
-      console.log(
-        '🔥 List 페이지 마운트, SSE 연결 시도! (userId:',
-        userId,
-        ')'
-      );
       const eventSource = connectSSE(userId);
       return () => {
         eventSource?.close();
       };
     }
   }, [isLoggedIn, userId]);
+
+  // PDF 다운로드 핸들러 추가
+  const handlePdfDownload = async (option: '문제만' | '정답/해설포함') => {
+    if (!selectedPaper) return;
+
+    try {
+      const blob = await convertToPdf(
+        selectedPaper.testPaperId,
+        option === '정답/해설포함'
+      );
+      downloadPdf(blob, `${selectedPaper.title}.pdf`);
+      setIsPdfModalOpen(false);
+    } catch (error) {
+      alert('PDF 변환에 실패했습니다.');
+    }
+  };
 
   return (
     <div className='pb-8 flex flex-col gap-0'>
@@ -501,7 +526,9 @@ export default function List() {
                           isCreating,
                         };
                       })}
-                      onAddClick={handleOpenAddModal}
+                      onAddClick={() =>
+                        navigate(`/generate/${numericWorkBookId}`)
+                      }
                       onPdfClick={handlePdfClick}
                       onSolveClick={handleQuizStart}
                       onHistoryClick={handleHistoryClick}
@@ -561,10 +588,7 @@ export default function List() {
       <PdfModal
         isOpen={isPdfModalOpen}
         onClose={() => setIsPdfModalOpen(false)}
-        onDownload={(option) => {
-          console.log(option);
-          setIsPdfModalOpen(false);
-        }}
+        onDownload={handlePdfDownload}
       />
 
       <QuizStartModal

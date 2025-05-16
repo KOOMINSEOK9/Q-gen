@@ -2,10 +2,10 @@ import { WorkBook } from '@/types/workbook';
 import axiosInstance from '@/apis/axiosInstance';
 
 // 문제집 전체 조회 API
-export const getWorkBooks = async (userId: number): Promise<WorkBook[]> => {
+export const getWorkBooks = async (): Promise<WorkBook[]> => {
   try {
     const response = await axiosInstance.get<{ data: WorkBook[] }>(
-      `/api/workbooks/${userId}`
+      `/api/workbooks`
     );
     console.log('222 조회된 문제집 목록 :::: ', response.data.data);
     return response.data.data;
@@ -16,15 +16,11 @@ export const getWorkBooks = async (userId: number): Promise<WorkBook[]> => {
 };
 
 // 문제집 생성 API
-export const createWorkBook = async (
-  userId: number,
-  title: string
-): Promise<WorkBook> => {
+export const createWorkBook = async (title: string): Promise<WorkBook> => {
   try {
-    const response = await axiosInstance.post<WorkBook>(
-      `/api/workbooks/${userId}`,
-      { title }
-    );
+    const response = await axiosInstance.post<WorkBook>(`/api/workbooks`, {
+      title,
+    });
     console.log('문제집 생성 응답 : ', response.data);
     return response.data;
   } catch (error) {

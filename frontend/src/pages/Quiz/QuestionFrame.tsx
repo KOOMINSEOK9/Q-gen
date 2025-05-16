@@ -181,8 +181,15 @@ function QuestionFrame({
           className='w-full p-4 border-1 rounded-2xl border-gray-200'
           placeholder='답을 입력하세요'
           value={selectedOption || ''}
-          disabled={isSubmitted}
+          readOnly={isSubmitted}
           onChange={(e) => onSelect(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !isSubmitted) {
+              onSubmit();
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
         />
       </div>
     );

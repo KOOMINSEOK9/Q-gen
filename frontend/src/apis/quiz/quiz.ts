@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import {
   ApiResponse,
   TestQuestion,
@@ -6,16 +7,12 @@ import {
   TestResult,
 } from '../../types/quiz';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-});
-
 // 단일 문제 조회
 export const getTestQuestion = async (
   testId: number
 ): Promise<ApiResponse<TestQuestion>> => {
   try {
-    const response = await api.get<ApiResponse<TestQuestion>>(
+    const response = await axiosInstance.get<ApiResponse<TestQuestion>>(
       `/api/test/${testId}`
     );
     return response.data;
@@ -39,7 +36,7 @@ export const getTestIdList = async (
   testPaperId: number
 ): Promise<ApiResponse<number[]>> => {
   try {
-    const response = await api.get<ApiResponse<number[]>>(
+    const response = await axiosInstance.get<ApiResponse<number[]>>(
       `/api/test/list/${testPaperId}`
     );
     return response.data;
@@ -63,7 +60,7 @@ export const submitAnswer = async (
   payload: SubmitAnswerRequest
 ): Promise<ApiResponse<TestResult>> => {
   try {
-    const response = await api.post<ApiResponse<TestResult>>(
+    const response = await axiosInstance.post<ApiResponse<TestResult>>(
       '/api/test',
       payload
     );

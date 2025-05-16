@@ -13,13 +13,9 @@ interface UseWorkBookReturn {
   setWorkbooks: (workbooks: WorkBook[]) => void;
   isLoading: boolean;
   error: Error | null;
-  fetchWorkBooks: (userId: number) => Promise<void>;
-  createNewWorkBook: (userId: number, title: string) => Promise<void>;
-  removeWorkBook: (
-    // userId: number,
-    workBookId: number
-    // title: string
-  ) => Promise<void>;
+  fetchWorkBooks: () => Promise<void>;
+  createNewWorkBook: (title: string) => Promise<void>;
+  removeWorkBook: (workBookId: number) => Promise<void>;
   editWorkBook: (workBookId: number, title: string) => Promise<void>;
 }
 
@@ -29,13 +25,11 @@ export const useWorkBook = (): UseWorkBookReturn => {
   const [error, setError] = useState<Error | null>(null);
 
   // 문제집 목록 조회
-  const fetchWorkBooks = async (userId: number) => {
+  const fetchWorkBooks = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      userId = 1; // 임시
-      const response = await getWorkBooks(userId);
-      // console.log('1. 조회된 문제집 목록 :::: ', response);
+      const response = await getWorkBooks();
       setWorkbooks(response);
     } catch (err) {
       setError(
@@ -47,12 +41,11 @@ export const useWorkBook = (): UseWorkBookReturn => {
   };
 
   // 문제집 생성
-  const createNewWorkBook = async (userId: number, title: string) => {
+  const createNewWorkBook = async (title: string) => {
     setIsLoading(true);
     setError(null);
     try {
-      userId = 1; // 임시
-      const newWorkBook = await createWorkBook(userId, title);
+      const newWorkBook = await createWorkBook(title);
       setWorkbooks((prev) => [...prev, newWorkBook]);
     } catch (err) {
       setError(
@@ -65,15 +58,10 @@ export const useWorkBook = (): UseWorkBookReturn => {
   };
 
   // 문제집 삭제
-  const removeWorkBook = async (
-    // userId: number,
-    workBookId: number
-    // title: string
-  ) => {
+  const removeWorkBook = async (workBookId: number) => {
     setIsLoading(true);
     setError(null);
     try {
-      // const userId = 1; // 임시
       await deleteWorkBook(workBookId);
       setWorkbooks((prev) => prev.filter((wb) => wb.workBookId !== workBookId));
     } catch (err) {
@@ -91,7 +79,6 @@ export const useWorkBook = (): UseWorkBookReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      // const userId = 1; // 임시
       await updateWorkBook(workBookId, title);
       setWorkbooks((prev) =>
         prev.map((wb) => (wb.workBookId === workBookId ? { ...wb, title } : wb))

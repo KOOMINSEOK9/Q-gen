@@ -34,7 +34,7 @@ function PdfModal({ isOpen, onClose, onDownload }: PdfModalProps) {
         {/* 선택 버튼 */}
         <div className='w-full flex flex-col gap-3 mb-6'>
           <button
-            className={`w-full py-3 rounded-xl border text-base font-semibold transition-colors ${
+            className={`w-full py-3 rounded-xl border text-base font-semibold transition-colors cursor-pointer ${
               selected === '문제만'
                 ? 'bg-purple-100 border-purple-400 text-purple-700'
                 : 'bg-white border-gray-300 text-gray-800'
@@ -44,7 +44,7 @@ function PdfModal({ isOpen, onClose, onDownload }: PdfModalProps) {
             문제만
           </button>
           <button
-            className={`w-full py-3 rounded-xl border text-base font-semibold transition-colors ${
+            className={`w-full py-3 rounded-xl border text-base font-semibold transition-colors cursor-pointer ${
               selected === '정답/해설포함'
                 ? 'bg-purple-100 border-purple-400 text-purple-700'
                 : 'bg-white border-gray-300 text-gray-800'
@@ -57,7 +57,7 @@ function PdfModal({ isOpen, onClose, onDownload }: PdfModalProps) {
 
         {/* PDF 다운로드 버튼 */}
         <button
-          className='w-full py-3 rounded-xl bg-gradient-to-r from-[#8B65FF] to-[#754AFF] text-white font-bold text-lg mt-2 transition-all hover:brightness-110'
+          className='w-full py-3 rounded-xl bg-gradient-to-r from-[#8B65FF] to-[#754AFF] text-white font-bold text-lg mt-2 transition-all hover:brightness-110 cursor-pointer'
           onClick={() => onDownload(selected)}
         >
           PDF 다운로드
