@@ -57,7 +57,6 @@ public class TestPaperService {
                 generateTestPaperRequestDto.getChoiceAns(),
                 generateTestPaperRequestDto.getShortAns(),
                 generateTestPaperRequestDto.getOxAns(),
-                generateTestPaperRequestDto.getWordAns(),
                 generateTestPaperRequestDto.getQuantity());
         testPaper = testPaperRepository.save(testPaper);
 
@@ -125,7 +124,6 @@ public class TestPaperService {
                 createTestPaperRequestDto.getChoiceAns(),
                 createTestPaperRequestDto.getShortAns(),
                 createTestPaperRequestDto.getOxAns(),
-                createTestPaperRequestDto.getWordAns(),
                 createTestPaperRequestDto.getQuantity());
         testPaper = testPaperRepository.save(testPaper);
         entityManager.flush();

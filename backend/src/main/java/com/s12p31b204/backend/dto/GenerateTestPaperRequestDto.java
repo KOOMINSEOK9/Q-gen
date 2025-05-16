@@ -17,7 +17,6 @@ public class GenerateTestPaperRequestDto {
     private int choiceAns;
     private int shortAns;
     private int oxAns;
-    private int wordAns;
     private int quantity;
     private List<Long> documentIds;
 }

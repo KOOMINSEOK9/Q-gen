@@ -17,6 +17,5 @@ public class CreateTestPaperRequestDto {
     private int choiceAns;
     private int shortAns;
     private int oxAns;
-    private int wordAns;
     private int quantity;
 }
