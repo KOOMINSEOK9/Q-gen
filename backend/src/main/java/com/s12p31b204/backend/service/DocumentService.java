@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +75,8 @@ public class DocumentService {
     @Transactional
     public FindDocumentResponseDto convertTextToTxt(Long workBookId, String text) {
         // 1. 텍스트를 임시 파일로 저장
-        String fileName = "입력한 텍스트" + ".txt";
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String fileName = "입력한 텍스트_" + today + ".txt";
         File tempFile = null;
         try {
             tempFile = File.createTempFile("user_text_", ".txt");
