@@ -18,7 +18,7 @@ export interface GenerateResponse {
   status: number;
   message: string;
   data: {
-    Id: number;
+    testPaperId: number;
     title: string;
     choiceAns: number;
     shortAns: number;

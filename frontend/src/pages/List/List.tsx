@@ -521,6 +521,14 @@ export default function List() {
                         const isCreating = creatingTestPaperIds.includes(
                           paper.testPaperId
                         );
+                        console.log(
+                          '시험지ID:',
+                          paper.testPaperId,
+                          'isCreating:',
+                          isCreating,
+                          '현재 생성중:',
+                          creatingTestPaperIds
+                        );
                         return {
                           ...paper,
                           isCreating,

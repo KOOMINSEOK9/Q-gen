@@ -23,8 +23,8 @@ export const useGeneration = (): UseGenerationReturn => {
     try {
       const response = await generate(request);
       if (response.success && response.data) {
-        addCreatingTestPaper(response.data.Id);
-        console.log('생성중 추가:', response.data.Id);
+        addCreatingTestPaper(response.data.testPaperId);
+        console.log('생성중 추가:', response.data.testPaperId);
         console.log(
           '현재 생성중:',
           useTestPaperCreationStore.getState().creatingTestPaperIds
