@@ -131,7 +131,7 @@ function Test({
           readOnly
         />
         {isSubmitted && (
-          <div className='mt-2 text-gray-700 bg-[#009d77]/10 border border-[#009d77]/20 rounded-xl p-4 text-sm'>
+          <div className='mt-2 text-gray-700 bg-[#009d77]/10 border border-[#009d77]/20 rounded-2xl p-4'>
             정답: <span className='font-bold'>{answer}</span>
           </div>
         )}
@@ -191,7 +191,7 @@ function Test({
         {/* 문제 유형에 따른 렌더링 */}
         {renderQuestion()}
         {/* 해설 */}
-        <SimpleBar className='my-6 h-full min-h-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'>
+        <SimpleBar className='my-4 h-full min-h-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'>
           <div className='font-semibold mb-2 text-gray-700'>해설</div>
           <div className='text-gray-700'>{explanation}</div>
         </SimpleBar>

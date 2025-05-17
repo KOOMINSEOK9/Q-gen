@@ -29,3 +29,12 @@
   background-size: 200% 100%;
   animation: gradient-move-bg 2s linear infinite;
 }
+
+.hide-spin::-webkit-inner-spin-button,
+.hide-spin::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.hide-spin {
+  -moz-appearance: textfield;
+}

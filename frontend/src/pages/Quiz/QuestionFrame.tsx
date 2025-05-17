@@ -214,22 +214,24 @@ function QuestionFrame({
   // 정답 표시 렌더링 (shortAns만)
   const renderAnswer = () => {
     const convertedType = convertQuestionType(questionType || '');
-    if (
-      !isSubmitted ||
-      convertedType !== 'shortAns' ||
-      isCorrect === undefined ||
-      isCorrect === null
-    )
-      return null;
+    const shouldShow =
+      convertedType === 'shortAns' &&
+      isCorrect !== undefined &&
+      isCorrect !== null &&
+      answerIndex &&
+      explanation;
     let bg = 'bg-[#009d77]/10 border-[#009d77]/20 text-[#009d77]';
     let border = 'border';
     let text = '정답';
     if (isCorrect === false) {
       bg = 'bg-[#ff4339]/10 border-[#ff4339]/20 text-[#ff4339]';
-      text = '오답';
+      text = '정답';
     }
     return (
-      <div className={`mt-2 ${bg} ${border} rounded-xl p-4 text-sm`}>
+      <div
+        className={`mt-2 ${bg} ${border} rounded-xl p-4 text-sm transition-all duration-200`}
+        style={{ display: shouldShow ? undefined : 'none' }}
+      >
         {text}: <span className='font-bold'>{answerIndex}</span>
       </div>
     );
@@ -269,35 +271,18 @@ function QuestionFrame({
         </div>
         {/* 문제 유형에 따른 렌더링 */}
         {renderQuestion()}
-        {/* 해설: shortAns는 정답 칸이 렌더링될 때만, 나머지는 제출 후 바로 */}
-        {(() => {
-          const convertedType = convertQuestionType(questionType || '');
-          if (convertedType === 'shortAns') {
-            return (
-              renderAnswer() && (
-                <SimpleBar
-                  className='my-6 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'
-                  style={{ opacity: 1 }}
-                >
-                  <div className='font-semibold mb-2 text-gray-700'>해설</div>
-                  <div className='text-gray-700'>{explanation}</div>
-                </SimpleBar>
-              )
-            );
-          } else {
-            return (
-              isSubmitted && (
-                <SimpleBar
-                  className='my-6 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'
-                  style={{ opacity: 1 }}
-                >
-                  <div className='font-semibold mb-2 text-gray-700'>해설</div>
-                  <div className='text-gray-700'>{explanation}</div>
-                </SimpleBar>
-              )
-            );
-          }
-        })()}
+        {/* 정답 표시 */}
+        {renderAnswer()}
+        {/* 해설: API 응답이 온 경우에만 보임 */}
+        {answerIndex && explanation && (
+          <SimpleBar
+            className='my-4 h-full min-h-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'
+            style={{ opacity: 1 }}
+          >
+            <div className='font-semibold mb-2 text-gray-700'>해설</div>
+            <div className='text-gray-700'>{explanation}</div>
+          </SimpleBar>
+        )}
       </div>
     </div>
   );

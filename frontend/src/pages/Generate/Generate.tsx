@@ -7,7 +7,7 @@ import { TestType } from '@/types/generate';
 import { UploadedFile, DocumentInfo } from '@/types/document';
 import { useGeneration } from '@/hooks/useGeneration';
 import { useGenerateStore } from '@/stores/generateStore';
-import ProblemTypeSelector from './ProblemTypeSelector';
+import ProblemTypeSelector from './TestTypeSelector';
 import GradientTitle from '@/components/common/GradientTitle/GradientTitle';
 import { useDocuments } from '@/hooks/useDocument';
 
@@ -62,17 +62,13 @@ const Generate = () => {
 
   const handleTypeClick = (typeName: string) => {
     setTestTypes((prev) =>
-      prev.map((type) => ({
-        ...type,
-        count:
-          type.name === typeName
-            ? type.count === 0
-              ? totalProblems >= 30
-                ? 0
-                : 1
-              : 0
-            : type.count,
-      }))
+      prev.map((type) =>
+        type.name === typeName
+          ? type.count === 0
+            ? { ...type, count: totalProblems < 30 ? 1 : 0 }
+            : { ...type, count: 0 }
+          : type
+      )
     );
   };
 
