@@ -12,10 +12,10 @@ export default function Landing() {
 
   return (
     <div className='min-h-screen'>
-      <div data-aos='fade-up'>
+      <div data-aos='fade-up' className='mb-12'>
         <HeroSection />
       </div>
-      <div data-aos='fade-up' data-aos-delay='100'>
+      <div data-aos='fade-up' data-aos-delay='100' className='mb-12'>
         <FeatureSection />
       </div>
       <div data-aos='fade-up' data-aos-delay='200'>
