@@ -10,9 +10,15 @@ router = APIRouter()
 
 @router.post("/search/{testPaperId}/")
 async def search_with_uploaded_file(testPaperId: int, request: S3UploadRequest):
+    print(f" [요청 시작] testPaperId: {testPaperId}")
+    print(f" S3 URLs: {request.s3Urls}")
+    print(f" 요청된 문제 수 - 선택형: {request.choiceAns}, OX: {request.oxAns}, 주관식: {request.shortAns}")
+
     chunks = extract_chunks_from_urls(request.s3Urls)
+    print(f" 추출된 텍스트 블록 수: {len(chunks)}")
 
     if not chunks:
+        print(" 텍스트 추출 실패")
         raise HTTPException(status_code=400, detail="사용자 파일에서 텍스트 추출 실패")
 
     query_text = " ".join(chunks)
