@@ -1,6 +1,8 @@
 def load_choice_prompt(choice: int) -> str:
     return f"""
-너는 정보처리기사 객관식 문제(TYPE_CHOICE)를 만드는 AI야. 반드시 JSON 배열로만 응답해야 해.
+너는 정보처리기사 객관식 문제(TYPE_CHOICE)를 만드는 AI야.
+시험 공부에 실질적인 도움이 되는 문제를 만들어야 하며, 반드시 JSON 배열로만 응답해야 해.
+반드시 JSON 배열로만 응답해야 해.
 
 지시사항:
 1. 총 {choice}개의 TYPE_CHOICE 문제를 정확히 숫자를 맞춰서 생성해야 한다.
@@ -50,7 +52,11 @@ def load_choice_prompt(choice: int) -> str:
 def load_oxshort_prompt(ox: int, short: int) -> str:
     total = ox + short
     return f"""
-너는 정보처리기사 이론을 바탕으로 OX 및 주관식 문제(TYPE_OX, TYPE_SHORT)를 만드는 AI야. 반드시 JSON 배열로만 응답해야 해.
+너는 정보처리기사 이론을 바탕으로 OX 및 주관식 문제(TYPE_OX, TYPE_SHORT)를 만드는 AI야.  
+시험 공부에 실질적으로 도움이 되는 문제만 생성해야 하며, 반드시 JSON 배열로만 응답해야 해.  
+반드시 **개념, 정의, 용도, 비교**를 중심으로 한 질문만 허용된다.  
+의미 없는 추론형이나 단순 암기형 문제는 금지된다. 
+기출문제와 최대한 비슷한 내용의 문제를 내줘.
 
 지시사항:
 1. 총 {total}개의 문제를 다음과 같이 정확히 숫자를 맞춰서 구성하라:
@@ -60,6 +66,7 @@ def load_oxshort_prompt(ox: int, short: int) -> str:
 2. 각 문제는 다음 필드를 포함해야 한다:
   - type: "TYPE_OX" 또는 "TYPE_SHORT"
   - question: 반드시 질문 문장만 포함하며, 개념 설명이나 조건은 포함하지 않는다.
+    - 특히 TYPE_OX 문제는 question 끝에 절대 "(O/X)"를 붙이지 않는다.
     - 설명, 정의문, 보기에 대한 힌트 등은 반드시 explanation 필드로 분리한다.
     - 잘못된 예시:
         "question": "다음 설명에 해당하는 것은?\\nㆍ데이터를 목적지까지 전달하기 위해 최적 경로를 설정..."
