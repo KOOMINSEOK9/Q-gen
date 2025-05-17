@@ -9,7 +9,7 @@ def load_choice_prompt(choice: int) -> str:
 
 2. 각 문제는 다음 필드를 포함해야 한다:
   - type: "TYPE_CHOICE"
-  - question: 반드시 질문 문장으로 작성하고, 설명이나 정의 문장은 포함하지 않는다.
+  - question: 반드시 질문 문장으로 작성하고, 설명이나 정의 문장은 포함하지 않는다. 물음표로 끝나야 한다.
     - 핵심 설명, 조건, 정의, 보기 힌트 등은 절대로 question에 포함하지 않고 반드시 explanation에 따로 분리해야 한다.
     - 잘못된 예시:
         "question": "다음 내용이 설명하는 것은?\\nㆍ블록체인 개발환경을 클라우드로 서비스하는 개념..."
@@ -65,14 +65,14 @@ def load_oxshort_prompt(ox: int, short: int) -> str:
 
 2. 각 문제는 다음 필드를 포함해야 한다:
   - type: "TYPE_OX" 또는 "TYPE_SHORT"
-  - question: 반드시 질문 문장만 포함하며, 개념 설명이나 조건은 포함하지 않는다.
-    - 특히 TYPE_OX 문제는 question 끝에 절대 "(O/X)"를 붙이지 않는다.
+  - question: 반드시 질문 문장만 포함하며, 개념 설명이나 조건은 포함하지 않는다. 물음표로 끝나야 한다.
     - 설명, 정의문, 보기에 대한 힌트 등은 반드시 explanation 필드로 분리한다.
     - 잘못된 예시:
         "question": "다음 설명에 해당하는 것은?\\nㆍ데이터를 목적지까지 전달하기 위해 최적 경로를 설정..."
     - 올바른 예시:
         "question": "다음 설명에 해당하는 계층은?"
         "explanation": ["데이터를 목적지까지 전달하기 위해 최적 경로를 설정하고, IP 주소 등 논리 주소를 이용해 패킷을 전달한다."]
+    - 특히 TYPE_OX 문제는 question 끝에 절대 "(O/X)"를 붙이지 않는다.
   - explanation: 정답 도출을 위해 추가 설명이 꼭 필요한 경우에만 작성하고, 그렇지 않으면 반드시 null로 설정한다.
   - answer: 정답 (TYPE_OX는 'O' 또는 'X', TYPE_SHORT는 단답형 문자열)
   - comment: 해설 (최소 3문장 이상, 정답 근거와 개념 설명 포함)
