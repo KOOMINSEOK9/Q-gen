@@ -31,7 +31,15 @@ public class TestService {
     public FindTestResponseDto findTestOne(Long testId) {
         Test test = testRepository.findById(testId).orElseThrow(
                 () -> new NoSuchElementException("문제를 찾을 수 없습니다."));
-        return FindTestResponseDto.from(test);
+        List<String> explanations = null;
+        if(test.getExplanations() != null) {
+            String[] split = test.getExplanations().split("///");
+            explanations = new ArrayList<>();
+            for(String ex : split) {
+                explanations.add(ex);
+            }
+        }
+        return FindTestResponseDto.from(test, explanations);
     }
 
     public List<Long> findIdTestAll(Long testPaperId) {
@@ -58,12 +66,26 @@ public class TestService {
         Test test = testRepository.findById(solvingTestRequestDto.getTestId()).orElseThrow(
                 () -> new NoSuchElementException("문제를 찾을 수 없습니다."));
         boolean isCorrect = false;
+
         // 히스토리 저장
-        if(test.getAnswer().equals(solvingTestRequestDto.getUserAnswer())) {
+        String correctAnswer = test.getAnswer().trim();
+        String userAnswer = solvingTestRequestDto.getUserAnswer().trim();
+
+        List<String> explanations = null;
+        if(test.getExplanations() != null) {
+            String[] split = test.getExplanations().split("///");
+            explanations = new ArrayList<>();
+            for(String ex : split) {
+                explanations.add(ex);
+            }
+        }
+
+
+        if(correctAnswer.equals(userAnswer)) {
             isCorrect = true;
         }
         TestHistory history = new TestHistory(test, solvingTestRequestDto.getUserAnswer(), isCorrect);
         testHistoryRepository.save(history);
-        return SolvingTestResponseDto.from(test, solvingTestRequestDto.getUserAnswer(), isCorrect);
+        return SolvingTestResponseDto.from(test, explanations, solvingTestRequestDto.getUserAnswer(), isCorrect);
     }
 }
