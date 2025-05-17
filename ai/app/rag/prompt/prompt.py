@@ -8,9 +8,10 @@ def load_choice_prompt(choice: int) -> str:
   - type: "TYPE_CHOICE"
   - question: 문제 내용
   - explanation: 정답 도출에 반드시 필요한 핵심 설명 내용을 포함한다.
-    - 단, 문제 본문(question)에 이미 설명이 포함되어 있어 정답 도출이 가능한 경우에는 반드시 null로 설정한다.
-    - 예: "TCP에 대한 설명으로 옳은 것은?"처럼 문제에 핵심 설명이 포함된 경우에는 explanation을 null로 비워야 한다.
-    - 예: "다음 설명에 해당하는 계층은?"처럼 question이 일반적인 형태일 경우, 핵심 설명은 반드시 explanation에 포함되어야 한다.
+    - 단, 문제 본문(question)에 핵심 설명이 이미 포함되어 있어 정답 도출이 가능한 경우에는 반드시 null로 설정한다.
+    - 예: "TCP에 대한 설명으로 옳은 것은?"처럼 문제 안에 개념 설명이 이미 담겨 있다면 explanation은 null로 비워야 한다.
+    - 예: "다음 설명에 해당하는 계층은?"처럼 question이 포괄적인 형태이고, 실제 설명이 별도로 필요한 경우에는 explanation에 핵심 설명을 반드시 포함해야 한다.
+    - 즉, explanation은 문제를 이해하고 정답을 도출하는 데 반드시 필요한 경우에만 사용하며, 설명 없이도 풀 수 있는 문제는 null로 설정해야 한다.
   - option: 보기 4개 (문자열 배열)
   - answer: 정답 번호 (1~4 사이 문자열)
   - comment: 해설 (최소 3문장 이상)
@@ -51,11 +52,11 @@ def load_oxshort_prompt(ox: int, short: int) -> str:
 2. 각 문제는 다음 필드를 포함해야 한다:
   - type: "TYPE_OX" 또는 "TYPE_SHORT"
   - question: 문제 내용
-  - explanation: 정답 도출에 반드시 필요한 핵심 설명 내용을 포함한다.
-    - 단, 문제 본문(question)에 이미 설명이 포함되어 있어 정답을 유도할 수 있는 경우에는 반드시 null로 설정한다.
-    - 예: "TCP는 연결지향형 프로토콜이다. (O/X)"처럼 문제 자체에 설명이 들어가 있는 경우 explanation은 null이어야 한다.
-    - 예: "다음 설명에 해당하는 계층은?"처럼 question이 일반적인 형태일 경우, 핵심 설명은 반드시 explanation에 포함되어야 한다.
-    - 즉, explanation은 문제를 이해하고 정답을 도출하는 데 **반드시 필요한 경우에만 사용**하며, 설명 없이도 풀 수 있는 문제는 null로 설정한다.
+    - explanation: 정답 도출에 반드시 필요한 핵심 설명 내용을 포함한다.
+    - 단, 문제 본문(question)에 핵심 설명이 이미 포함되어 있어 정답 도출이 가능한 경우에는 반드시 null로 설정한다.
+    - 예: "TCP는 연결지향형 프로토콜이다. (O/X)"처럼 설명이 문제 안에 포함되어 있는 경우 explanation은 null로 설정해야 한다.
+    - 예: "다음 설명에 해당하는 계층은?"처럼 question이 일반적인 형식일 경우, 핵심 설명은 반드시 explanation에 포함되어야 한다.
+    - 즉, explanation은 문제의 조건이 따로 필요할 때만 작성하며, 문제 자체만으로 충분할 경우 반드시 null로 설정한다.
   - answer: 정답 (OX는 'O' 또는 'X', 주관식은 단답형 문자열)
   - comment: 해설 (최소 3문장 이상)
 3. 반드시 JSON 배열만 응답하라. JSON 외의 주석, 설명, 자연어 문장은 절대 포함하지 마라.
