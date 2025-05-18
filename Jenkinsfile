@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        sonarQubeScanner 'sonarqubeScanner' // Jenkins에 등록한 SonarScanner 이름
-    }
-
     parameters {
         string(name: 'DEPLOY_COLOR', defaultValue: 'blue', description: '배포 색상')
     }
