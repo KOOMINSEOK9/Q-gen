@@ -20,7 +20,6 @@ pipeline {
                 ]) {
                     sh """
                         mkdir -p backend/src/main/resources
-                        cp \$ENV_FILE backend/.env
                         cp \$APP_YML backend/src/main/resources/application.yml
                     """
                 }
@@ -31,12 +30,14 @@ pipeline {
             steps {
                 echo "🛠️ Running Gradle build and SonarQube analysis..."
 
-                withCredentials([
-                    file(credentialsId: 'env-file', variable: 'ENV_FILE'),
-                    string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')
-                ]) {
-                    dir('backend') {
+                dir('backend') {
+                    withCredentials([
+                        file(credentialsId: 'env-file', variable: 'ENV_FILE'),
+                        string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')
+                    ]) {
                         sh """
+                            cp \$ENV_FILE .env
+
                             set -o allexport
                             . .env
                             set +o allexport
@@ -45,12 +46,12 @@ pipeline {
                             ./gradlew build
 
                             sonar-scanner \\
-                            -Dsonar.projectKey=q-generator-be \\
-                            -Dsonar.sources=src/main/java \\
-                            -Dsonar.projectBaseDir=. \\
-                            -Dsonar.exclusions=**/test/** \\
-                            -Dsonar.host.url=https://sonar.q-generator.com \\
-                            -Dsonar.login=\$SONAR_TOKEN
+                              -Dsonar.projectKey=q-generator-be \\
+                              -Dsonar.sources=src/main/java \\
+                              -Dsonar.projectBaseDir=. \\
+                              -Dsonar.exclusions=**/test/** \\
+                              -Dsonar.host.url=https://sonar.q-generator.com \\
+                              -Dsonar.login=\$SONAR_TOKEN
                         """
                     }
                 }
@@ -64,9 +65,9 @@ pipeline {
             }
         }
 
-        stage('Build AI') {
+        stage('Build AI Docker Image') {
             steps {
-                echo "🚀 Building AI Docker Image"
+                echo "🤖 Building AI Docker Image..."
                 sh "docker build -t ai:${params.DEPLOY_COLOR} ./ai"
             }
         }
