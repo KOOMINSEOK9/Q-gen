@@ -39,20 +39,21 @@ pipeline {
                         sh """
                             cp \$ENV_FILE .env
 
-                            if [ -f .env ]; then
-                              export \$(grep -v '^#' .env | xargs)
-                            fi
+                            # export 환경변수로 로딩 (현재 셸 + 서브셸에도 적용되게)
+                            set -o allexport
+                            source .env
+                            set +o allexport
 
                             chmod +x gradlew
                             ./gradlew build
 
                             sonar-scanner \\
-                              -Dsonar.projectKey=q-generator-be \\
-                              -Dsonar.sources=src/main/java \\
-                              -Dsonar.projectBaseDir=. \\
-                              -Dsonar.exclusions=**/test/** \\
-                              -Dsonar.host.url=https://sonar.q-generator.com \\
-                              -Dsonar.login=\$SONAR_TOKEN
+                            -Dsonar.projectKey=q-generator-be \\
+                            -Dsonar.sources=src/main/java \\
+                            -Dsonar.projectBaseDir=. \\
+                            -Dsonar.exclusions=**/test/** \\
+                            -Dsonar.host.url=https://sonar.q-generator.com \\
+                            -Dsonar.login=\$SONAR_TOKEN
                         """
                     }
                 }
