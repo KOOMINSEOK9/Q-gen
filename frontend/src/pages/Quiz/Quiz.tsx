@@ -89,6 +89,13 @@ function QuizPage() {
     fetchQuestion();
   }, [current, problemIds]);
 
+  useEffect(() => {
+    // QuizEnd에서 사용할 Lottie 파일을 미리 fetch해서 캐시에 올려둔다
+    fetch(
+      'https://lottie.host/5851c0d5-f978-414e-8d73-8403cb8cded5/XJR5Ma7DBl.lottie'
+    );
+  }, []);
+
   const handleSelect = (value: string) => {
     if (!isSubmitted) {
       setSelected(value);
