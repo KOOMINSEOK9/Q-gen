@@ -78,9 +78,9 @@ export default function Footer() {
         </div>
         <div className='flex justify-between items-center gap-8 mt-8 text-gray-400 text-base'>
           <div className='flex gap-8'>
-            <span>개인정보 처리방침</span>
+            {/* <span>개인정보 처리방침</span>
             <span>서비스 이용약관</span>
-            <span>고객센터</span>
+            <span>고객센터</span> */}
           </div>
           {expanded && (
             <div className='text-gray-400 text-base'>

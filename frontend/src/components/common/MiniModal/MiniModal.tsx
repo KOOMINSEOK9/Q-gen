@@ -16,7 +16,7 @@ function MiniModal({ isOpen, actions, selectedId }: MiniModalProps) {
 
   return (
     <div
-      className='absolute right-0 top-0 bg-white rounded-xl shadow-lg p-2 min-w-[120px] flex flex-col gap-2'
+      className='absolute right-0 top-0 bg-white rounded-xl shadow-xl p-2 min-w-[120px] flex flex-col gap-2'
       onClick={(e) => e.stopPropagation()}
     >
       {actions.map((action, idx) => (

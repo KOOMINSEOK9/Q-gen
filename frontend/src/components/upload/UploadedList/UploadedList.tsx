@@ -131,6 +131,32 @@ function UploadedList({
     }
   };
 
+  // 파일 타입을 사용자 친화적으로 변환하는 함수
+  const getFriendlyFileType = (file: UploadedFile) => {
+    const type = (file.type || '').toLowerCase();
+    const title = (file.title || '').toLowerCase();
+    const ext = title.split('.').pop();
+
+    // 확장자 기반 체크
+    if (ext === 'docx') return 'Word 문서';
+    if (ext === 'pdf') return 'PDF 문서';
+    if (ext === 'txt') return '텍스트 문서';
+    if (ext === 'jpg' || ext === 'jpeg') return '이미지';
+    if (ext === 'png') return '이미지';
+    if (ext === 'mp4') return '비디오';
+    if (ext === 'mp3') return '오디오';
+
+    // MIME 타입 기반 체크
+    if (type.includes('word') || type.includes('docx')) return 'Word 문서';
+    if (type.includes('pdf')) return 'PDF 문서';
+    if (type.includes('text')) return '텍스트 문서';
+    if (type.includes('image')) return '이미지';
+    if (type.includes('video')) return '비디오';
+    if (type.includes('audio')) return '오디오';
+
+    return '기타 파일';
+  };
+
   return (
     <div className='flex-1 bg-white rounded-3xl shadow-sm '>
       <div className={twMerge('w-full space-y-4 py-6', className)}>
@@ -139,7 +165,7 @@ function UploadedList({
           {showAddButton && (
             <Button
               variant='filled'
-              className='px-2 py-1 text-xs'
+              className='px-4 py-2 text-xs rounded-[10px]'
               onClick={() => onClick?.()}
             >
               + 자료 추가
@@ -243,7 +269,9 @@ function UploadedList({
                       <h3 className='font-medium whitespace-normal break-words'>
                         {file.title}
                       </h3>
-                      <span className='text-sm text-gray-500'>{file.type}</span>
+                      <span className='text-sm text-gray-500'>
+                        {getFriendlyFileType(file)}
+                      </span>
                     </div>
                   </div>
                   <button

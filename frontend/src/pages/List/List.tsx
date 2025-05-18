@@ -17,12 +17,12 @@ import { TestPaper } from '@/types/testpaper';
 import PdfModal from '@/components/testpaper/PdfModal';
 import QuizStartModal from '@/components/testpaper/QuizStartModal';
 import WorkBookTitleModal from '@/components/workbook/WorkBookTitleModal/WorkBookTitleModal';
-import GradientTitle from '@/components/common/GradientTitle/GradientTitle';
 import { useTestPaperCreationStore } from '@/stores/testPaperCreationStore';
 import { connectSSE } from '@/utils/sse';
 import { useUserStore } from '@/stores/userStore';
 import { convertToPdf } from '@/apis/testpaper/testpaper';
 import { downloadPdf } from '@/utils/file';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function List() {
   const { workBookId } = useParams(); // URL 파라미터에서 workBookId 추출
@@ -30,6 +30,7 @@ export default function List() {
   const userId = useUserStore((s) => s.userId);
   const isLoggedIn = userId !== null;
   const navigate = useNavigate();
+  const { userName } = useAuth(); // useAuth 훅 사용
 
   // 커스텀 훅 사용
   const {
@@ -362,21 +363,21 @@ export default function List() {
         after='목록'
         className='text-4xl mb-6'
       ></GradientTitle> */}
-      <div className='flex gap-0'>
-        <div className='w-26 h-26 mt-6 ml-6'>
+      <div className='flex gap-0 py-6'>
+        <div className='w-26 h-26 mt-6 ml-6 animate-dolphin'>
           <img src='/images/dolpin-with-tablet.png' alt='돌고래 사진' />
         </div>
-        <div className='flex flex-col items-start gap-1 justify-center bg-white rounded-2xl shadow p-4 px-8 max-w-[600px] ml-[1%] relative cursor-default'>
+        <div className='flex flex-col h-[100px] items-start justify-center bg-white rounded-2xl shadow px-6 max-w-[600px] ml-[1%] relative cursor-default animate-speech-bubble'>
           <span className='text-2xl font-semibold '>
             안녕하세요!{' '}
             <strong className='bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text p-1'>
-              User
+              {userName || 'User'}
             </strong>
             님
           </span>
           <span className='text-2xl font-semibold'>
             오늘도{' '}
-            <strong className='bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text p-1'>
+            <strong className='bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text '>
               Q-gen
             </strong>{' '}
             에서 효율적인 공부를 시작해볼까요!
@@ -405,7 +406,7 @@ export default function List() {
       </section> */}
 
       {/* 문제집 & 자료 업로드 */}
-      <section className='flex gap-8'>
+      <section className='flex gap-8 h-[calc(100dvh-340px)]'>
         {/* 문제집 리스트 */}
         <div className='flex-1 flex flex-col gap-0'>
           {/* 제목 파트 */}

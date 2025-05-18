@@ -38,3 +38,24 @@
 .hide-spin {
   -moz-appearance: textfield;
 }
+
+/* List 돌고래, 말풍선 애니메이션 */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-dolphin {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-speech-bubble {
+  animation: fadeInUp 0.8s ease-out 0.5s forwards;
+  opacity: 0;
+}

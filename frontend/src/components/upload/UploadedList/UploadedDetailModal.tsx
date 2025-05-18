@@ -35,7 +35,7 @@ const UploadedListDetailModal: React.FC<UploadedListDetailModalProps> = ({
             <IconBox name='x' size={24} />
           </button>
         </div>
-        <SimpleBar className='w-full min-h-0'>
+        <SimpleBar className='w-full min-h-[50px]'>
           {/* Content */}
           {isLoading ? (
             <div className='text-center py-4'>로딩 중...</div>

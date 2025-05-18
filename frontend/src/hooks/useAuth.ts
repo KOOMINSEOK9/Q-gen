@@ -7,6 +7,7 @@ export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(true);
   const setUserId = useUserStore((s) => s.setUserId);
   const userId = useUserStore((s) => s.userId);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     checkLoginStatus();
@@ -18,6 +19,8 @@ export const useAuth = () => {
       console.log('userinfo 응답:', response.data);
       const login = response.data?.data?.login === true;
       const userId = response.data?.data?.userId ?? null;
+      const userName = response.data?.data?.userName ?? null;
+      setUserName(userName);
       console.log('setIsLoggedIn:', login, 'setUserId:', userId);
       setIsLoggedIn(login);
       setUserId(userId);
@@ -46,5 +49,6 @@ export const useAuth = () => {
     checkLoginStatus,
     handleLogout,
     userId,
+    userName,
   };
 };
