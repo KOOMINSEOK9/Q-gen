@@ -17,6 +17,7 @@ public class FindNoteTestResponseDto {
     private Long testId;
     private Test.Type type;
     private String question;
+    private List<String> explanation;
     private String option1;
     private String option2;
     private String option3;
@@ -27,11 +28,12 @@ public class FindNoteTestResponseDto {
     private List<TestHistoryDto> testHistoryList;
     private int incorrectCount;
 
-    public static FindNoteTestResponseDto from(Test test, List<TestHistoryDto> testHistoryList, int incorrectCount) {
+    public static FindNoteTestResponseDto from(Test test, List<TestHistoryDto> testHistoryList, List<String> explanation, int incorrectCount) {
         return FindNoteTestResponseDto.builder()
                 .testId(test.getTestId())
                 .type(test.getType())
                 .question(test.getQuestion())
+                .explanation(explanation)
                 .option1(test.getOption1())
                 .option2(test.getOption2())
                 .option3(test.getOption3())

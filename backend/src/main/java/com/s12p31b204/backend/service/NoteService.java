@@ -65,7 +65,15 @@ public class NoteService {
                 incorrectCount++;
             }
         }
-        return FindNoteTestResponseDto.from(test, testHistoryDtoList, incorrectCount);
+        List<String> explanations = null;
+        if(test.getExplanations() != null) {
+            String[] split = test.getExplanations().split("///");
+            explanations = new ArrayList<>();
+            for(String ex : split) {
+                explanations.add(ex);
+            }
+        }
+        return FindNoteTestResponseDto.from(test, testHistoryDtoList, explanations, incorrectCount);
     }
 
     @Transactional
