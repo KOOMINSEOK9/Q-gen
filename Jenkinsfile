@@ -39,9 +39,8 @@ pipeline {
                         sh """
                             cp \$ENV_FILE .env
 
-                            # export 환경변수로 로딩 (현재 셸 + 서브셸에도 적용되게)
                             set -o allexport
-                            source .env
+                            . .env
                             set +o allexport
 
                             chmod +x gradlew
