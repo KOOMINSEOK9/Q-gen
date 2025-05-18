@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        // Jenkins에 등록한 SonarQube Scanner 툴 이름
+        sonarQubeScanner 'sonarqubeScanner'
+    }
+
     parameters {
         string(name: 'DEPLOY_COLOR', defaultValue: 'blue', description: '배포 색상')
     }
@@ -18,10 +23,11 @@ pipeline {
                     file(credentialsId: 'env-file', variable: 'ENV_FILE'),
                     file(credentialsId: 'app-yml', variable: 'APP_YML')
                 ]) {
-                    sh """
+                    sh '''
                         mkdir -p backend/src/main/resources
-                        cp \$APP_YML backend/src/main/resources/application.yml
-                    """
+                        cp "$APP_YML" backend/src/main/resources/application.yml
+                        cp "$ENV_FILE" backend/.env
+                    '''
                 }
             }
         }
@@ -32,31 +38,33 @@ pipeline {
 
                 dir('backend') {
                     withCredentials([
-                        file(credentialsId: 'env-file', variable: 'ENV_FILE')
+                        string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')
                     ]) {
                         withSonarQubeEnv('sonarqube') {
-                            sh '''#!/bin/bash
-                                echo "📄 Copying .env file..."
-                                cp "$ENV_FILE" .env
-                                ls -al .env || { echo "❌ .env not found"; exit 1; }
+                            def scannerHome = tool 'sonarqubeScanner'
+
+                            sh """#!/bin/bash
+                                echo "📄 Checking .env..."
+                                ls -al .env || { echo '❌ .env not found'; exit 1; }
 
                                 echo "🌿 Loading environment variables..."
                                 set -o allexport
                                 source .env
                                 set +o allexport
 
-                                echo "🔨 Building with Gradle..."
+                                echo "🔨 Running Gradle build..."
                                 chmod +x gradlew
                                 ./gradlew build
 
                                 echo "🔍 Running SonarQube analysis..."
-                                sonar-scanner \
-                                  -Dsonar.projectKey=q-generator-be \
-                                  -Dsonar.sources=src/main/java \
-                                  -Dsonar.projectBaseDir=. \
-                                  -Dsonar.exclusions=**/test/** \
-                                  -Dsonar.login=$SONAR_AUTH_TOKEN
-                            '''
+                                export PATH=\$PATH:${scannerHome}/bin
+                                sonar-scanner \\
+                                  -Dsonar.projectKey=q-generator-be \\
+                                  -Dsonar.sources=src/main/java \\
+                                  -Dsonar.projectBaseDir=. \\
+                                  -Dsonar.exclusions=**/test/** \\
+                                  -Dsonar.login=\$SONAR_AUTH_TOKEN
+                            """
                         }
                     }
                 }
