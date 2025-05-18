@@ -37,8 +37,6 @@ pipeline {
                 ]) {
                     dir('backend') {
                         sh """
-                            cp \$ENV_FILE .env
-
                             set -o allexport
                             . .env
                             set +o allexport
