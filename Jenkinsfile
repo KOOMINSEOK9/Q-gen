@@ -10,13 +10,6 @@ pipeline {
     }
 
     stages {
-        stage('Build Frontend') {
-            steps {
-                echo "🎨 Building Frontend Docker Image..."
-                sh "docker build -t frontend:${params.DEPLOY_COLOR} ./frontend"
-            }
-        }
-
         stage('Analyze Frontend with SonarQube') {
             steps {
                 echo "🔍 Analyzing Frontend with SonarQube..."
@@ -39,6 +32,13 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                echo "🎨 Building Frontend Docker Image..."
+                sh "docker build -t frontend:${params.DEPLOY_COLOR} ./frontend"
             }
         }
     }
