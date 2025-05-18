@@ -13,6 +13,7 @@ export interface TestQuestion {
   testId: number;
   type: 'choiceAns' | 'shortAns' | 'oxAns';
   question: string;
+  explanation: string[];
   option1: string;
   option2: string;
   option3: string;

@@ -12,6 +12,7 @@ interface QuestionFrameProps {
   isSubmitted: boolean;
   answerIndex: string;
   explanation: string;
+  explanationBox?: string[];
   onSelect: (value: string) => void;
   onSubmit: () => void;
   onNext: () => void;
@@ -28,6 +29,7 @@ function QuestionFrame({
   isSubmitted,
   answerIndex,
   explanation,
+  explanationBox,
   onSelect,
   onSubmit,
   onNext,
@@ -105,8 +107,8 @@ function QuestionFrame({
   // OX 문제 렌더링
   const renderOXQuestion = () => {
     return (
-      <div className='flex gap-6 justify-center h-full'>
-        {['O', 'X'].map((option) => {
+      <div className='flex gap-6 justify-center'>
+        {['O', 'X'].map((option, idx) => {
           let optionStyle = 'border-gray-200';
           let textStyle = '';
           if (isSubmitted) {
@@ -124,11 +126,13 @@ function QuestionFrame({
             optionStyle = 'border-[#754AFF]/20 bg-[#754AFF]/10 py-3 border-2';
             textStyle = 'font-base';
           }
+          // 마지막(X) 버튼에만 mb-2 추가
+          const isLast = idx === 1;
           return (
             <div
               key={option}
               onClick={() => !isSubmitted && onSelect(option)}
-              className={`w-full border-1 rounded-3xl cursor-pointer transition-colors flex items-center justify-center text-9xl font-base ${optionStyle}`}
+              className={`w-full h-[314px] border-1 rounded-3xl cursor-pointer transition-colors flex items-center justify-center text-9xl font-base ${optionStyle} ${isLast ? 'mb-2' : ''}`}
             >
               <span className={textStyle}>{option}</span>
             </div>
@@ -266,23 +270,55 @@ function QuestionFrame({
       </div>
       <div className='flex-1 min-h-0 flex flex-col'>
         {/* 문제 내용 */}
-        <div className='mb-6'>
+        <div className='mb-4'>
           <h2 className='text-lg font-bold'>{question}</h2>
+          {explanationBox && explanationBox.length > 0 && (
+            <div className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0'>
+              {explanationBox.map((exp, idx) => (
+                <div key={idx} className='flex items-center'>
+                  <span className='mr-2 text-gray-700'>•</span>
+                  {exp}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         {/* 문제 유형에 따른 렌더링 */}
         {renderQuestion()}
-        {/* 정답 표시 */}
-        {renderAnswer()}
-        {/* 해설: API 응답이 온 경우에만 보임 */}
-        {answerIndex && explanation && (
-          <SimpleBar
-            className='my-4 h-full min-h-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'
-            style={{ opacity: 1 }}
-          >
-            <div className='font-semibold mb-2 text-gray-700'>해설</div>
-            <div className='text-gray-700'>{explanation}</div>
-          </SimpleBar>
-        )}
+        {/* 주관식일 때만 정답 박스 별도 표시 */}
+        {convertQuestionType(questionType || '') === 'shortAns' &&
+          renderAnswer()}
+        {/* 해설: 주관식은 제출 후에만, 나머지는 제출 후 바로 */}
+        {(() => {
+          const convertedType = convertQuestionType(questionType || '');
+          const hasExplanationBox = explanationBox && explanationBox.length > 0;
+          const maxHClass = hasExplanationBox ? 'max-h-64' : 'max-h-52';
+          if (convertedType === 'shortAns') {
+            return (
+              isSubmitted && (
+                <SimpleBar
+                  className='mt-2 mb-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6 w-full overflow-auto'
+                  style={{ opacity: 1, boxSizing: 'border-box' }}
+                >
+                  <div className='font-semibold mb-2 text-gray-700'>해설</div>
+                  <div className='text-gray-700'>{explanation}</div>
+                </SimpleBar>
+              )
+            );
+          } else {
+            return (
+              isSubmitted && (
+                <SimpleBar
+                  className='mt-2 mb-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6 w-full overflow-auto'
+                  style={{ opacity: 1, boxSizing: 'border-box' }}
+                >
+                  <div className='font-semibold mb-2 text-gray-700'>해설</div>
+                  <div className='text-gray-700'>{explanation}</div>
+                </SimpleBar>
+              )
+            );
+          }
+        })()}
       </div>
     </div>
   );

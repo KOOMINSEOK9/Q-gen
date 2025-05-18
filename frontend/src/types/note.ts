@@ -58,6 +58,7 @@ export interface NoteTestDetail {
   memo: string | null;
   testHistoryList: NoteTestHistory[];
   incorrectCount: number;
+  explanation?: string[];
 }
 
 export interface GetNoteTestDetailResponse {

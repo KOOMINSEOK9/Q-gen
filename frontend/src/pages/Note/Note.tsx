@@ -245,6 +245,7 @@ const Note = () => {
                 isSubmitted={isSubmitted}
                 answerIndex={answerIndex}
                 explanation={currentTestDetail.comment}
+                explanationBox={currentTestDetail.explanation}
                 incorrectCount={currentTestDetail.incorrectCount}
                 onNext={handleNext}
                 onPrev={handlePrev}

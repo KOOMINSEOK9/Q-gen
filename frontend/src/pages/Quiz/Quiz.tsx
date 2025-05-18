@@ -220,6 +220,7 @@ function QuizPage() {
             currentQuestion?.type as 'choiceAns' | 'shortAns' | 'oxAns'
           }
           isCorrect={resultArr[current]?.correct}
+          explanationBox={currentQuestion?.explanation}
         />
       </div>
       {/* ExamSidebar (1/5) */}
