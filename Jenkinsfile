@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        sonarQubeScanner 'sonarqubeScanner' // Jenkins에 등록한 SonarScanner 이름
+    }
+
     parameters {
         string(name: 'DEPLOY_COLOR', defaultValue: 'blue', description: '배포 색상')
     }
@@ -32,32 +36,33 @@ pipeline {
 
                 dir('backend') {
                     withCredentials([
-                        file(credentialsId: 'env-file', variable: 'ENV_FILE'),
-                        string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')
+                        file(credentialsId: 'env-file', variable: 'ENV_FILE')
                     ]) {
-                        sh '''#!/bin/bash
-                            echo "📄 Copying .env file..."
-                            cp "$ENV_FILE" .env
-                            ls -al .env || { echo "❌ .env not found"; exit 1; }
+                        withSonarQubeEnv('SonarQube') { // Jenkins에 등록된 SonarQube 서버 이름
+                            sh '''#!/bin/bash
+                                echo "📄 Copying .env file..."
+                                cp "$ENV_FILE" .env
+                                ls -al .env || { echo "❌ .env not found"; exit 1; }
 
-                            echo "🌿 Loading environment variables..."
-                            set -o allexport
-                            source .env
-                            set +o allexport
+                                echo "🌿 Loading environment variables..."
+                                set -o allexport
+                                source .env
+                                set +o allexport
 
-                            echo "🔨 Building with Gradle..."
-                            chmod +x gradlew
-                            ./gradlew build
+                                echo "🔨 Building with Gradle..."
+                                chmod +x gradlew
+                                ./gradlew build
 
-                            echo "🔍 Running SonarQube analysis..."
-                            sonar-scanner \
-                              -Dsonar.projectKey=q-generator-be \
-                              -Dsonar.sources=src/main/java \
-                              -Dsonar.projectBaseDir=. \
-                              -Dsonar.exclusions=**/test/** \
-                              -Dsonar.host.url=https://sonar.q-generator.com \
-                              -Dsonar.login=$SONAR_TOKEN
-                        '''
+                                echo "🔍 Running SonarQube analysis..."
+                                sonar-scanner \
+                                  -Dsonar.projectKey=q-generator-be \
+                                  -Dsonar.sources=src/main/java \
+                                  -Dsonar.projectBaseDir=. \
+                                  -Dsonar.exclusions=**/test/** \
+                                  -Dsonar.host.url=$SONAR_HOST_URL \
+                                  -Dsonar.login=$SONAR_AUTH_TOKEN
+                            '''
+                        }
                     }
                 }
             }
