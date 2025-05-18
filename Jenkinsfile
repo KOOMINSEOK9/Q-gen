@@ -49,7 +49,7 @@ pipeline {
                                 chmod +x gradlew
                                 ./gradlew build
 
-                                echo "🔍 Running SonarQube analysis..."
+                                echo "🔍 Running SonarQube analysis (Backend)..."
                                 export PATH=\$PATH:${scannerHome}/bin
                                 sonar-scanner \\
                                   -Dsonar.projectKey=q-generator-be \\
@@ -57,6 +57,30 @@ pipeline {
                                   -Dsonar.projectBaseDir=. \\
                                   -Dsonar.java.binaries=build/classes/java/main \\
                                   -Dsonar.exclusions=**/test/**
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build & Analyze AI') {
+            steps {
+                echo "🧠 Running SonarQube analysis for AI..."
+
+                dir('ai') {
+                    withSonarQubeEnv('sonarqube') {
+                        script {
+                            def scannerHome = tool name: 'sonarqubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+
+                            sh """#!/bin/bash
+                                echo "🔍 Running SonarQube analysis (AI)..."
+                                export PATH=\$PATH:${scannerHome}/bin
+                                sonar-scanner \\
+                                  -Dsonar.projectKey=q-generator-ai \\
+                                  -Dsonar.sources=. \\
+                                  -Dsonar.language=py \\
+                                  -Dsonar.exclusions=**/__pycache__/**,**/tests/**
                             """
                         }
                     }
