@@ -574,7 +574,7 @@ export default function List() {
                   onFileUpload={handleFileUpload}
                   onLinkSubmit={handleLinkSubmit}
                   onTextSubmit={handleTextSubmit}
-                  workBookId={numericWorkBookId || 0} // 추가
+                  workBookId={numericWorkBookId || 0}
                 />
               </aside>
             )}

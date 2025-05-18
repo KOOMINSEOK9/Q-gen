@@ -28,7 +28,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       {/* Backdrop */}
       <div className='absolute inset-0 bg-black/40' onClick={onClose} />
       {/* Modal Content */}
-      <div className='relative bg-white rounded-2xl w-full max-w-xl p-8 shadow-lg z-10'>
+      <div className='relative bg-white rounded-2xl w-full max-w-3xl p-8 shadow-lg z-10 min-h-[80dvh]'>
         {/* Modal Header */}
         <div className='flex items-center justify-end absolute top-8 right-8'>
           {/* <h2 className='text-xl font-bold'>자료 업로드</h2> */}

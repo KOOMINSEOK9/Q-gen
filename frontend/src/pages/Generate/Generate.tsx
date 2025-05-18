@@ -96,6 +96,18 @@ const Generate = () => {
     try {
       await uploadDocument(file, numericWorkBookId);
       await fetchDocuments();
+
+      // 파일 목록이 최신화된 후, 마지막 파일을 자동 선택
+      setUploadedFiles((files) => {
+        if (files.length === 0) return files;
+        const lastFile = files[files.length - 1];
+        setSelectedDocumentIds((prev) =>
+          prev.includes(Number(lastFile.id))
+            ? prev
+            : [...prev, Number(lastFile.id)]
+        );
+        return files;
+      });
     } catch (err) {
       console.error('파일 업로드 실패:', err);
       alert('파일 업로드에 실패했습니다.');
@@ -190,24 +202,49 @@ const Generate = () => {
         <div className='flex justify-between items-center w-full'>
           <GradientTitle highlight='시험지' after='생성하기' />
           <div className='flex gap-3'>
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <Button
+                onClick={handleGenerate}
+                variant='filled'
+                className={`px-6 py-3 text-lg font-semibold relative overflow-hidden
+                ${totalProblems !== 0 && selectedDocumentIds.length !== 0 && !isLoading ? 'btn-gradient-move text-white' : ''}
+              `}
+                disabled={
+                  totalProblems === 0 ||
+                  selectedDocumentIds.length === 0 ||
+                  isLoading
+                }
+              >
+                {isLoading ? '생성 중...' : '시험지 생성하기'}
+              </Button>
+              {(totalProblems === 0 || selectedDocumentIds.length === 0) &&
+                !isLoading && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      cursor: 'not-allowed',
+                      zIndex: 10,
+                    }}
+                    onClick={() => {
+                      if (selectedDocumentIds.length === 0) {
+                        alert('자료를 업로드하여 선택해주세요.');
+                      } else if (totalProblems === 0) {
+                        alert('문제 유형을 선택해주세요.');
+                      }
+                    }}
+                  />
+                )}
+            </div>
             <Button
               variant='outlined'
               className='px-6 py-2 text-lg font-semibold relative overflow-hidden'
               onClick={() => navigate(`/list/${numericWorkBookId}`)}
             >
               취소
-            </Button>
-            <Button
-              onClick={handleGenerate}
-              variant='filled'
-              className={`px-6 py-3 text-lg font-semibold relative overflow-hidden
-              ${totalProblems !== 0 && uploadedFiles.length !== 0 && !isLoading ? 'btn-gradient-move text-white' : ''}
-            `}
-              disabled={
-                totalProblems === 0 || uploadedFiles.length === 0 || isLoading
-              }
-            >
-              {isLoading ? '생성 중...' : '시험지 생성하기'}
             </Button>
           </div>
         </div>
@@ -231,7 +268,7 @@ const Generate = () => {
 
         {/* File Upload and List Section */}
         <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-4 '>
-          <div className='flex md:col-span-2 p-6 bg-white rounded-3xl shadow-sm'>
+          <div className='flex md:col-span-2 p-6 bg-white rounded-3xl shadow-sm min-h-[80dvh]'>
             <FileUploader
               onFileUpload={handleFileUpload}
               onLinkSubmit={handleLinkSubmit}

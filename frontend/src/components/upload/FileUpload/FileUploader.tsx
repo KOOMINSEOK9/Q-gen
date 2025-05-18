@@ -98,7 +98,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
   return (
     <div
-      className={`flex flex-col min-h-[80dvh] w-full select-none ${className}`}
+      className={`flex flex-col min-h-[80dvh] w-full select-none h-full ${className}`}
     >
       <style>{pulseAnimation}</style>
       {/* 전역 스피너 */}
@@ -109,10 +109,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         문제 생성에 사용할 자료를 업로드하세요.
       </p>
 
-      <div className='flex-1 flex flex-col gap-4'>
-        {/* 파일 선택 영역 - flex-1 */}
+      <div className='flex flex-col gap-4 h-full'>
+        {/* 파일 선택 영역 */}
         <div
-          className={`border-2 border-dashed rounded-lg p-12 mb-0 flex flex-col items-center justify-center min-h-[200px] flex-1 cursor-pointer group transition-all duration-300 select-none
+          className={`basis-2/3 border-2 border-dashed rounded-lg p-12 mb-0 flex flex-col items-center justify-center cursor-pointer group transition-all duration-300 select-none
             ${
               isDragging
                 ? 'border-purple-500'
@@ -153,7 +153,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           />
         </div>
 
-        <div className='flex flex-row gap-4'>
+        <div className='flex flex-row gap-4 basis-1/3'>
           {/* Link Input Option */}
           <div
             className='bg-white rounded-lg p-8 border border-gray-200 hover:border-gray-300 flex flex-col items-center flex-1 cursor-pointer group select-none'

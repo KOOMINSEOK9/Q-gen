@@ -8,6 +8,7 @@ import UploadedListDetailModal from './UploadedDetailModal';
 import PDFPreviewModal from './PDFPreviewModal';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
+import mammoth from 'mammoth';
 
 interface UploadedFile {
   id: string;
@@ -51,6 +52,9 @@ function UploadedList({
   const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const [pdfFileName, setPdfFileName] = useState<string>('');
+  const [docxHtml, setDocxHtml] = useState<string | null>(null);
+  const [docxPreviewOpen, setDocxPreviewOpen] = useState(false);
+  const [docxFileName, setDocxFileName] = useState<string>('');
 
   // 파일 상세 조회 핸들러
   const handleDetailOpen = async (file: UploadedFile) => {
@@ -84,27 +88,54 @@ function UploadedList({
     }
   };
 
-  const handlePreviewPdf = async (file: UploadedFile) => {
-    try {
-      const blob = await downloadDocument(Number(file.id));
-      const url = window.URL.createObjectURL(
-        new Blob([blob], { type: 'application/pdf' })
-      );
-      setPdfBlobUrl(url);
-      setPdfFileName(
-        file.title.endsWith('.pdf') ? file.title : file.title + '.pdf'
-      );
-      setPdfPreviewOpen(true);
-    } catch (e) {
-      alert('PDF 미리보기에 실패했습니다.');
+  // 파일 미리보기 핸들러 (PDF, DOCX)
+  const handlePreviewDocument = async (
+    file: UploadedFile,
+    fileType: 'pdf' | 'docx'
+  ) => {
+    if (fileType === 'docx') {
+      try {
+        const blob = await downloadDocument(Number(file.id));
+        const fileObj = new File([blob], file.title, {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        const reader = new FileReader();
+        reader.onload = async function (event) {
+          const arrayBuffer = event.target?.result;
+          if (arrayBuffer && typeof arrayBuffer !== 'string') {
+            const result = await mammoth.convertToHtml({ arrayBuffer });
+            setDocxHtml(result.value);
+            setDocxFileName(file.title);
+            setDocxPreviewOpen(true);
+          }
+        };
+        reader.readAsArrayBuffer(fileObj);
+      } catch (e) {
+        alert('docx 미리보기에 실패했습니다.');
+      }
+      return;
+    }
+    // PDF 기존 로직
+    if (fileType === 'pdf') {
+      try {
+        const blob = await downloadDocument(Number(file.id));
+        const url = window.URL.createObjectURL(
+          new Blob([blob], { type: 'application/pdf' })
+        );
+        setPdfBlobUrl(url);
+        setPdfFileName(file.title);
+        setPdfPreviewOpen(true);
+      } catch (e) {
+        alert('문서 미리보기에 실패했습니다.');
+      }
     }
   };
 
   return (
     <div className='flex-1 bg-white rounded-3xl shadow-sm '>
       <div className={twMerge('w-full space-y-4 py-6', className)}>
-        <div className='flex justify-between items-center'>
-          <h2 className='text-xl font-bold px-6'>업로드 된 자료</h2>
+        <div className='flex justify-between items-center px-6'>
+          <h2 className='text-xl font-bold'>업로드 된 자료</h2>
           {showAddButton && (
             <Button
               variant='filled'
@@ -153,11 +184,33 @@ function UploadedList({
                         : 'border-gray-200 bg-white hover:border-gray-300'
                     }`}
                   onClick={() => {
-                    if (file.type.toLowerCase().includes('pdf')) {
-                      handlePreviewPdf(file);
-                    } else {
-                      handleDetailOpen(file);
+                    const type = (file.type || '').toLowerCase();
+                    const title = (file.title || '').toLowerCase();
+                    const ext = title.split('.').pop();
+
+                    // DOCX 분기
+                    if (
+                      ext === 'docx' ||
+                      type.includes('docx') ||
+                      type ===
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    ) {
+                      handlePreviewDocument(file, 'docx');
+                      return;
                     }
+
+                    // PDF 분기
+                    if (
+                      ext === 'pdf' ||
+                      type.includes('pdf') ||
+                      type === 'application/pdf'
+                    ) {
+                      handlePreviewDocument(file, 'pdf');
+                      return;
+                    }
+
+                    // 그 외는 상세보기
+                    handleDetailOpen(file);
                   }}
                 >
                   <div className='flex items-start gap-3'>
@@ -215,6 +268,7 @@ function UploadedList({
         detailData={detailData}
         isLoading={detailLoading}
       />
+      {/* PDF 미리보기 모달 */}
       <PDFPreviewModal
         isOpen={pdfPreviewOpen}
         onClose={handleClosePreview}
@@ -222,6 +276,45 @@ function UploadedList({
         onDownload={handleDownloadFromPreview}
         fileName={pdfFileName}
       />
+      {/* DOCX 미리보기 모달 */}
+      {docxPreviewOpen && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center'>
+          <div
+            className='absolute inset-0 bg-black/40'
+            onClick={() => setDocxPreviewOpen(false)}
+          />
+          <div className='relative bg-white rounded-2xl w-[80vw] h-[90vh] p-8 flex flex-col items-center shadow-lg z-10 overflow-auto'>
+            <div className='w-full flex items-center justify-between mb-4'>
+              <h2 className='text-xl font-bold'>
+                {docxFileName || 'DOCX 미리보기'}
+              </h2>
+              <button
+                onClick={() => setDocxPreviewOpen(false)}
+                className='p-1 rounded-full cursor-pointer'
+              >
+                <IconBox name='x' size={20} className='text-gray-400' />
+              </button>
+            </div>
+            <div
+              className='w-full flex-1 overflow-auto prose prose-sm max-w-none'
+              style={{
+                minHeight: 200,
+                background: '#fafafa',
+                borderRadius: 8,
+                padding: 16,
+              }}
+            >
+              {docxHtml ? (
+                <div dangerouslySetInnerHTML={{ __html: docxHtml }} />
+              ) : (
+                <div className='text-gray-400 text-center py-8'>
+                  내용을 불러오는 중입니다...
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

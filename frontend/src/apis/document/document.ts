@@ -39,6 +39,12 @@ export const deleteDocumentByDocumentId = async (documentId: number) => {
 // 파일 상세 조회
 export const fetchDocumentByDocumentId = async (documentId: number) => {
   const response = await axiosInstance.get(`/api/document/${documentId}`);
+  console.log(
+    '[DOC DETAIL API] documentId:',
+    documentId,
+    'response:',
+    response.data
+  );
   return response.data.data;
 };
 

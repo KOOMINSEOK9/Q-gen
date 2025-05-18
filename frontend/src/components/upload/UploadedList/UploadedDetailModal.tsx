@@ -24,7 +24,7 @@ const UploadedListDetailModal: React.FC<UploadedListDetailModalProps> = ({
       {/* Backdrop */}
       <div className='absolute inset-0 bg-black/30' onClick={onClose} />
       {/* Modal */}
-      <div className='relative bg-white rounded-2xl w-[80vw] max-h-[90vh] p-8 flex flex-col items-center shadow-lg z-10'>
+      <div className='relative bg-white rounded-2xl w-[80vw] h-[90vh] p-8 flex flex-col items-center shadow-lg z-10'>
         {/* Header */}
         <div className='w-full flex items-center justify-between mb-6'>
           <h2 className='text-xl font-bold'>자료 상세 정보</h2>
