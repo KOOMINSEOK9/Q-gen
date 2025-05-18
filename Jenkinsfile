@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Jenkins에 등록한 SonarQube Scanner 툴 이름
-        sonarQubeScanner 'sonarqubeScanner'
-    }
-
     parameters {
         string(name: 'DEPLOY_COLOR', defaultValue: 'blue', description: '배포 색상')
     }
@@ -41,30 +36,32 @@ pipeline {
                         string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')
                     ]) {
                         withSonarQubeEnv('sonarqube') {
-                            def scannerHome = tool 'sonarqubeScanner'
+                            script {
+                                def scannerHome = tool name: 'sonarqubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
-                            sh """#!/bin/bash
-                                echo "📄 Checking .env..."
-                                ls -al .env || { echo '❌ .env not found'; exit 1; }
+                                sh """#!/bin/bash
+                                    echo "📄 Checking .env..."
+                                    ls -al .env || { echo '❌ .env not found'; exit 1; }
 
-                                echo "🌿 Loading environment variables..."
-                                set -o allexport
-                                source .env
-                                set +o allexport
+                                    echo "🌿 Loading environment variables..."
+                                    set -o allexport
+                                    source .env
+                                    set +o allexport
 
-                                echo "🔨 Running Gradle build..."
-                                chmod +x gradlew
-                                ./gradlew build
+                                    echo "🔨 Running Gradle build..."
+                                    chmod +x gradlew
+                                    ./gradlew build
 
-                                echo "🔍 Running SonarQube analysis..."
-                                export PATH=\$PATH:${scannerHome}/bin
-                                sonar-scanner \\
-                                  -Dsonar.projectKey=q-generator-be \\
-                                  -Dsonar.sources=src/main/java \\
-                                  -Dsonar.projectBaseDir=. \\
-                                  -Dsonar.exclusions=**/test/** \\
-                                  -Dsonar.login=\$SONAR_AUTH_TOKEN
-                            """
+                                    echo "🔍 Running SonarQube analysis..."
+                                    export PATH=\$PATH:${scannerHome}/bin
+                                    sonar-scanner \\
+                                      -Dsonar.projectKey=q-generator-be \\
+                                      -Dsonar.sources=src/main/java \\
+                                      -Dsonar.projectBaseDir=. \\
+                                      -Dsonar.exclusions=**/test/** \\
+                                      -Dsonar.login=\$SONAR_AUTH_TOKEN
+                                """
+                            }
                         }
                     }
                 }
