@@ -203,7 +203,7 @@ function Test({
         {/* 문제 유형에 따른 렌더링 */}
         {renderQuestion()}
         {/* 해설 */}
-        <SimpleBar className='my-4 h-full min-h-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6'>
+        <SimpleBar className='mt-2 mb-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6 w-full overflow-auto'>
           <div className='font-semibold mb-2 text-gray-700'>해설</div>
           <div className='text-gray-700'>{explanation}</div>
         </SimpleBar>
