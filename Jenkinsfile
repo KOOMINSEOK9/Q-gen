@@ -35,24 +35,29 @@ pipeline {
                         file(credentialsId: 'env-file', variable: 'ENV_FILE'),
                         string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')
                     ]) {
-                        sh """
-                            cp \$ENV_FILE .env
+                        sh '''#!/bin/bash
+                            echo "📄 Copying .env file..."
+                            cp "$ENV_FILE" .env
+                            ls -al .env || { echo "❌ .env not found"; exit 1; }
 
+                            echo "🌿 Loading environment variables..."
                             set -o allexport
-                            . .env
+                            source .env
                             set +o allexport
 
+                            echo "🔨 Building with Gradle..."
                             chmod +x gradlew
                             ./gradlew build
 
-                            sonar-scanner \\
-                              -Dsonar.projectKey=q-generator-be \\
-                              -Dsonar.sources=src/main/java \\
-                              -Dsonar.projectBaseDir=. \\
-                              -Dsonar.exclusions=**/test/** \\
-                              -Dsonar.host.url=https://sonar.q-generator.com \\
-                              -Dsonar.login=\$SONAR_TOKEN
-                        """
+                            echo "🔍 Running SonarQube analysis..."
+                            sonar-scanner \
+                              -Dsonar.projectKey=q-generator-be \
+                              -Dsonar.sources=src/main/java \
+                              -Dsonar.projectBaseDir=. \
+                              -Dsonar.exclusions=**/test/** \
+                              -Dsonar.host.url=https://sonar.q-generator.com \
+                              -Dsonar.login=$SONAR_TOKEN
+                        '''
                     }
                 }
             }
