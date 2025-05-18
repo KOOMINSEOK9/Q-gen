@@ -19,7 +19,7 @@ export const useAuth = () => {
       console.log('userinfo 응답:', response.data);
       const login = response.data?.data?.login === true;
       const userId = response.data?.data?.userId ?? null;
-      const userName = response.data?.data?.userName ?? null;
+      const userName = response.data?.data?.nickname ?? null;
       setUserName(userName);
       console.log('setIsLoggedIn:', login, 'setUserId:', userId);
       setIsLoggedIn(login);
