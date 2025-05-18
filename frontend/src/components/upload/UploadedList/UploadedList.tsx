@@ -9,6 +9,7 @@ import PDFPreviewModal from './PDFPreviewModal';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import mammoth from 'mammoth';
+import Swal from 'sweetalert2';
 
 interface UploadedFile {
   id: string;
@@ -34,7 +35,7 @@ interface UploadedListProps {
 
 function UploadedList({
   files,
-  maxFiles = 10,
+  maxFiles = 30,
   onDelete,
   className,
   isLoading = false,
@@ -111,7 +112,12 @@ function UploadedList({
         };
         reader.readAsArrayBuffer(fileObj);
       } catch (e) {
-        alert('docx 미리보기에 실패했습니다.');
+        Swal.fire({
+          icon: 'error',
+          title: 'docx 미리보기에 실패했습니다.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
       }
       return;
     }
@@ -126,7 +132,12 @@ function UploadedList({
         setPdfFileName(file.title);
         setPdfPreviewOpen(true);
       } catch (e) {
-        alert('문서 미리보기에 실패했습니다.');
+        Swal.fire({
+          icon: 'error',
+          title: '문서 미리보기에 실패했습니다.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
       }
     }
   };
@@ -193,6 +204,60 @@ function UploadedList({
         {/* 파일 목록 */}
         <SimpleBar className='h-[50dvh] px-6'>
           <div className='space-y-3'>
+            {/* 전체 선택 체크박스 */}
+            {!showAddButton && safeFiles.length > 0 && (
+              <div
+                className='flex items-center ml-1 my-3 cursor-pointer select-none'
+                onClick={() => {
+                  const allSelected =
+                    selectedIds.length === safeFiles.length &&
+                    safeFiles.length > 0;
+                  if (allSelected) {
+                    // 전체 해제
+                    safeFiles.forEach((file) => {
+                      if (selectedIds.includes(file.id)) {
+                        onSelect?.(file.id);
+                      }
+                    });
+                  } else {
+                    // 전체 선택
+                    safeFiles.forEach((file) => {
+                      if (!selectedIds.includes(file.id)) {
+                        onSelect?.(file.id);
+                      }
+                    });
+                  }
+                }}
+              >
+                <div
+                  className={`relative w-5 h-5 mr-2 flex-shrink-0 rounded border-2 transition-colors duration-200
+                    ${
+                      selectedIds.length === safeFiles.length &&
+                      safeFiles.length > 0
+                        ? 'border-purple-500 bg-purple-500'
+                        : 'border-gray-300 hover:border-purple-300 bg-white'
+                    }
+                  `}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {/* 체크됨: 모두 선택일 때만 */}
+                  {selectedIds.length === safeFiles.length &&
+                    safeFiles.length > 0 && (
+                      <IconBox
+                        name='checkW'
+                        size={16}
+                        className='absolute inset-0 m-auto text-white'
+                      />
+                    )}
+                  {/* 인디터미넌트(일부만 선택)는 제거 */}
+                </div>
+                <span className='text-base'>전체 선택</span>
+              </div>
+            )}
             {isLoading ? (
               <div className='text-center text-purple-500 py-8'>로딩 중...</div>
             ) : !safeFiles || safeFiles.length === 0 ? (

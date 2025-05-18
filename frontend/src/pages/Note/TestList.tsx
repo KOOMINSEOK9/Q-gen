@@ -20,7 +20,13 @@ function TestList({
   return (
     <div className='flex flex-col'>
       <h3 className='text-lg font-bold mb-4'>문제 목록</h3>
-      <div className='grid grid-cols-5 gap-2'>
+      <div
+        className='grid grid-cols-5 gap-2'
+        style={{
+          gridAutoRows: '2.5rem', // 버튼 한 줄 높이
+          height: 'calc(2.5rem * 6 + 0.5rem * 5)', // 6행, gap 5개
+        }}
+      >
         {Array.from({ length: Math.min(totalTests) }, (_, i) => i + 1).map(
           (number, idx) => {
             const isSelected = number === currentNumber;

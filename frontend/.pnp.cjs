@@ -80,6 +80,7 @@ const RAW_RUNTIME_STATE =
           ["simplebar-react", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:3.3.1"],\
           ["slick-carousel", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:1.8.1"],\
           ["storybook", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:8.6.12"],\
+          ["sweetalert2", "npm:11.21.1"],\
           ["tailwind-merge", "npm:3.2.0"],\
           ["tailwind-scrollbar", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:4.0.2"],\
           ["tailwindcss", "npm:4.1.5"],\
@@ -5741,6 +5742,7 @@ const RAW_RUNTIME_STATE =
           ["simplebar-react", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:3.3.1"],\
           ["slick-carousel", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:1.8.1"],\
           ["storybook", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:8.6.12"],\
+          ["sweetalert2", "npm:11.21.1"],\
           ["tailwind-merge", "npm:3.2.0"],\
           ["tailwind-scrollbar", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:4.0.2"],\
           ["tailwindcss", "npm:4.1.5"],\
@@ -9204,6 +9206,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/svg-parser-npm-2.0.4-1b0b6afbe9-02f6cb155d.zip/node_modules/svg-parser/",\
         "packageDependencies": [\
           ["svg-parser", "npm:2.0.4"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["sweetalert2", [\
+      ["npm:11.21.1", {\
+        "packageLocation": "./.yarn/cache/sweetalert2-npm-11.21.1-ea2bbea11b-3a33b311fa.zip/node_modules/sweetalert2/",\
+        "packageDependencies": [\
+          ["sweetalert2", "npm:11.21.1"]\
         ],\
         "linkType": "HARD"\
       }]\

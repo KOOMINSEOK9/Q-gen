@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Test from './Test';
 import TestList from './TestList';
 import Button from '@/components/common/Button/Button';
@@ -27,13 +27,15 @@ const Note = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [testDetails, setTestDetails] = useState<NoteTestDetail[]>([]);
+  const simpleBarRef = useRef<any>(null);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // 시험지 목록 불러오기
   useEffect(() => {
     const fetchTestPapers = async () => {
       try {
         const res = await getNoteTestPapers(Number(workBookId));
-        setTestPapers(res.data);
+        setTestPapers(res.data.reverse());
       } catch (e) {
         setTestPapers([]);
         setError('시험지 목록을 불러오지 못했습니다.');
@@ -84,6 +86,15 @@ const Note = () => {
     setCurrentTestDetail(testDetails[currentNumber - 1] || null);
   }, [testDetails, currentNumber]);
 
+  useEffect(() => {
+    if (buttonRefs.current[activeTestPaperIndex]) {
+      buttonRefs.current[activeTestPaperIndex]?.scrollIntoView({
+        block: 'nearest',
+        behavior: 'auto',
+      });
+    }
+  }, [activeTestPaperIndex, testPapers.length]);
+
   const handleOptionSelect = (index: number) => {
     setSelectedOption(index);
   };
@@ -111,29 +122,35 @@ const Note = () => {
   return (
     <div className='flex gap-4 h-full'>
       {/* TestList (1/5) */}
-      <div style={{ flex: 1 }} className='flex flex-col gap-4 h-full'>
-        <SimpleBar
-          style={{ flex: 3.3, height: '0', minHeight: 0 }}
-          className='bg-white rounded-3xl p-6 shadow-sm'
-        >
-          <h3 className='text-lg font-bold mb-4'>내가 푼 시험지 List</h3>
-
-          <div className='flex flex-col gap-3'>
-            {testPapers.map((exam, idx) => (
-              <Button
-                key={exam.testPaperId}
-                variant='filled'
-                className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/10 hover:border-transparent'}`}
-                onClick={() => {
-                  setActiveTestPaperIndex(idx);
-                  navigate(`/note/${workBookId}/${exam.testPaperId}`);
-                }}
-              >
-                {exam.title}
-              </Button>
-            ))}
-          </div>
-        </SimpleBar>
+      <div style={{ flex: 1 }} className='flex flex-col gap-4 h-full min-h-0'>
+        <div className='bg-white rounded-3xl py-6 shadow-sm h-full min-h-0 flex flex-col'>
+          <h3 className='text-lg font-bold px-6 mb-4'>내가 푼 시험지 List</h3>
+          <SimpleBar
+            style={{ flex: 1, height: '100%', minHeight: 0 }}
+            ref={simpleBarRef}
+          >
+            <div className='flex flex-col gap-3 px-6'>
+              {testPapers.map((exam, idx) => (
+                <Button
+                  key={exam.testPaperId}
+                  ref={(el) => {
+                    if (el) {
+                      buttonRefs.current[idx] = el;
+                    }
+                  }}
+                  variant='filled'
+                  className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/10 hover:border-transparent'}`}
+                  onClick={() => {
+                    setActiveTestPaperIndex(idx);
+                    navigate(`/note/${workBookId}/${exam.testPaperId}`);
+                  }}
+                >
+                  {exam.title}
+                </Button>
+              ))}
+            </div>
+          </SimpleBar>
+        </div>
 
         <div className='bg-white rounded-3xl p-6 shadow-sm'>
           <TestList
@@ -146,7 +163,7 @@ const Note = () => {
       </div>
 
       {/* Test (3/5) */}
-      <div style={{ flex: 3 }} className='flex flex-col h-full min-h-0'>
+      <div style={{ flex: 2.8 }} className='flex flex-col h-full min-h-0'>
         {loading ? (
           <div className='flex items-center justify-center h-full'>
             불러오는 중...
@@ -263,7 +280,7 @@ const Note = () => {
       </div>
 
       {/* Note (1/5) */}
-      <div style={{ flex: 1 }} className='flex flex-col h-full min-h-0'>
+      <div style={{ flex: 1.2 }} className='flex flex-col h-full min-h-0'>
         {currentTestDetail ? (
           <Memo
             testId={currentTestDetail.testId}

@@ -4246,6 +4246,7 @@ __metadata:
     simplebar-react: "npm:^3.3.1"
     slick-carousel: "npm:^1.8.1"
     storybook: "npm:8.6.12"
+    sweetalert2: "npm:^11.21.1"
     tailwind-merge: "npm:^3.2.0"
     tailwind-scrollbar: "npm:^4.0.2"
     tailwindcss: "npm:^4.1.4"
@@ -7271,6 +7272,13 @@ __metadata:
   version: 2.0.4
   resolution: "svg-parser@npm:2.0.4"
   checksum: 10c0/02f6cb155dd7b63ebc2f44f36365bc294543bebb81b614b7628f1af3c54ab64f7e1cec20f06e252bf95bdde78441ae295a412c68ad1678f16a6907d924512b7a
+  languageName: node
+  linkType: hard
+
+"sweetalert2@npm:^11.21.1":
+  version: 11.21.1
+  resolution: "sweetalert2@npm:11.21.1"
+  checksum: 10c0/3a33b311fae4a5d704d950c6bb49d21973416e1046308712071869853bb1419e02f6004e3fa78ef0d64f8ad98cc2122455dc95c4686dea23e1dc57ca16052d53
   languageName: node
   linkType: hard
 

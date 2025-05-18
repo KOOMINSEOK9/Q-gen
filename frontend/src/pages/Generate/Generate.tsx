@@ -10,6 +10,7 @@ import { useGenerateStore } from '@/stores/generateStore';
 import ProblemTypeSelector from './TestTypeSelector';
 import GradientTitle from '@/components/common/GradientTitle/GradientTitle';
 import { useDocuments } from '@/hooks/useDocument';
+import Swal from 'sweetalert2';
 
 const Generate = () => {
   const { workBookId } = useParams();
@@ -30,13 +31,7 @@ const Generate = () => {
   }, [testTypes]);
 
   const { isLoading, generatePaper } = useGeneration();
-  // const { isLoading: isUploading, handleUpload, handleDelete } = useUpload();
-  const {
-    getDocuments,
-    deleteDocument,
-    uploadDocument,
-    // isLoading: isDocumentLoading,
-  } = useDocuments();
+  const { getDocuments, deleteDocument, uploadDocument } = useDocuments();
   const setGenerated = useGenerateStore((state) => state.setGenerated);
 
   const fetchDocuments = useCallback(async () => {
@@ -110,7 +105,12 @@ const Generate = () => {
       });
     } catch (err) {
       console.error('파일 업로드 실패:', err);
-      alert('파일 업로드에 실패했습니다.');
+      Swal.fire({
+        icon: 'error',
+        title: '파일 업로드에 실패했습니다.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     }
   };
 
@@ -123,6 +123,11 @@ const Generate = () => {
         type: result.documentType,
       },
     ]);
+    setSelectedDocumentIds((prev) =>
+      prev.includes(Number(result.documentId))
+        ? prev
+        : [...prev, Number(result.documentId)]
+    );
   };
 
   const handleTextSubmit = (result: DocumentInfo) => {
@@ -134,6 +139,11 @@ const Generate = () => {
         type: result.documentType,
       },
     ]);
+    setSelectedDocumentIds((prev) =>
+      prev.includes(Number(result.documentId))
+        ? prev
+        : [...prev, Number(result.documentId)]
+    );
   };
 
   const handleFileDelete = async (id: string) => {
@@ -144,14 +154,24 @@ const Generate = () => {
       await fetchDocuments();
     } catch (err) {
       console.error('파일 삭제 실패:', err);
-      alert('파일 삭제에 실패했습니다.');
+      Swal.fire({
+        icon: 'error',
+        title: '파일 삭제에 실패했습니다.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     }
   };
 
   const handleTestNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     if (newValue.length > 100) {
-      alert('시험지 이름은 100자를 초과할 수 없어요🥲');
+      Swal.fire({
+        icon: 'warning',
+        title: '시험지 이름은 100자를 초과할 수 없습니다',
+        timer: 2000,
+        showConfirmButton: false,
+      });
       return;
     }
     setTestName(newValue);
@@ -159,7 +179,12 @@ const Generate = () => {
 
   const handleGenerate = async () => {
     if (!numericWorkBookId) {
-      alert('문제집 ID가 없습니다.');
+      Swal.fire({
+        icon: 'error',
+        title: '문제집 ID가 없습니다.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
       return;
     }
 
@@ -181,6 +206,10 @@ const Generate = () => {
       }
     } catch (err) {
       console.error('시험지 생성 실패:', err);
+      Swal.fire({
+        icon: 'error',
+        title: '문제 생성 조건을 모두 충족해주세요.',
+      });
     }
   };
 
@@ -231,9 +260,19 @@ const Generate = () => {
                     }}
                     onClick={() => {
                       if (selectedDocumentIds.length === 0) {
-                        alert('자료를 업로드하여 선택해주세요.');
+                        Swal.fire({
+                          icon: 'warning',
+                          title: '자료를 업로드하여 선택해주세요.',
+                          timer: 2000,
+                          showConfirmButton: false,
+                        });
                       } else if (totalProblems === 0) {
-                        alert('문제 유형을 선택해주세요.');
+                        Swal.fire({
+                          icon: 'warning',
+                          title: '문제 유형을 선택해주세요.',
+                          timer: 2000,
+                          showConfirmButton: false,
+                        });
                       }
                     }}
                   />
@@ -274,13 +313,12 @@ const Generate = () => {
               onLinkSubmit={handleLinkSubmit}
               onTextSubmit={handleTextSubmit}
               className='md:col-span-2'
-              // workBookId={numericWorkBookId ?? 0}
             />
           </div>
           <div className='flex flex-col gap-4'>
             <UploadedList
               files={uploadedFiles}
-              maxFiles={10}
+              maxFiles={30}
               onDelete={handleFileDelete}
               className='md:col-span-1'
               showAddButton={false}

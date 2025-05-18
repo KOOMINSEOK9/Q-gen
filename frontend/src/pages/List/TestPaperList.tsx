@@ -2,8 +2,9 @@
 
 import Button from '@/components/common/Button/Button';
 import IconBox from '@/components/common/IconBox/IconBox';
-import { MouseEvent } from 'react';
+import { MouseEvent, useState } from 'react';
 import CreatingLoader from '@/components/Animation/CreatingLoader';
+import Swal from 'sweetalert2';
 
 interface TestPaper {
   workbookId: string | number;
@@ -109,9 +110,17 @@ function TestPaperList({
                   onClick={(e: MouseEvent) => {
                     e.stopPropagation();
                     if (paper.isCreating) return;
-                    if (window.confirm('이 시험지를 삭제하시겠습니까?')) {
-                      onDelete?.(paper.testPaperId);
-                    }
+                    Swal.fire({
+                      title: '이 시험지를 삭제하시겠습니까?',
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonText: '확인',
+                      cancelButtonText: '취소',
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        onDelete?.(paper.testPaperId);
+                      }
+                    });
                   }}
                 >
                   <IconBox

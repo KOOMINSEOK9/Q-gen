@@ -3,6 +3,7 @@ import IconBox from '@/components/common/IconBox/IconBox';
 import React, { useState, ChangeEvent } from 'react';
 import { useDocuments } from '@/hooks/useDocument';
 import { DocumentInfo } from '@/types/document';
+import Swal from 'sweetalert2';
 
 interface TextUploadModalProps {
   onClose: () => void;
@@ -27,7 +28,12 @@ const TextUploadModal: React.FC<TextUploadModalProps> = ({
       onSubmit(result);
       onClose();
     } catch (e) {
-      alert('텍스트 업로드에 실패했습니다.');
+      Swal.fire({
+        icon: 'error',
+        title: '텍스트 업로드에 실패했습니다.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } finally {
       setLoading(false);
     }

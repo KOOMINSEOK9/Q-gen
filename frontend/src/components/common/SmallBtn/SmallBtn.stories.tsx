@@ -28,10 +28,10 @@ export const WithOnClick: Story = {
 
 export const MultipleButtons: Story = {
   render: () => (
-    <div className="flex gap-2">
-      <SmallBtn text="확인" />
-      <SmallBtn text="취소" />
-      <SmallBtn text="저장" />
+    <div className='flex gap-2'>
+      <SmallBtn text='확인' />
+      <SmallBtn text='취소' />
+      <SmallBtn text='저장' />
     </div>
   ),
 };

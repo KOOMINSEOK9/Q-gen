@@ -155,17 +155,18 @@ function Test({
   };
 
   return (
-    <div className='w-full h-full min-h-0 bg-white rounded-3xl p-6 shadow-sm flex flex-col'>
-      <div className='flex justify-between mb-2'>
-        {/* 문제 번호 */}
-        <div className='flex items-center gap-2'>
-          <p className='text-base font-bold'>
-            문제 {currentNumber}/{totalNumber}
-          </p>
-          <div className='flex items-center gap-1 px-2 py-1'>
-            <p className='text-sm'>틀린횟수</p>
-            <div className='bg-rose-400 text-white text-sm rounded-lg px-2 py-1'>
-              {incorrectCount}회
+    <div className='w-full h-full min-h-0 bg-white rounded-3xl p-6 shadow-sm'>
+      <div>
+        <div className='flex justify-between mb-2'>
+          {/* 문제 번호 */}
+          <div className='flex items-center gap-2'>
+            <p className='text-base font-bold'>
+              문제 {currentNumber}/{totalNumber}
+            </p>
+            <div className='flex items-center gap-1 px-2 py-1'>
+              <div className='bg-rose-400 text-white text-sm rounded-lg px-2 py-1'>
+                오답 {incorrectCount}회
+              </div>
             </div>
           </div>
           <Button

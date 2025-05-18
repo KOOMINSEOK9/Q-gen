@@ -8,6 +8,7 @@ import GlobalSpinner from '@/components/common/GlobalSpinner/GlobalSpinner';
 import { useParams } from 'react-router-dom';
 import { DocumentInfo } from '@/types/document';
 import LinkUploadModal from './LinkUploadModal';
+import Swal from 'sweetalert2';
 
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
@@ -71,11 +72,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       try {
         // await uploadDocument(file, workBookId);
         onFileUpload(file);
-        alert('파일 업로드에 성공하였습니다.');
       } catch (error) {
-        alert(
-          error instanceof Error ? error.message : '파일 업로드에 실패했습니다.'
-        );
+        Swal.fire({
+          icon: 'error',
+          title: '파일 업로드에 실패했습니다.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
       }
     }
   };
@@ -87,11 +90,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       try {
         // await uploadDocument(file, workBookId);
         onFileUpload(file);
-        alert('파일 업로드에 성공하였습니다.');
       } catch (error) {
-        alert(
-          error instanceof Error ? error.message : '파일 업로드에 실패했습니다.'
-        );
+        Swal.fire({
+          icon: 'error',
+          title: '파일 업로드에 실패했습니다. 다시 시도해주세요.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
       }
     }
   };
@@ -112,7 +117,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       <div className='flex flex-col gap-4 h-full'>
         {/* 파일 선택 영역 */}
         <div
-          className={`basis-2/3 border-2 border-dashed rounded-lg p-12 mb-0 flex flex-col items-center justify-center cursor-pointer group transition-all duration-300 select-none
+          className={`basis-2/3 border-2 border-dashed rounded-lg py-12 mb-0 flex flex-col items-center justify-center cursor-pointer group transition-all duration-300 select-none
             ${
               isDragging
                 ? 'border-purple-500'
@@ -131,7 +136,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           <img
             src={uploadGlassIcon}
             alt='upload'
-            className={`h-15 w-15 mb-3 transition-transform duration-300 group-hover:scale-110 select-none`}
+            className={`h-15 w-15 my-3 transition-transform duration-300 group-hover:scale-110 select-none`}
             style={{
               animation: isDragging ? 'iconPulse 1.2s infinite' : 'none',
             }}
@@ -162,13 +167,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             <img
               src={linkGlassIcon}
               alt='link'
-              className='h-15 w-15 mb-3 transition-transform duration-300 group-hover:scale-110 select-none'
+              className='h-15 w-15 my-3 transition-transform duration-300 group-hover:scale-110 select-none'
               draggable='false'
             />
             <h3 className='text-lg font-semibold select-none'>
               링크로 가져오기
             </h3>
-            <p className='text-sm text-gray-500 text-center mb-4 select-none'>
+            <p className='text-sm text-gray-500 text-center select-none'>
               웹 URL에 표시되는 텍스트를 가져옵니다.
             </p>
           </div>
@@ -181,13 +186,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             <img
               src={textGlassIcon}
               alt='text'
-              className='h-15 w-15 mb-3 transition-transform duration-300 group-hover:scale-110 select-none'
+              className='h-15 w-15 my-3 transition-transform duration-300 group-hover:scale-110 select-none'
               draggable='false'
             />
             <h3 className='text-lg font-semibold select-none'>
               텍스트 입력하기
             </h3>
-            <p className='text-sm text-gray-500 text-center mb-4 select-none'>
+            <p className='text-sm text-gray-500 text-center select-none'>
               텍스트를 직접 입력하여 문제를 생성합니다.
             </p>
           </div>

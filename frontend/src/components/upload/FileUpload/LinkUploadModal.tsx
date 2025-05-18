@@ -3,6 +3,7 @@ import Button from '@/components/common/Button/Button';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useDocuments } from '@/hooks/useDocument';
 import { DocumentInfo } from '@/types/document';
+import Swal from 'sweetalert2';
 
 interface LinkUploadModalProps {
   onClose: () => void;
@@ -30,7 +31,12 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
       onClose();
     } catch (e) {
       console.error('API error:', e);
-      alert('URL 업로드에 실패했습니다.');
+      Swal.fire({
+        icon: 'error',
+        title: 'URL 업로드에 실패했습니다.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } finally {
       setLoading(false);
     }

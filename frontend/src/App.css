@@ -9,8 +9,8 @@
 .simplebar-track.simplebar-vertical {
   width: 8px !important;
   background: transparent !important;
-  top: 25px !important;
-  bottom: 25px !important;
+  top: 11px !important;
+  bottom: 11px !important;
 }
 .simplebar-scrollbar.simplebar-visible:before {
   opacity: 1 !important;
