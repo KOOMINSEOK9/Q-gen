@@ -38,7 +38,7 @@ pipeline {
                     withCredentials([
                         file(credentialsId: 'env-file', variable: 'ENV_FILE')
                     ]) {
-                        withSonarQubeEnv('SonarQube') { // Jenkins에 등록된 SonarQube 서버 이름
+                        withSonarQubeEnv('sonarqube') {
                             sh '''#!/bin/bash
                                 echo "📄 Copying .env file..."
                                 cp "$ENV_FILE" .env
@@ -59,7 +59,6 @@ pipeline {
                                   -Dsonar.sources=src/main/java \
                                   -Dsonar.projectBaseDir=. \
                                   -Dsonar.exclusions=**/test/** \
-                                  -Dsonar.host.url=$SONAR_HOST_URL \
                                   -Dsonar.login=$SONAR_AUTH_TOKEN
                             '''
                         }
