@@ -58,8 +58,9 @@ pipeline {
                                       -Dsonar.projectKey=q-generator-be \\
                                       -Dsonar.sources=src/main/java \\
                                       -Dsonar.projectBaseDir=. \\
+                                      -Dsonar.java.binaries=build/classes/java/main \\
                                       -Dsonar.exclusions=**/test/** \\
-                                      -Dsonar.login=\$SONAR_AUTH_TOKEN
+                                      -Dsonar.token=\$SONAR_AUTH_TOKEN
                                 """
                             }
                         }
