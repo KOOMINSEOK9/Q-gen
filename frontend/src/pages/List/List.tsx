@@ -147,18 +147,28 @@ export default function List() {
   };
 
   // 파일 추가 함수
-  const handleFileUpload = (file: File) => {
-    if (!numericWorkBookId) return; // workBookId가 없으면 early return
-    setFiles((prev) => [
-      ...prev,
-      {
-        id: `${Date.now()}`, // 고유 id 생성
-        title: file.name,
-        type: file.type || 'FILE',
-      },
-    ]);
-    uploadDocument(file, numericWorkBookId);
-    setIsUploadModalOpen(false);
+  const handleFileUpload = async (file: File) => {
+    if (!numericWorkBookId) return;
+    try {
+      await uploadDocument(file, numericWorkBookId);
+      // 업로드 후 서버에서 최신 파일 목록을 받아와서 상태 갱신
+      const docs = await getDocuments(numericWorkBookId);
+      setFiles(
+        docs.map((doc) => ({
+          id: String(doc.documentId),
+          title: doc.documentName,
+          type: doc.documentType,
+        }))
+      );
+      setIsUploadModalOpen(false);
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: '파일 업로드에 실패했습니다.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
   };
 
   // 링크 추가 함수 (DocumentInfo 기반)
