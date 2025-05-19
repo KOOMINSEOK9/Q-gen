@@ -220,17 +220,15 @@ function UploadedList({
                     selectedIds.length === safeFiles.length &&
                     safeFiles.length > 0;
                   if (allSelected) {
-                    // 전체 해제
                     safeFiles.forEach((file) => {
-                      if (selectedIds.includes(file.id)) {
-                        onSelect?.(file.id);
+                      if (selectedIds.includes(String(file.id))) {
+                        onSelect?.(String(file.id));
                       }
                     });
                   } else {
-                    // 전체 선택
                     safeFiles.forEach((file) => {
-                      if (!selectedIds.includes(file.id)) {
-                        onSelect?.(file.id);
+                      if (!selectedIds.includes(String(file.id))) {
+                        onSelect?.(String(file.id));
                       }
                     });
                   }
@@ -275,7 +273,8 @@ function UploadedList({
               safeFiles.map((file) => (
                 <div
                   key={file.id}
-                  className={`flex cursor-pointer items-start justify-between gap-3 p-4 rounded-2xl border transition-colors duration-200
+                  className={`flex cursor-pointer items-start justify-between gap-3 rounded-2xl border transition-colors duration-200
+                    ${!showAddButton ? 'py-4 pr-4' : 'p-4'}
                     ${
                       !showAddButton && selectedIds.includes(file.id)
                         ? 'border-purple-500 bg-purple-50'
@@ -311,30 +310,31 @@ function UploadedList({
                     handleDetailOpen(file);
                   }}
                 >
-                  <div className='flex items-start gap-3'>
+                  <div className='flex items-start'>
                     {!showAddButton && (
                       <div
+                        className='flex items-center justify-center w-11 h-11 mt-[-7px] cursor-pointer flex-shrink-0 hover:bg-gray-100 rounded-full'
                         onClick={(e) => {
                           e.stopPropagation();
                           onSelect?.(file.id);
                         }}
-                        className='relative w-5 h-5 mt-1 cursor-pointer flex-shrink-0'
                       >
                         <div
-                          className={`absolute inset-0 rounded border-2 transition-colors duration-200
-                          ${
-                            selectedIds.includes(file.id)
-                              ? 'border-purple-500 bg-purple-500'
-                              : 'border-gray-300 hover:border-purple-300'
-                          }`}
-                        />
-                        {selectedIds.includes(file.id) && (
-                          <IconBox
-                            name='checkW'
-                            size={16}
-                            className='absolute inset-0 m-auto text-white'
-                          />
-                        )}
+                          className={`relative w-5 h-5 rounded border-2 transition-colors duration-200
+                            ${
+                              selectedIds.includes(file.id)
+                                ? 'border-purple-500 bg-purple-500'
+                                : 'border-gray-300 hover:border-purple-300'
+                            }`}
+                        >
+                          {selectedIds.includes(file.id) && (
+                            <IconBox
+                              name='checkW'
+                              size={16}
+                              className='absolute inset-0 m-auto text-white'
+                            />
+                          )}
+                        </div>
                       </div>
                     )}
                     <div className='space-y-1 min-w-0'>

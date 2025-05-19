@@ -139,7 +139,7 @@ const Note = () => {
                     }
                   }}
                   variant='filled'
-                  className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/10 hover:border-transparent'}`}
+                  className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/10 hover:border-[#754AFF]/80'}`}
                   onClick={() => {
                     setActiveTestPaperIndex(idx);
                     navigate(`/note/${workBookId}/${exam.testPaperId}`);
@@ -249,23 +249,62 @@ const Note = () => {
             );
 
             return (
-              <Test
-                currentNumber={currentNumber}
-                totalNumber={totalTests}
-                test={currentTestDetail.question}
-                options={options}
-                selectedOption={selectedOption}
-                isSubmitted={isSubmitted}
-                answerIndex={answerIndex}
-                explanation={currentTestDetail.comment}
-                explanationBox={currentTestDetail.explanation}
-                incorrectCount={currentTestDetail.incorrectCount}
-                onNext={handleNext}
-                onPrev={handlePrev}
-                testHistoryList={currentTestDetail.testHistoryList}
-                answer={currentTestDetail.answer}
-                type={type}
-              />
+              <div className='flex-1 min-h-0 flex flex-col'>
+                {/* 문제 유형에 따른 렌더링 */}
+                {testHistoryList.length === 0 ? (
+                  <div className='flex flex-col items-center justify-center h-full text-gray-500'>
+                    <svg
+                      className='w-12 h-12 mb-2 text-gray-300'
+                      fill='none'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+                      />
+                    </svg>
+                    <div className='text-lg font-semibold mb-1'>
+                      아직 이 문제를 풀지 않았어요!
+                    </div>
+                    <div className='text-sm mb-4'>
+                      문제를 풀면 해설과 제출 이력을 확인할 수 있습니다.
+                    </div>
+                    <Button
+                      variant='basic'
+                      onClick={() => {
+                        setSelectedOption(null);
+                        setIsSubmitted(false);
+                        navigate(
+                          `/quiz/${testPapers[activeTestPaperIndex].testPaperId}`
+                        );
+                      }}
+                    >
+                      문제 풀러가기
+                    </Button>
+                  </div>
+                ) : (
+                  <Test
+                    currentNumber={currentNumber}
+                    totalNumber={totalTests}
+                    test={currentTestDetail.question}
+                    options={options}
+                    selectedOption={selectedOption}
+                    isSubmitted={isSubmitted}
+                    answerIndex={answerIndex}
+                    explanation={currentTestDetail.comment}
+                    explanationBox={currentTestDetail.explanation}
+                    incorrectCount={currentTestDetail.incorrectCount}
+                    onNext={handleNext}
+                    onPrev={handlePrev}
+                    testHistoryList={currentTestDetail.testHistoryList}
+                    answer={currentTestDetail.answer}
+                    type={type}
+                  />
+                )}
+              </div>
             );
           })()
         ) : (
