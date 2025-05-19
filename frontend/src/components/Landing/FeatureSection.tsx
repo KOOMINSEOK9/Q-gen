@@ -71,7 +71,7 @@ export default function FeatureSection() {
                   <img
                     src={f.image}
                     alt={f.title}
-                    className={`h-[280px] w-auto max-w-[520px] object-contain bg-white rounded-2xl shadow-lg`}
+                    className={`h-[260px] w-auto max-w-[520px] object-contain rounded-2xl shadow-lg`}
                     style={{ display: 'block' }}
                   />
                   <div className='absolute bottom-4 right-4'>
