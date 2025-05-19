@@ -10,6 +10,8 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import mammoth from 'mammoth';
 import Swal from 'sweetalert2';
+import { motion, AnimatePresence } from 'framer-motion';
+import DocxPreviewModal from './DocxPreviewModal';
 
 interface UploadedFile {
   id: string;
@@ -31,6 +33,7 @@ interface UploadedListProps {
   showAddButton?: boolean;
   selectedIds?: string[];
   onSelect?: (id: string) => void;
+  lastUploadedId?: string | null;
 }
 
 function UploadedList({
@@ -43,6 +46,7 @@ function UploadedList({
   showAddButton = true,
   selectedIds = [],
   onSelect,
+  lastUploadedId,
 }: UploadedListProps) {
   // files가 null이거나 undefined일 경우를 대비해 기본값 처리
   const safeFiles = files ?? [];
@@ -56,6 +60,7 @@ function UploadedList({
   const [docxHtml, setDocxHtml] = useState<string | null>(null);
   const [docxPreviewOpen, setDocxPreviewOpen] = useState(false);
   const [docxFileName, setDocxFileName] = useState<string>('');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // 높이 관련 클래스가 className에 포함되어 있는지 체크
   const hasHeightClass = className?.match(
@@ -173,6 +178,8 @@ function UploadedList({
     return '기타 파일';
   };
 
+  const sortedFiles = [...safeFiles].reverse();
+
   return (
     <div className='flex-1 bg-white rounded-3xl shadow-sm '>
       <div className={twMerge('w-full space-y-4 py-6', className)}>
@@ -198,7 +205,7 @@ function UploadedList({
           </div>
           <div className='h-2 rounded-full bg-gray-200 overflow-hidden'>
             <div
-              className='h-full rounded-full transition-all duration-300 bg-gradient-to-r from-purple-400 via-purple-500 to-fuchsia-500'
+              className='h-full rounded-full transition-all duration-300 bg-gradient-to-r from-[#754AFF] via-[#A34BFF] to-[#C34BFF]'
               style={{
                 width: `${(safeFiles.length / maxFiles) * 100}%`,
               }}
@@ -239,8 +246,8 @@ function UploadedList({
                     ${
                       selectedIds.length === safeFiles.length &&
                       safeFiles.length > 0
-                        ? 'border-purple-500 bg-purple-500'
-                        : 'border-gray-300 hover:border-purple-300 bg-white'
+                        ? 'border-[#A34BFF]/30 bg-[#A34BFF]'
+                        : 'border-gray-300 hover:border-[#A34BFF]/50'
                     }
                   `}
                   style={{
@@ -270,93 +277,124 @@ function UploadedList({
                 업로드된 파일이 없습니다
               </div>
             ) : (
-              safeFiles.map((file) => (
-                <div
-                  key={file.id}
-                  className={`flex cursor-pointer items-start justify-between gap-3 rounded-2xl border transition-colors duration-200
-                    ${!showAddButton ? 'py-4 pr-4' : 'p-4'}
-                    ${
-                      !showAddButton && selectedIds.includes(file.id)
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 bg-white hover:border-gray-300'
-                    }`}
-                  onClick={() => {
-                    const type = (file.type || '').toLowerCase();
-                    const title = (file.title || '').toLowerCase();
-                    const ext = title.split('.').pop();
-
-                    // DOCX 분기
-                    if (
-                      ext === 'docx' ||
-                      type.includes('docx') ||
-                      type ===
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    ) {
-                      handlePreviewDocument(file, 'docx');
-                      return;
-                    }
-
-                    // PDF 분기
-                    if (
-                      ext === 'pdf' ||
-                      type.includes('pdf') ||
-                      type === 'application/pdf'
-                    ) {
-                      handlePreviewDocument(file, 'pdf');
-                      return;
-                    }
-
-                    // 그 외는 상세보기
-                    handleDetailOpen(file);
-                  }}
-                >
-                  <div className='flex items-start'>
-                    {!showAddButton && (
-                      <div
-                        className='flex items-center justify-center w-11 h-11 mt-[-7px] cursor-pointer flex-shrink-0 hover:bg-gray-100 rounded-full'
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelect?.(file.id);
-                        }}
-                      >
-                        <div
-                          className={`relative w-5 h-5 rounded border-2 transition-colors duration-200
-                            ${
-                              selectedIds.includes(file.id)
-                                ? 'border-purple-500 bg-purple-500'
-                                : 'border-gray-300 hover:border-purple-300'
-                            }`}
-                        >
-                          {selectedIds.includes(file.id) && (
-                            <IconBox
-                              name='checkW'
-                              size={16}
-                              className='absolute inset-0 m-auto text-white'
-                            />
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    <div className='space-y-1 min-w-0'>
-                      <h3 className='font-medium whitespace-normal break-words'>
-                        {file.title}
-                      </h3>
-                      <span className='text-sm text-gray-500'>
-                        {getFriendlyFileType(file)}
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete?.(file.id);
+              <AnimatePresence initial={false}>
+                {sortedFiles.map((file) => (
+                  <motion.div
+                    key={file.id}
+                    initial={{ opacity: 0, x: -100 }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                      transition: {
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 32,
+                      },
                     }}
-                    className='p-1 rounded-full cursor-pointer'
+                    exit={{
+                      opacity: 0,
+                      x: 60,
+                      transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+                    }}
+                    layout
+                    className={`flex cursor-pointer items-start justify-between gap-3 rounded-2xl border transition-colors duration-200
+                      ${!showAddButton ? 'py-4 pr-4' : 'p-4'}
+                      ${
+                        !showAddButton && selectedIds.includes(file.id)
+                          ? 'border-[#A34BFF]/30 bg-[#A34BFF]/10'
+                          : 'border-gray-200 bg-white hover:border-gray-300'
+                      }
+                      ${deletingId === file.id ? 'pointer-events-none opacity-60' : ''}
+                    `}
+                    onClick={() => {
+                      const type = (file.type || '').toLowerCase();
+                      const title = (file.title || '').toLowerCase();
+                      const ext = title.split('.').pop();
+
+                      // DOCX 분기
+                      if (
+                        ext === 'docx' ||
+                        type.includes('docx') ||
+                        type ===
+                          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                      ) {
+                        handlePreviewDocument(file, 'docx');
+                        return;
+                      }
+
+                      // PDF 분기
+                      if (
+                        ext === 'pdf' ||
+                        type.includes('pdf') ||
+                        type === 'application/pdf'
+                      ) {
+                        handlePreviewDocument(file, 'pdf');
+                        return;
+                      }
+
+                      // 그 외는 상세보기
+                      handleDetailOpen(file);
+                    }}
                   >
-                    <IconBox name='x' size={20} className='text-gray-400' />
-                  </button>
-                </div>
-              ))
+                    <div className='flex items-start'>
+                      {!showAddButton && (
+                        <div
+                          className='flex items-center justify-center w-11 h-11 mt-[-7px] cursor-pointer flex-shrink-0 hover:bg-gray-100 rounded-full'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelect?.(file.id);
+                          }}
+                        >
+                          <div
+                            className={`relative w-5 h-5 rounded border-2 transition-colors duration-200
+                              ${
+                                selectedIds.includes(file.id)
+                                  ? 'border-[#A34BFF] bg-[#A34BFF]'
+                                  : 'border-gray-300 hover:border-[#A34BFF]/50'
+                              }`}
+                          >
+                            {selectedIds.includes(file.id) && (
+                              <IconBox
+                                name='checkW'
+                                size={16}
+                                className='absolute inset-0 m-auto text-white'
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      <div className='space-y-1 min-w-0'>
+                        <h3 className='font-medium whitespace-normal break-words'>
+                          {file.title}
+                        </h3>
+                        <span className='text-sm text-gray-500'>
+                          {getFriendlyFileType(file)}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (deletingId !== file.id) {
+                          setDeletingId(file.id);
+                          onDelete?.(file.id);
+                        }
+                      }}
+                      disabled={deletingId === file.id}
+                      className={`p-1 rounded-full cursor-pointer transition-colors duration-200 group
+                        ${deletingId === file.id ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
+                    >
+                      <span className='inline-block transition-transform duration-200 group-hover:scale-115'>
+                        <IconBox
+                          name='x'
+                          size={20}
+                          className='text-gray-400 hover:text-gray-900'
+                        />
+                      </span>
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             )}
           </div>
         </SimpleBar>
@@ -377,44 +415,12 @@ function UploadedList({
         fileName={pdfFileName}
       />
       {/* DOCX 미리보기 모달 */}
-      {docxPreviewOpen && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center'>
-          <div
-            className='absolute inset-0 bg-black/40'
-            onClick={() => setDocxPreviewOpen(false)}
-          />
-          <div className='relative bg-white rounded-2xl w-[80vw] h-[90vh] p-8 flex flex-col items-center shadow-lg z-10 overflow-auto'>
-            <div className='w-full flex items-center justify-between mb-4'>
-              <h2 className='text-xl font-bold'>
-                {docxFileName || 'DOCX 미리보기'}
-              </h2>
-              <button
-                onClick={() => setDocxPreviewOpen(false)}
-                className='p-1 rounded-full cursor-pointer'
-              >
-                <IconBox name='x' size={20} className='text-gray-400' />
-              </button>
-            </div>
-            <div
-              className='w-full flex-1 overflow-auto prose prose-sm max-w-none'
-              style={{
-                minHeight: 200,
-                background: '#fafafa',
-                borderRadius: 8,
-                padding: 16,
-              }}
-            >
-              {docxHtml ? (
-                <div dangerouslySetInnerHTML={{ __html: docxHtml }} />
-              ) : (
-                <div className='text-gray-400 text-center py-8'>
-                  내용을 불러오는 중입니다...
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <DocxPreviewModal
+        isOpen={docxPreviewOpen}
+        onClose={() => setDocxPreviewOpen(false)}
+        docxHtml={docxHtml}
+        fileName={docxFileName}
+      />
     </div>
   );
 }

@@ -30,9 +30,9 @@ const UploadedListDetailModal: React.FC<UploadedListDetailModalProps> = ({
           <h2 className='text-xl font-bold'>자료 상세 정보</h2>
           <button
             onClick={onClose}
-            className='text-gray-400 hover:text-gray-600 text-2xl cursor-pointer'
+            className='p-1 rounded-full cursor-pointer text-gray-400 hover:text-gray-600 transition-transform duration-200 hover:scale-110'
           >
-            <IconBox name='x' size={24} />
+            <IconBox name='x' size={20} />
           </button>
         </div>
         <SimpleBar className='w-full min-h-[50px]'>

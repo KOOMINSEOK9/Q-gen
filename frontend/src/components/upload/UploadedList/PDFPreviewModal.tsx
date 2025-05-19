@@ -25,8 +25,15 @@ const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
       <div className='relative bg-white rounded-2xl w-[80vw] h-[90vh] p-6 flex flex-col items-center shadow-lg z-10'>
         <div className='w-full flex items-center justify-between mb-4'>
           <h2 className='text-xl font-bold'>{fileName}</h2>
-          <button onClick={onClose} className='p-1 rounded-full cursor-pointer'>
-            <IconBox name='x' size={20} className='text-gray-400' />
+          <button
+            onClick={onClose}
+            className='p-1 rounded-full cursor-pointer transition-transform duration-200 hover:scale-110'
+          >
+            <IconBox
+              name='x'
+              size={20}
+              className='text-gray-400 hover:text-gray-600'
+            />
           </button>
         </div>
         <iframe

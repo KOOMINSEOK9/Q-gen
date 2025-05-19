@@ -92,6 +92,8 @@ export default function List() {
     (s) => s.creatingTestPaperIds
   );
 
+  const [lastUploadedId, setLastUploadedId] = useState<string | null>(null);
+
   // 로그인 체크
   useEffect(() => {
     if (!isLoggedIn) {
@@ -151,7 +153,6 @@ export default function List() {
     if (!numericWorkBookId) return;
     try {
       await uploadDocument(file, numericWorkBookId);
-      // 업로드 후 서버에서 최신 파일 목록을 받아와서 상태 갱신
       const docs = await getDocuments(numericWorkBookId);
       setFiles(
         docs.map((doc) => ({
@@ -160,6 +161,10 @@ export default function List() {
           type: doc.documentType,
         }))
       );
+      if (docs.length > 0) {
+        setLastUploadedId(String(docs[docs.length - 1].documentId));
+        setTimeout(() => setLastUploadedId(null), 1000);
+      }
       setIsUploadModalOpen(false);
     } catch (error) {
       Swal.fire({
@@ -173,27 +178,35 @@ export default function List() {
 
   // 링크 추가 함수 (DocumentInfo 기반)
   const handleLinkSubmit = (result: DocumentInfo) => {
-    setFiles((prev) => [
-      ...prev,
-      {
-        id: result.documentId.toString(),
-        title: result.documentName,
-        type: result.documentType,
-      },
-    ]);
+    setFiles((prev) => {
+      setLastUploadedId(result.documentId.toString());
+      setTimeout(() => setLastUploadedId(null), 1000);
+      return [
+        ...prev,
+        {
+          id: result.documentId.toString(),
+          title: result.documentName,
+          type: result.documentType,
+        },
+      ];
+    });
     setIsUploadModalOpen(false);
   };
 
   // 텍스트 추가 함수 (DocumentInfo 기반)
   const handleTextSubmit = (result: DocumentInfo) => {
-    setFiles((prev) => [
-      ...prev,
-      {
-        id: result.documentId.toString(),
-        title: result.documentName,
-        type: result.documentType,
-      },
-    ]);
+    setFiles((prev) => {
+      setLastUploadedId(result.documentId.toString());
+      setTimeout(() => setLastUploadedId(null), 1000);
+      return [
+        ...prev,
+        {
+          id: result.documentId.toString(),
+          title: result.documentName,
+          type: result.documentType,
+        },
+      ];
+    });
     setIsUploadModalOpen(false);
   };
 
@@ -607,6 +620,7 @@ export default function List() {
                   onDelete={handleDelete}
                   onClick={() => setIsUploadModalOpen(true)}
                   className='h-full'
+                  lastUploadedId={lastUploadedId}
                 />
                 <UploadModal
                   isOpen={isUploadModalOpen}

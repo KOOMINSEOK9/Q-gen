@@ -25,6 +25,7 @@ const Generate = () => {
   ]);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [selectedDocumentIds, setSelectedDocumentIds] = useState<number[]>([]);
+  const [lastUploadedId, setLastUploadedId] = useState<string | null>(null);
 
   const totalProblems = useMemo(() => {
     return testTypes.reduce((sum, type) => sum + type.count, 0);
@@ -96,6 +97,8 @@ const Generate = () => {
       setUploadedFiles((files) => {
         if (files.length === 0) return files;
         const lastFile = files[files.length - 1];
+        setLastUploadedId(lastFile.id);
+        setTimeout(() => setLastUploadedId(null), 1000);
         setSelectedDocumentIds((prev) =>
           prev.includes(Number(lastFile.id))
             ? prev
@@ -115,14 +118,18 @@ const Generate = () => {
   };
 
   const handleLinkSubmit = (result: DocumentInfo) => {
-    setUploadedFiles((prev) => [
-      ...prev,
-      {
-        id: result.documentId.toString(),
-        title: result.documentName,
-        type: result.documentType,
-      },
-    ]);
+    setUploadedFiles((prev) => {
+      setLastUploadedId(result.documentId.toString());
+      setTimeout(() => setLastUploadedId(null), 1000);
+      return [
+        ...prev,
+        {
+          id: result.documentId.toString(),
+          title: result.documentName,
+          type: result.documentType,
+        },
+      ];
+    });
     setSelectedDocumentIds((prev) =>
       prev.includes(Number(result.documentId))
         ? prev
@@ -131,14 +138,18 @@ const Generate = () => {
   };
 
   const handleTextSubmit = (result: DocumentInfo) => {
-    setUploadedFiles((prev) => [
-      ...prev,
-      {
-        id: result.documentId.toString(),
-        title: result.documentName,
-        type: result.documentType,
-      },
-    ]);
+    setUploadedFiles((prev) => {
+      setLastUploadedId(result.documentId.toString());
+      setTimeout(() => setLastUploadedId(null), 1000);
+      return [
+        ...prev,
+        {
+          id: result.documentId.toString(),
+          title: result.documentName,
+          type: result.documentType,
+        },
+      ];
+    });
     setSelectedDocumentIds((prev) =>
       prev.includes(Number(result.documentId))
         ? prev
@@ -275,6 +286,7 @@ const Generate = () => {
               showAddButton={false}
               selectedIds={selectedDocumentIds.map(String)}
               onSelect={handleDocumentSelect}
+              lastUploadedId={lastUploadedId}
             />
             <ProblemTypeSelector
               testTypes={testTypes}
