@@ -68,8 +68,15 @@ public class TestService {
         boolean isCorrect = false;
 
         // 히스토리 저장
-        String correctAnswer = test.getAnswer().trim();
-        String userAnswer = solvingTestRequestDto.getUserAnswer().trim();
+        String match = "[^\uAC00-\uD7A30-9a-zA-Z]";
+        String correctAnswer = test.getAnswer()
+                .trim()
+                .toLowerCase()
+                .replaceAll(match, "");
+        String userAnswer = solvingTestRequestDto.getUserAnswer()
+                .trim()
+                .toLowerCase()
+                .replaceAll(match, "");
 
         List<String> explanations = null;
         if(test.getExplanations() != null) {
@@ -80,9 +87,17 @@ public class TestService {
             }
         }
 
-
         if(correctAnswer.equals(userAnswer)) {
             isCorrect = true;
+        } else if(test.getType().equals(Test.Type.TYPE_SHORT)) {
+            String[] aliases = test.getAliases().split("///");
+            for(String alias : aliases) {
+                alias = alias.trim().toLowerCase().replaceAll(match, "");
+                if(alias.equals(userAnswer)) {
+                    isCorrect = true;
+                    break;
+                }
+            }
         }
         TestHistory history = new TestHistory(test, solvingTestRequestDto.getUserAnswer(), isCorrect);
         testHistoryRepository.save(history);

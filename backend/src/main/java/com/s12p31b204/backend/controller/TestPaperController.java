@@ -120,6 +120,8 @@ public class TestPaperController {
             }
         } catch (NoSuchElementException e) {
             return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
         } catch (Exception e) {
             log.error(e.getMessage());
             return ApiResponse.failure("시험지 생성 중 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI());

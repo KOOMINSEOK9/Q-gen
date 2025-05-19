@@ -58,6 +58,9 @@ public class Test {
     @Column(nullable = false)
     private String answer;
 
+    @Column(length = 1000)
+    private String aliases;
+
     @Column(nullable = false, length = 1000)
     private String comment;
 
@@ -88,11 +91,11 @@ public class Test {
 
     // 주관식, OX인 경우
     public Test(TestPaper testPaper, Type type, String question,
-                String explanations, String answer, String comment) {
+                String aliases, String answer, String comment) {
         this.testPaper = testPaper;
         this.type = type;
         this.question = question;
-        this.explanations = explanations;
+        this.aliases = aliases;
         this.answer = answer;
         this.comment = comment;
     }

@@ -63,9 +63,13 @@ public class TestPaperService {
         List<String> s3Urls = new ArrayList<>();
         for(Long documentId : generateTestPaperRequestDto.getDocumentIds()) {
             Document document = documentRepository.findById(documentId).orElseThrow(() -> {
-                throw new NoSuchElementException("해당 자료를 찾을 수 없습니다. " + documentId);
+                throw new NoSuchElementException("해당 자료를 찾을 수 없습니다. : " + documentId);
             });
             s3Urls.add(document.getDocumentURL());
+        }
+
+        if(s3Urls.isEmpty()) {
+            throw new IllegalArgumentException("자료가 준비되지 않았습니다. : " + testPaper.getTitle());
         }
 
         List<Test> tests = Collections.synchronizedList(new ArrayList<>());
@@ -83,26 +87,37 @@ public class TestPaperService {
                         .timeout(Duration.ofMinutes(5))
                         .block();
                 for(CreateTestResponseDto.Data data : response.getData()) {
-                    String explanation = null;
-                    if(data.getExplanation() != null) {
-                        explanation = "";
-                        for(int i = 0; i < data.getExplanation().size(); i++) {
-                            String ex = data.getExplanation().get(i);
-                            explanation += ex;
-                            if(i != data.getExplanation().size() - 1) {
-                                explanation += "///";
+                    if(data.getType() == Test.Type.TYPE_CHOICE) {
+                        String explanation = null;
+                        if(data.getExplanation() != null) {
+                            explanation = "";
+                            for(int i = 0; i < data.getExplanation().size(); i++) {
+                                String ex = data.getExplanation().get(i);
+                                explanation += ex;
+                                if(i != data.getExplanation().size() - 1) {
+                                    explanation += "///";
+                                }
                             }
                         }
-                    }
-                    if(data.getType() == Test.Type.TYPE_CHOICE) {
                         tests.add(new Test(savedTestPaper, data.getType(), data.getQuestion(), explanation,
                                 data.getOption().get(0), data.getOption().get(1),
                                 data.getOption().get(2), data.getOption().get(3),
                                 data.getAnswer(), data.getComment()));
 
                     } else {
+                        String aliases = null;
+                        if(data.getAliases() != null) {
+                            aliases = "";
+                            for(int i = 0; i < data.getAliases().size(); i++) {
+                                String alias = data.getAliases().get(i);
+                                aliases += alias;
+                                if(i != data.getAliases().size() - 1) {
+                                    aliases += "///";
+                                }
+                            }
+                        }
                         tests.add(new Test(savedTestPaper, data.getType(), data.getQuestion(),
-                                explanation, data.getAnswer(), data.getComment()));
+                                aliases, data.getAnswer(), data.getComment()));
                     }
                 }
 
