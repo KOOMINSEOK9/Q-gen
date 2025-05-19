@@ -23,10 +23,8 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
   const handleSubmit = async () => {
     if (!url.trim()) return;
     setLoading(true);
-    console.log('handleSubmit called', { workBookId, url, convertUrlToTxt });
     try {
       const result = await convertUrlToTxt(workBookId, url);
-      console.log('API result:', result);
       onSubmit(result);
       onClose();
     } catch (e) {

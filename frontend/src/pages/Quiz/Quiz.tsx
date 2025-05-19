@@ -65,7 +65,7 @@ function QuizPage() {
       } catch (e) {
         setError('문제 ID 목록을 불러오지 못했습니다.');
       } finally {
-        console.log('문제 불러오기 완료');
+        setIsLoading(false);
       }
     };
     fetchProblemIds();
@@ -127,7 +127,6 @@ function QuizPage() {
             const updated = [...prev];
             updated[current] = res.data;
             if (res.data) {
-              console.log('정답 correctAnswer:', res.data.correctAnswer);
             }
             return updated;
           });
@@ -186,7 +185,6 @@ function QuizPage() {
   }
 
   if (!currentQuestion) {
-    console.log(currentQuestion);
     return <div>문제를 불러오는데 실패했습니다.</div>;
   }
 

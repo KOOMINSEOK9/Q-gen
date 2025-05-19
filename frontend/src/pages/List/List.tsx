@@ -228,7 +228,6 @@ export default function List() {
       setFiles([]); // 초기화
       getTestPapers(numericWorkBookId);
       getDocuments(numericWorkBookId).then((docs) => {
-        console.log('조회된 시험지 :: ', docs);
         setFiles(
           docs.map((doc) => ({
             id: String(doc.documentId),
@@ -266,7 +265,6 @@ export default function List() {
     timer?: { min: number; sec: number }
   ) => {
     // TODO: 선택된 모드와 타이머로 퀴즈 페이지로 이동
-    console.log('Quiz mode:', mode, 'Timer:', timer);
     setIsQuizStartModalOpen(false);
   };
 

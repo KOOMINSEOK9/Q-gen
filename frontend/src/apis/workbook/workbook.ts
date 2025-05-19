@@ -7,7 +7,6 @@ export const getWorkBooks = async (): Promise<WorkBook[]> => {
     const response = await axiosInstance.get<{ data: WorkBook[] }>(
       `/api/workbooks`
     );
-    console.log('222 조회된 문제집 목록 :::: ', response.data.data);
     return response.data.data;
   } catch (error) {
     console.error('Failed to fetch workbooks:', error);
@@ -21,7 +20,6 @@ export const createWorkBook = async (title: string): Promise<WorkBook> => {
     const response = await axiosInstance.post<WorkBook>(`/api/workbooks`, {
       title,
     });
-    console.log('문제집 생성 응답 : ', response.data);
     return response.data;
   } catch (error) {
     console.error('Failed to create workbook:', error);

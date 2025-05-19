@@ -247,13 +247,7 @@ const Note = () => {
             const isSubmitted = !!(
               testHistoryList && testHistoryList.length > 0
             );
-            // 디버깅용 로그
-            console.log('[NOTE->TEST] type:', type);
-            console.log('[NOTE->TEST] options:', options);
-            console.log('[NOTE->TEST] answerIndex:', answerIndex);
-            console.log('[NOTE->TEST] selectedOption:', selectedOption);
-            console.log('[NOTE->TEST] answer:', answer);
-            console.log('[NOTE->TEST] testHistoryList:', testHistoryList);
+
             return (
               <Test
                 currentNumber={currentNumber}

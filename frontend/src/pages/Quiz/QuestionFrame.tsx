@@ -57,13 +57,6 @@ function QuestionFrame({
   };
 
   useEffect(() => {
-    const convertedType = convertQuestionType(questionType || '');
-    console.log('원본 문제 유형:', questionType);
-    console.log('변환된 문제 유형:', convertedType);
-    console.log('선택된 옵션:', selectedOption);
-  }, [questionType, selectedOption]);
-
-  useEffect(() => {
     if (isSubmitted && explanationRef.current) {
       explanationRef.current.style.maxHeight =
         explanationRef.current.scrollHeight + 'px';

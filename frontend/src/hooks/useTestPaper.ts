@@ -21,7 +21,6 @@ export function useTestPaper() {
     setError(null);
     try {
       const res: TestPaperListResponse = await fetchTestPapers(workBookId);
-      console.log('시험지 조회 결과 ::: ', res);
       if (res.success && res.data) {
         setTestPapers(res.data);
       } else {

@@ -41,9 +41,7 @@ export const Default: Story = {
   args: {
     files: mockFiles,
     maxFiles: 10,
-    onDelete: (id) => {
-      console.log('Delete file:', id);
-    },
+    onDelete: (id) => {},
   },
 };
 

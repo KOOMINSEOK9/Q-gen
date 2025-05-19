@@ -26,7 +26,6 @@ export const fetchDocumentsByWorkBook = async (
   const response = await axiosInstance.get(
     `/api/document/workbook/${workBookId}`
   );
-  console.log('문제집', workBookId, '의 조회된 파일 목록', response.data);
   return response.data.data;
 };
 
@@ -39,18 +38,11 @@ export const deleteDocumentByDocumentId = async (documentId: number) => {
 // 파일 상세 조회
 export const fetchDocumentByDocumentId = async (documentId: number) => {
   const response = await axiosInstance.get(`/api/document/${documentId}`);
-  console.log(
-    '[DOC DETAIL API] documentId:',
-    documentId,
-    'response:',
-    response.data
-  );
   return response.data.data;
 };
 
 // 텍스트 입력 txt파일 변환
 export const convertTextToTxt = async (workBookId: number, text: string) => {
-  console.log('텍스트 업로드 시작:', workBookId, text);
   const response = await axiosInstance.post(
     `/api/document/text`,
     { workBookId, text },
@@ -60,7 +52,6 @@ export const convertTextToTxt = async (workBookId: number, text: string) => {
       },
     }
   );
-  console.log('텍스트 업로드 결과:', response.data.data);
   return response.data.data;
 };
 

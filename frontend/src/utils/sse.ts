@@ -4,21 +4,17 @@ import { toast } from 'react-toastify';
 let eventSource: EventSource | null = null;
 
 export const connectSSE = (userId: number) => {
-  console.log('🔥 connectSSE 함수 진입!', userId);
   if (eventSource) {
     eventSource.close();
   }
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   eventSource = new EventSource(`${baseUrl}/api/sse/${userId}`);
-  console.log('🔥 EventSource 생성됨!');
 
   // 시험지 생성 관련 이벤트
   eventSource.addEventListener('testpaper created', (event: MessageEvent) => {
-    console.log('SSE 이벤트 수신:', event);
     try {
       const data = JSON.parse(event.data);
-      console.log('SSE 파싱 데이터:', data);
       if (
         data &&
         data.testPaperId &&
@@ -37,17 +33,13 @@ export const connectSSE = (userId: number) => {
       // 파싱 에러 무시
     }
   });
-  console.log('🔥 testpaper 이벤트 리스너 등록됨!');
 
   // 하트비트 이벤트
   eventSource.addEventListener('heartbeat', (event: MessageEvent) => {
     // 필요하다면 마지막 하트비트 시간 기록 등 추가 가능
-    console.log('SSE heartbeat:', event.data);
   });
-  console.log('🔥 heartbeat 이벤트 리스너 등록됨!');
 
   eventSource.onerror = (err) => {
-    console.error('SSE 연결 에러:', err);
     eventSource?.close();
   };
 

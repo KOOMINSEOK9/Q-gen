@@ -24,11 +24,6 @@ export const useGeneration = (): UseGenerationReturn => {
       const response = await generate(request);
       if (response.success && response.data) {
         addCreatingTestPaper(response.data.testPaperId);
-        console.log('생성중 추가:', response.data.testPaperId);
-        console.log(
-          '현재 생성중:',
-          useTestPaperCreationStore.getState().creatingTestPaperIds
-        );
       } else if (!response.success) {
         setError(response.message);
       }
