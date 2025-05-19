@@ -19,6 +19,10 @@ def load_choice_prompt(choice: int) -> str:
   - explanation : 정답 도출에 꼭 필요한 설명이 있는 경우에만 작성하며, 그렇지 않으면 null로 설정한다.
     - question만으로 문제 풀이가 가능한 경우 → explanation은 반드시 null
     - 포괄적인 question(ex. “다음 설명에 해당하는 것은?”)일 경우에만 explanation 배열로 포함
+  - explanation_type: 설명의 형식을 명시한다.
+    - 기본값은 "text"이며, 설명이 코드로 구성된 경우 "code"로 설정한다.
+    - explanation이 없으면 null이다. null일 경우 생략 가능하다.
+    - 예시: "explanation_type": "code"
   - option: 보기 4개 (문자열 배열, 보기 간 중복 없이 의미 구분이 명확해야 함)
   - answer: 정답 번호 (1~4 중 하나, 문자열로 작성. 예: "2")
   - comment: 해설 (최소 3문장 이상. 정답의 이유와 오답의 구분 근거를 반드시 포함)
@@ -31,6 +35,7 @@ def load_choice_prompt(choice: int) -> str:
   {{
     "type": "TYPE_CHOICE",
     "question": "다음 중 객체 지향 프로그래밍(OOP)의 주요 특징이 아닌 것은 무엇인가?",
+    "explanation_type": null,
     "explanation": null,
     "option": ["캡슐화", "상속", "다형성", "구조적 프로그래밍"],
     "answer": "4",
@@ -39,6 +44,7 @@ def load_choice_prompt(choice: int) -> str:
   {{
     "type": "TYPE_CHOICE",
     "question": "다음 설명에 해당하는 소프트웨어 구성 요소는 무엇인가?",
+    "explanation_type", "text",
     "explanation": ["상호 독립적으로 작동하며 유지 보수성을 높인다.", "각기 다른 기능을 수행하는 코드의 그룹이다.", "재사용이 용이하여 개발 속도를 향상시킬 수 있다."],
     "option": ["함수", "클래스", "모듈", "프레임워크"],
     "answer": "3",
@@ -47,6 +53,7 @@ def load_choice_prompt(choice: int) -> str:
   {{
     "type": "TYPE_CHOICE",
     "question": "다음 C언어 프로그램이 실행되었을 때, 실행 결과는?",
+    "explanation_type": "code",
     "explanation": [
     "#include <stdio.h>",
     "",
