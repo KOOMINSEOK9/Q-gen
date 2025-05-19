@@ -30,7 +30,20 @@ export default function Footer() {
             <div
               className={`${expanded ? 'text-7xl font-extrabold mb-6 ' : 'text-3xl font-bold mb-2'}`}
             >
-              Q-gen
+              {expanded ? (
+                <img
+                  src='/images/logo-lg-w.png'
+                  alt='Q-gen'
+                  className='h-[54px]'
+                />
+              ) : (
+                <img
+                  src='/images/logo-lg.png'
+                  alt='Q-gen'
+                  className='h-[54px]'
+                />
+              )}
+              <h2 className='sr-only'>Q-gen</h2>
             </div>
             {expanded && (
               <>

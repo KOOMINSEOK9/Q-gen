@@ -8,9 +8,10 @@ export default function Header() {
   const { handleLogout } = useAuth();
 
   return (
-    <header className='w-full flex items-center justify-between px-8 py-4 bg-white rounded-full shadow-[0_0_24px_0_rgba(0,0,0,0.08)]'>
+    <header className='w-full flex items-center justify-between px-8 py-3 bg-white rounded-full shadow-[0_0_24px_0_rgba(0,0,0,0.08)]'>
       <Link to='/'>
-        <h2 className='text-3xl font-bold cursor-pointer'>Q-gen</h2>
+        <img src='/images/logo-lg.png' alt='Q-gen' className='h-[42px]' />
+        <h2 className='sr-only'>Q-gen</h2>
       </Link>
       <div className='flex items-center gap-3'>
         {userId && (

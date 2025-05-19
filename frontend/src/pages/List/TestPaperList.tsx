@@ -58,7 +58,7 @@ function TestPaperList({
   };
 
   return (
-    <div className='bg-white h-full rounded-2xl p-4 flex flex-col gap-2 shadow border border-gray-100 min-h-[40vh] overflow-y-auto'>
+    <div className='bg-white flex gap-8 min-h-[calc(100dvh-340px)] rounded-2xl p-4 flex flex-col gap-2 shadow border border-gray-100 min-h-[40vh] overflow-y-auto'>
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
         {papers.map((paper) => (
           <div
