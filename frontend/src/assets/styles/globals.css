@@ -82,3 +82,31 @@ button {
   background-color: #754aff !important;
   border-color: #754aff !important;
 }
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.animate-fade-in-scale-loop {
+  animation: fadeInScale 2.5s ease-in-out infinite;
+}
+
+.animate-fade-in-scale-loop-delayed {
+  animation: fadeInScale 3s ease-in-out infinite;
+  animation-delay: 1.5s;
+}

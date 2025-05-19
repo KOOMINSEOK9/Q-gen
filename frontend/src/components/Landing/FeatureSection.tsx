@@ -43,7 +43,7 @@ export default function FeatureSection() {
                   />
                   {/* 모달 오버레이 */}
                   <div className='absolute inset-0 flex items-center justify-center'>
-                    <div className='bg-white rounded-2xl shadow-lg p-2 w-[180px] max-w-full flex flex-col items-center border border-gray-100 animate-fade-in-scale-loop'>
+                    <div className='bg-white rounded-2xl shadow-lg p-2 w-[180px] max-w-full flex flex-col items-center border border-gray-100 animate-[fadeInScale_3s_ease-in-out_infinite_1.5s]'>
                       <div className='w-full flex justify-between items-center mb-2'>
                         <span className='text-[9px] font-bold'>
                           어떻게 변환할까요?
@@ -76,7 +76,7 @@ export default function FeatureSection() {
                   />
                   <div className='absolute bottom-4 right-4'>
                     <svg
-                      className='text-green-400 text-4xl animate-fade-in-scale-loop'
+                      className='text-green-400 text-4xl animate-[fadeInScale_2.5s_ease-in-out_infinite]'
                       width='40'
                       height='40'
                       fill='currentColor'
