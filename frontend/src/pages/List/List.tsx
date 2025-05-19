@@ -514,6 +514,12 @@ export default function List() {
                     variant='outlined'
                     className=''
                     onClick={() => handleHistoryClick(numericWorkBookId)}
+                    disabled={testPapers.length === 0}
+                    title={
+                      testPapers.length === 0
+                        ? '생성된 시험지가 없을 때는 문제 노트를 사용할 수 없습니다.'
+                        : ''
+                    }
                   >
                     문제 노트
                   </Button>

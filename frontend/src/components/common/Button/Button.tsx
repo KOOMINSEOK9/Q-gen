@@ -7,10 +7,14 @@ interface ButtonProps {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   className?: string;
+  title?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'filled', children, onClick, disabled, className }, ref) => {
+  (
+    { variant = 'filled', children, onClick, disabled, className, title },
+    ref
+  ) => {
     const baseStyles =
       'flex items-center justify-center rounded-xl font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
@@ -29,6 +33,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={twMerge(baseStyles, variantStyles[variant], className)}
         onClick={onClick}
         disabled={disabled}
+        title={title}
       >
         {children}
       </button>

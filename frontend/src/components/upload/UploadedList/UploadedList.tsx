@@ -202,7 +202,7 @@ function UploadedList({
         </div>
 
         {/* 파일 목록 */}
-        <SimpleBar className='h-[50dvh] px-6'>
+        <SimpleBar className='h-full px-6'>
           <div className='space-y-3'>
             {/* 전체 선택 체크박스 */}
             {!showAddButton && safeFiles.length > 0 && (

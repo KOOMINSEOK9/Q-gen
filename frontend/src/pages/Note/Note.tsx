@@ -244,7 +244,9 @@ const Note = () => {
               selectedOption = lastHistory ? lastHistory.userAnswer : '';
             }
 
-            const isSubmitted = true;
+            const isSubmitted = !!(
+              testHistoryList && testHistoryList.length > 0
+            );
             // 디버깅용 로그
             console.log('[NOTE->TEST] type:', type);
             console.log('[NOTE->TEST] options:', options);
