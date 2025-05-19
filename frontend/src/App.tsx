@@ -9,9 +9,12 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useState } from 'react';
+import PCRecommendModal from './components/common/PCRecommendModal/PCRecommendModal';
 
 function App() {
   useAuth(); // 앱 전체에서 한 번만 인증 동기화
+  const [showPCRecommend, setShowPCRecommend] = useState(false);
   const arcPages = ['/quiz', '/note'];
   const location = useLocation();
   const isArcPage = arcPages.some((path) => location.pathname.startsWith(path));
@@ -26,6 +29,28 @@ function App() {
   }
 
   const BackgroundComponent = isArcPage ? ArcBackground : BlurBackground;
+
+  useEffect(() => {
+    // 화면 너비 체크 함수
+    const checkScreenWidth = () => {
+      const isSmallScreen = window.innerWidth <= 1024;
+      // URL에 pc=1 파라미터가 있으면 모달을 표시하지 않음
+      const isPCVersion =
+        new URLSearchParams(window.location.search).get('pc') === '1';
+      setShowPCRecommend(isSmallScreen && !isPCVersion);
+    };
+
+    // 초기 체크
+    checkScreenWidth();
+
+    // 화면 크기 변경 시 체크
+    window.addEventListener('resize', checkScreenWidth);
+
+    // 클린업
+    return () => {
+      window.removeEventListener('resize', checkScreenWidth);
+    };
+  }, []);
 
   return (
     <div className='flex flex-col w-full'>
@@ -59,6 +84,10 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
+      />
+      <PCRecommendModal
+        isOpen={showPCRecommend}
+        onClose={() => setShowPCRecommend(false)}
       />
     </div>
   );
