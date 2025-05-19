@@ -241,24 +241,35 @@ public class TestPaperService {
                         .timeout(Duration.ofMinutes(5))
                         .block();
                 for(CreateTestResponseDto.Data data : response.getData()) {
-                    String explanation = null;
-                    if(data.getExplanation() != null) {
-                        explanation = "";
-                        for(int i = 0; i < data.getExplanation().size(); i++) {
-                            String ex = data.getExplanation().get(i);
-                            explanation += ex;
-                            if(i != data.getExplanation().size() - 1) {
-                                explanation += "///";
+                    if(data.getType() == Test.Type.TYPE_CHOICE) {
+                        String explanation = null;
+                        if(data.getExplanation() != null) {
+                            explanation = "";
+                            for(int i = 0; i < data.getExplanation().size(); i++) {
+                                String ex = data.getExplanation().get(i);
+                                explanation += ex;
+                                if(i != data.getExplanation().size() - 1) {
+                                    explanation += "///";
+                                }
                             }
                         }
-                    }
-                    if(data.getType() == Test.Type.TYPE_CHOICE) {
                         tests.add(new Test(testPaper, data.getType(), data.getQuestion(), explanation,
                                 data.getOption().get(0), data.getOption().get(1),
                                 data.getOption().get(2), data.getOption().get(3),
                                 data.getAnswer(), data.getComment()));
                     } else {
-                        tests.add(new Test(testPaper, data.getType(), data.getQuestion(), explanation,
+                        String aliases = null;
+                        if(data.getAliases() != null) {
+                            aliases = "";
+                            for(int i = 0; i < data.getAliases().size(); i++) {
+                                String alias = data.getAliases().get(i);
+                                aliases += alias;
+                                if(i != data.getAliases().size() - 1) {
+                                    aliases += "///";
+                                }
+                            }
+                        }
+                        tests.add(new Test(testPaper, data.getType(), data.getQuestion(), aliases,
                                 data.getAnswer(), data.getComment()));
                     }
                 }

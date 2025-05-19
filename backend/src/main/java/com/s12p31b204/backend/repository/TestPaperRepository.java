@@ -19,6 +19,7 @@ public interface TestPaperRepository extends JpaRepository<TestPaper, Long> {
     @Query("SELECT p.workBook.workBookId FROM TestPaper p WHERE p.testPaperId = :testPaperId")
     Long findWorkBookIdByTestPaperId(@Param("testPaperId") Long testPaperId);
 
+    @Query("SELECT p FROM TestPaper p WHERE p.workBook.workBookId = :workBookId ORDER BY p.createAt DESC")
     List<TestPaper> findAllByWorkBook_WorkBookId(Long workBookId);
 
 }
