@@ -393,8 +393,8 @@ export default function List() {
         <div className='w-26 h-26 mt-6 ml-6 animate-dolphin'>
           <img src='/images/dolpin-with-tablet.png' alt='돌고래 사진' />
         </div>
-        <div className='flex flex-col h-[100px] items-start justify-center bg-white rounded-2xl shadow px-6 max-w-[600px] ml-[1%] relative cursor-default animate-speech-bubble'>
-          <span className='text-2xl font-semibold '>
+        <div className='flex flex-col h-[100px] items-start justify-center bg-white rounded-2xl shadow px-6 min-w-[540px] ml-[1%] relative cursor-default animate-speech-bubble'>
+          <span className='text-2xl font-semibold'>
             안녕하세요!{' '}
             <strong className='bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text p-1'>
               {userName || 'User'}
