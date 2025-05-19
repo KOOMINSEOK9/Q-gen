@@ -12,6 +12,7 @@ import {
 } from '@/apis/note/note';
 import type { TestPaper, NoteTestDetail } from '@/types/note';
 import { useParams, useNavigate } from 'react-router-dom';
+import ScrollingEllipsis from './ScrollingEllipsis';
 
 const Note = () => {
   const { workBookId, testPaperId } = useParams();
@@ -139,13 +140,13 @@ const Note = () => {
                     }
                   }}
                   variant='filled'
-                  className={`w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/10 hover:border-[#754AFF]/80'}`}
+                  className={`truncate block w-full py-3 px-6 rounded-2xl transition-colors${idx === activeTestPaperIndex ? '' : ' bg-white border-1 border-gray-200 text-gray-900 hover:bg-[#754AFF]/10 hover:border-transparent line-clamp-1 break-all'}`}
                   onClick={() => {
                     setActiveTestPaperIndex(idx);
                     navigate(`/note/${workBookId}/${exam.testPaperId}`);
                   }}
                 >
-                  {exam.title}
+                  <ScrollingEllipsis>{exam.title}</ScrollingEllipsis>
                 </Button>
               ))}
             </div>

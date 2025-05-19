@@ -24,6 +24,7 @@ import { convertToPdf } from '@/apis/testpaper/testpaper';
 import { downloadPdf } from '@/utils/file';
 import Swal from 'sweetalert2';
 import { useAuth } from '@/hooks/useAuth';
+import GuideModal from '@/components/common/GuideModal/GuideModal';
 
 export default function List() {
   const { workBookId } = useParams(); // URL 파라미터에서 workBookId 추출
@@ -94,6 +95,8 @@ export default function List() {
 
   const [lastUploadedId, setLastUploadedId] = useState<string | null>(null);
 
+  const [showGuideModal, setShowGuideModal] = useState(true);
+
   // 로그인 체크
   useEffect(() => {
     if (!isLoggedIn) {
@@ -107,6 +110,14 @@ export default function List() {
       fetchWorkBooks();
     }
   }, [isLoggedIn]);
+
+  // 컴포넌트 마운트 시 localStorage 체크
+  useEffect(() => {
+    const shouldShow = localStorage.getItem('showGuideModal');
+    if (shouldShow === 'false') {
+      setShowGuideModal(false);
+    }
+  }, []);
 
   // 선택된 워크북 정보
   const selectedWorkbookData =
@@ -658,6 +669,11 @@ export default function List() {
         isOpen={isQuizStartModalOpen}
         onClose={() => setIsQuizStartModalOpen(false)}
         onStart={handleQuizModeStart}
+      />
+
+      <GuideModal
+        isOpen={showGuideModal}
+        onClose={() => setShowGuideModal(false)}
       />
     </div>
   );

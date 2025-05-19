@@ -16,7 +16,7 @@ function QuestionList({
   onQuestionClick,
 }: QuestionListProps) {
   return (
-    <div className='h-full min-h-[0] flex flex-col bg-white rounded-3xl p-6 shadow-sm'>
+    <div className='h-full min-h-[0] flex flex-col bg-white rounded-3xl p-6 shadow-sm overflow-y-auto'>
       <h3 className='text-lg font-bold mb-4'>문제 목록</h3>
       <div className='grid grid-cols-5 gap-2'>
         {Array.from(

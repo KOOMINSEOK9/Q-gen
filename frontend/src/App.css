@@ -59,3 +59,37 @@
   animation: fadeInUp 0.8s ease-out 0.5s forwards;
   opacity: 0;
 }
+
+/* src/styles/scrolling-ellipsis.css */
+.scrolling-ellipsis {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.scrolling-ellipsis-inner {
+  display: inline-block;
+  transition: transform 2.5s linear;
+  will-change: transform;
+}
+
+.scrolling-ellipsis:hover .scrolling-ellipsis-inner {
+  /* 실제 이동 거리: (텍스트 전체 길이 - 컨테이너 너비)만큼 왼쪽으로 이동 */
+  transform: translateX(calc(min(0px, (100% - var(--scroll-width, 0px)))));
+}
+
+@keyframes scroll-left {
+  0% {
+    text-indent: 0;
+  }
+  90% {
+    text-indent: calc(-1 * (var(--scroll-width, 0px) - 100%));
+  }
+  100% {
+    text-indent: calc(-1 * (var(--scroll-width, 0px) - 100%));
+  }
+}

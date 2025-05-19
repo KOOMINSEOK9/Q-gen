@@ -6,7 +6,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   return (
-    <div className='h-full flex flex-col justify-center items-center mt-24 mb-24'>
+    <div className='h-full flex flex-col justify-center items-center '>
       <div className='w-full max-w-sm mx-auto rounded-3xl shadow-sm bg-white p-8 flex flex-col items-center gap-6'>
         {/* 로고/타이틀 */}
         <div className='flex flex-col items-center gap-4'>
