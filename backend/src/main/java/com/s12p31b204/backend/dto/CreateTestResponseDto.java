@@ -27,6 +27,7 @@ public class CreateTestResponseDto {
         private Test.Type type;
         private List<String> option;
         private List<String> explanation;
+        private String explanationType;
         private List<String> aliases;
         private String answer;
         private String comment;

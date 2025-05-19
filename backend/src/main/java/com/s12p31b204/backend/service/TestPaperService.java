@@ -1,15 +1,19 @@
 package com.s12p31b204.backend.service;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.s12p31b204.backend.domain.Document;
@@ -99,7 +103,7 @@ public class TestPaperService {
                                 }
                             }
                         }
-                        tests.add(new Test(savedTestPaper, data.getType(), data.getQuestion(), explanation,
+                        tests.add(new Test(savedTestPaper, data.getType(), data.getQuestion(), explanation, data.getExplanationType(),
                                 data.getOption().get(0), data.getOption().get(1),
                                 data.getOption().get(2), data.getOption().get(3),
                                 data.getAnswer(), data.getComment()));
@@ -253,7 +257,7 @@ public class TestPaperService {
                                 }
                             }
                         }
-                        tests.add(new Test(testPaper, data.getType(), data.getQuestion(), explanation,
+                        tests.add(new Test(testPaper, data.getType(), data.getQuestion(), explanation, data.getExplanationType(),
                                 data.getOption().get(0), data.getOption().get(1),
                                 data.getOption().get(2), data.getOption().get(3),
                                 data.getAnswer(), data.getComment()));
@@ -293,5 +297,11 @@ public class TestPaperService {
                                 "FAILED"));
             }
         });
+    }
+
+    public String imageToBase64(String classpathResource) throws IOException {
+        ClassPathResource resource = new ClassPathResource(classpathResource);
+        byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
+        return Base64.getEncoder().encodeToString(bytes);
     }
 }

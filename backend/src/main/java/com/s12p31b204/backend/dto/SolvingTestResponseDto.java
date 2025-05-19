@@ -18,6 +18,7 @@ public class SolvingTestResponseDto {
     private Test.Type type;
     private String question;
     private List<String> explanation;
+    private String explanationType;
     private String option1;
     private String option2;
     private String option3;
@@ -33,6 +34,7 @@ public class SolvingTestResponseDto {
                 .type(test.getType())
                 .question(test.getQuestion())
                 .explanation(explanation)
+                .explanationType(test.getExplanationType())
                 .option1(test.getOption1())
                 .option2(test.getOption2())
                 .option3(test.getOption3())
