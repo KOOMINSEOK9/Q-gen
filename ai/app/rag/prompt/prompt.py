@@ -44,7 +44,7 @@ def load_choice_prompt(choice: int) -> str:
   {{
     "type": "TYPE_CHOICE",
     "question": "다음 설명에 해당하는 소프트웨어 구성 요소는 무엇인가?",
-    "explanation_type", "text",
+    "explanation_type": "text",
     "explanation": ["상호 독립적으로 작동하며 유지 보수성을 높인다.", "각기 다른 기능을 수행하는 코드의 그룹이다.", "재사용이 용이하여 개발 속도를 향상시킬 수 있다."],
     "option": ["함수", "클래스", "모듈", "프레임워크"],
     "answer": "3",
