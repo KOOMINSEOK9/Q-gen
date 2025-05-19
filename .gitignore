@@ -46,3 +46,7 @@ jenkins_home/
 **/application.properties
 
 **/bin
+
+**/*.faiss
+**/info.json
+**/questions.json

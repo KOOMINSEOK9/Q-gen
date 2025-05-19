@@ -24,3 +24,11 @@ def search_with_index(index, store, query_np, k: int):
             logger.warning(f"[⚠️ 검색 {i+1}] 유효하지 않은 인덱스: {idx}")
     
     return results
+
+def search_with_index_return_distance(index, store, query_np_array, k: int):
+    D, I = index.search(query_np_array, k=k)
+    results = []
+    for i, idx in enumerate(I[0]):
+        if 0 <= idx < len(store):
+            results.append((store[idx], D[0][i]))
+    return results
