@@ -536,61 +536,59 @@ export default function List() {
           </div>
 
           <div className='flex gap-5'>
-            <div className='flex-4'>
-              {/* 로딩/에러 처리 */}
-              {isLoading && <div>로딩 중...</div>}
-              {error && <div className='text-red-500'>{error.message}</div>}
-              {/* 조건부 렌더링 */}
-              {!isLoading &&
-                !error &&
-                (numericWorkBookId ? (
-                  papersLoading ? (
-                    <div>시험지 목록 불러오는 중...</div>
-                  ) : papersError ? (
-                    <div className='text-red-500'>{papersError.message}</div>
-                  ) : (
-                    <TestPaperList
-                      workBookId={numericWorkBookId || 0}
-                      papers={testPapers.map((paper) => {
-                        const isCreating = creatingTestPaperIds.includes(
-                          paper.testPaperId
-                        );
-                        console.log(
-                          '시험지ID:',
-                          paper.testPaperId,
-                          'isCreating:',
-                          isCreating,
-                          '현재 생성중:',
-                          creatingTestPaperIds
-                        );
-                        return {
-                          ...paper,
-                          isCreating,
-                        };
-                      })}
-                      onAddClick={() =>
-                        navigate(`/generate/${numericWorkBookId}`)
-                      }
-                      onPdfClick={handlePdfClick}
-                      onSolveClick={handleQuizStart}
-                      onHistoryClick={handleHistoryClick}
-                      onDelete={handleDeleteTestPaper}
-                    />
-                  )
-                ) : (
-                  <WorkBookList
-                    workbooks={workbooks}
-                    onWorkBookClick={(id) => handleWorkBookClick(Number(id))}
-                    onAddClick={handleOpenAddModal}
-                    onWorkBookDelete={handleWorkBookDelete}
-                    onWorkBookEdit={(id) => {
-                      const target = Array.isArray(workbooks)
-                        ? workbooks.find((wb) => String(wb.workBookId) === id)
-                        : undefined;
-                      handleOpenEditModal(id, target?.title ?? '');
-                    }}
-                  />
-                ))}
+            <div className='flex-4 relative'>
+              {/* 기존 리스트는 항상 렌더링 */}
+              {numericWorkBookId ? (
+                <TestPaperList
+                  workBookId={numericWorkBookId || 0}
+                  papers={testPapers.map((paper) => {
+                    const isCreating = creatingTestPaperIds.includes(
+                      paper.testPaperId
+                    );
+                    return {
+                      ...paper,
+                      isCreating,
+                    };
+                  })}
+                  onAddClick={() => navigate(`/generate/${numericWorkBookId}`)}
+                  onPdfClick={handlePdfClick}
+                  onSolveClick={handleQuizStart}
+                  onHistoryClick={handleHistoryClick}
+                  onDelete={handleDeleteTestPaper}
+                />
+              ) : (
+                <WorkBookList
+                  workbooks={workbooks}
+                  onWorkBookClick={(id) => handleWorkBookClick(Number(id))}
+                  onAddClick={handleOpenAddModal}
+                  onWorkBookDelete={handleWorkBookDelete}
+                  onWorkBookEdit={(id) => {
+                    const target = Array.isArray(workbooks)
+                      ? workbooks.find((wb) => String(wb.workBookId) === id)
+                      : undefined;
+                    handleOpenEditModal(id, target?.title ?? '');
+                  }}
+                />
+              )}
+
+              {/* 로딩/에러 오버레이 */}
+              {(isLoading || papersLoading || error || papersError) && (
+                <div className='absolute inset-0 bg-white/60 flex flex-col items-center justify-center z-10'>
+                  {(isLoading || papersLoading) && (
+                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mb-4'></div>
+                  )}
+                  {error && (
+                    <div className='text-red-500 text-lg mb-2'>
+                      {error.message}
+                    </div>
+                  )}
+                  {papersError && (
+                    <div className='text-red-500 text-lg'>
+                      {papersError.message}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             {/* 자료 업로드 - selectedWorkbook이 있을 때만 표시 */}
             {numericWorkBookId && (

@@ -15,11 +15,12 @@ export default function HeroSection() {
       {/* 메인 컨텐츠 */}
       <div className='relative z-10 flex flex-col items-center justify-center w-full max-w-2xl mx-auto'>
         <h1 className='text-4xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text leading-tight'>
-          나만의 퀴즈 만들기
+          AI가 만드는 나만의 시험지
         </h1>
         <p className='text-lg md:text-2xl text-gray-700 mb-10 md:mb-12'>
-          학습한 내용을 퀴즈로 만들어
-          <br className='hidden md:block' /> 더 효과적으로 공부하세요
+          파일만 올리면 AI가 자동으로 문제를 생성!
+          <br className='hidden md:block' />
+          오답노트, PDF 변환, 복습까지 한 번에.
         </p>
         <Button
           onClick={() => navigate('/list')}

@@ -17,10 +17,10 @@ export default function Landing() {
         <HeroSection />
       </div>
       <div data-aos='fade-up' data-aos-delay='100' className='mb-12'>
-        <FeatureSection />
+        <QuizPreviewSection />
       </div>
       <div data-aos='fade-up' data-aos-delay='200'>
-        <QuizPreviewSection />
+        <FeatureSection />
       </div>
       <ScrollToTopButton />
     </div>

@@ -2,53 +2,37 @@ import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaCheck,
-  FaTimes,
-  FaPen,
-  FaListUl,
-} from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import choiceAnsImg from '@/assets/images/choiceAns.png';
+import shortAnsImg from '@/assets/images/shortAns.png';
+import oxAnsImg from '@/assets/images/oxAns.png';
 
-const quizExamples = [
+const previewImages = [
   {
-    type: '객관식',
-    question: 'C Class에 속하는 IP address는?',
-    choices: ['200.168.30.1', '10.3.2.1', '225.2.4.1', '172.16.98.3'],
-    answer: '200.168.30.1',
+    src: choiceAnsImg,
+    label: '객관식 문제',
+    desc: '여러 선택지 중 정답을 고르는 문제 유형',
   },
   {
-    type: 'OX',
-    question: 'TCP는 신뢰성 있는 데이터 전송을 보장한다.',
-    answer: 'O',
+    src: shortAnsImg,
+    label: '주관식 문제',
+    desc: '직접 정답을 입력하는 문제 유형',
   },
   {
-    type: '주관식',
-    question: 'OSI 7계층 중 4번째 계층의 이름을 한글로 쓰세요.',
-    answer: '전송 계층',
-  },
-  {
-    type: '객관식',
-    question: '데이터베이스의 무결성(Integrity) 설명으로 옳지 않은 것은?',
-    choices: ['정확성 보장', '일관성 유지', '보안성 강화', '중복 허용'],
-    answer: '중복 허용',
-  },
-  {
-    type: 'OX',
-    question: 'UDP는 흐름제어와 혼잡제어를 지원한다.',
-    answer: 'X',
+    src: oxAnsImg,
+    label: 'OX 문제',
+    desc: 'O/X로 답하는 간단한 문제 유형',
   },
 ];
 
 function Arrow(props: any) {
-  const { style, onClick, direction } = props;
+  const { onClick, direction } = props;
   return (
     <button
-      className={`absolute top-1/2 z-10 -translate-y-1/2 bg-white/80 border border-gray-200 rounded-full p-2 shadow hover:bg-purple-100 transition-colors cursor-pointer ${direction === 'left' ? 'left-0' : 'right-0'}`}
-      style={{ ...style }}
+      className={`absolute top-1/2 z-20 -translate-y-1/2 text-4xl flex items-center justify-center p-0 bg-transparent border-none shadow-none cursor-pointer ${direction === 'left' ? '-left-12' : '-right-12'}`}
       onClick={onClick}
       aria-label={direction === 'left' ? '이전' : '다음'}
+      style={{ background: 'none' }}
     >
       {direction === 'left' ? (
         <FaChevronLeft className='text-purple-500' />
@@ -63,112 +47,54 @@ const settings = {
   dots: true,
   infinite: true,
   speed: 500,
-  slidesToShow: 3,
+  slidesToShow: 1,
   slidesToScroll: 1,
-  nextArrow: <Arrow direction='right' />,
+  centerMode: false,
+  arrows: true,
   prevArrow: <Arrow direction='left' />,
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 2,
-      },
-    },
-    {
-      breakpoint: 640,
-      settings: {
-        slidesToShow: 1,
-      },
-    },
-  ],
+  nextArrow: <Arrow direction='right' />,
+  autoplay: true,
+  autoplaySpeed: 2500,
 };
-
-function renderQuizCard(quiz: any, idx: number) {
-  return (
-    <div
-      key={idx}
-      className='px-4'
-      data-aos='fade-up'
-      data-aos-delay={idx * 100}
-    >
-      <div className='bg-white rounded-2xl shadow border border-gray-200 p-8 w-full max-w-xs mx-auto flex flex-col justify-between min-h-[340px] h-[340px] items-center'>
-        {/* 유형 표시 */}
-        <div className='flex items-center gap-2 mb-2 text-sm text-purple-500 font-semibold'>
-          {quiz.type === '객관식' && <FaListUl />}
-          {quiz.type === '주관식' && <FaPen />}
-          {quiz.type === 'OX' &&
-            (quiz.answer === 'O' ? <FaCheck /> : <FaTimes />)}
-          {quiz.type} 문제
-        </div>
-        {/* 문제 */}
-        <div className='mb-4 text-lg font-semibold text-gray-800 text-center'>
-          {quiz.question}
-        </div>
-        {/* 보기/입력란 */}
-        {quiz.type === '객관식' && (
-          <ul className='mb-4 w-full'>
-            {quiz.choices.map((choice: string, i: number) => (
-              <li
-                key={i}
-                className={`py-2 px-4 rounded-lg mb-2 border text-gray-700 text-center ${choice === quiz.answer ? 'border-purple-400 bg-purple-50 font-bold' : 'border-gray-200 bg-gray-50'}`}
-              >
-                {choice}
-              </li>
-            ))}
-          </ul>
-        )}
-        {quiz.type === '주관식' && (
-          <div className='mb-4 w-full flex flex-col items-center'>
-            <input
-              type='text'
-              className='w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 bg-gray-50 text-center mb-2'
-              placeholder='정답을 입력해보세요'
-              disabled
-            />
-          </div>
-        )}
-        {quiz.type === 'OX' && (
-          <div className='mb-4 flex gap-4 justify-center'>
-            {['O', 'X'].map((option) => {
-              let optionStyle = 'border-gray-200 bg-white';
-              let textStyle = 'text-gray-700';
-              if (quiz.answer === option) {
-                optionStyle = 'border-purple-400 bg-purple-50';
-                textStyle = 'font-bold text-purple-600';
-              }
-              return (
-                <div
-                  key={option}
-                  className={`w-[120px] h-[80px] border-2 rounded-[24px] flex items-center justify-center text-4xl transition-colors ${optionStyle}`}
-                >
-                  <span className={textStyle}>{option}</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {/* 정답 */}
-        {!(quiz.type === '객관식' && idx === 0) && (
-          <div className='mt-auto text-right text-xs text-gray-400 w-full'>
-            정답:{' '}
-            <span className='font-bold text-purple-500'>{quiz.answer}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 export default function QuizPreviewSection() {
   return (
-    <section className='py-20 bg-gray-50 min-h-[80vh] flex items-center scroll-snap-start rounded-[24px]'>
-      <div className='container mx-auto px-4'>
-        <h2 className='text-4xl font-bold text-center mb-16'>
+    <section className='pb-16 min-h-[420px] flex items-start scroll-snap-start bg-transparent'>
+      <div className='bg-white rounded-[24px] container mx-auto px-4 py-16 md:py-20 overflow-hidden'>
+        <h2 className='text-4xl font-bold text-center mb-8 mt-8 tracking-tight'>
           시험지 미리보기
         </h2>
-        <Slider {...settings} className='max-w-5xl mx-auto relative'>
-          {quizExamples.map((quiz, idx) => renderQuizCard(quiz, idx))}
-        </Slider>
+        <div className='flex justify-center items-start min-h-[360px]'>
+          <div className='relative w-full max-w-[950px]'>
+            <Slider {...settings} className='w-full'>
+              {previewImages.map((img, idx) => (
+                <div
+                  key={idx}
+                  className='flex flex-col items-center justify-center relative group'
+                >
+                  <div className='relative w-full flex justify-center'>
+                    <img
+                      src={img.src}
+                      alt={img.label}
+                      className='w-[950px] max-w-[80vw] h-auto object-contain mx-auto rounded-2xl shadow-lg border border-gray-200 bg-gray-50 transition-all duration-300'
+                    />
+                    <div className='absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'>
+                      <div className='absolute inset-0 bg-gray-900/50 rounded-2xl'></div>
+                      <div className='relative z-10 flex flex-col items-center justify-center'>
+                        <div className='text-3xl font-extrabold text-white mb-2 drop-shadow-lg'>
+                          {img.label}
+                        </div>
+                        <div className='text-lg font-medium text-white drop-shadow-lg'>
+                          {img.desc}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          </div>
+        </div>
       </div>
     </section>
   );

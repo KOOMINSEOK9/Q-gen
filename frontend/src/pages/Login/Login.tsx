@@ -15,12 +15,12 @@ const Login = () => {
           className='w-28 max-w-[140px] aspect-[3/2] mb-4 object-contain'
         />
         {/* 안내문구 */}
-        <p className='text-gray-500 text-center mb-8 text-base'>
+        <p className='text-gray-500 text-center mb-2 text-base mt-2'>
           구글 계정으로 간편하게 로그인하세요.
         </p>
         {/* 구글 로그인 버튼 */}
         <button
-          className='flex items-center justify-center w-full gap-3 py-3.5 px-4 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all text-gray-700 font-semibold text-base focus:outline-none cursor-pointer'
+          className='flex items-center justify-center w-full gap-3 py-3.5 px-4 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all text-gray-700 font-semibold text-base focus:outline-none cursor-pointer mt-4'
           onClick={() => {
             window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`;
           }}
