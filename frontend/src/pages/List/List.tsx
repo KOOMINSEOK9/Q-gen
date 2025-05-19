@@ -434,7 +434,7 @@ export default function List() {
       {/* 문제집 & 자료 업로드 */}
       <section className='flex gap-8'>
         {/* 문제집 리스트 */}
-        <div className='flex-1 flex flex-col gap-0 '>
+        <div className='flex-1 flex flex-col gap-0 h-full'>
           {/* 제목 파트 */}
           <div className='flex justify-between pt-4 pb-3 items-center'>
             <div className='flex items-center gap-2 h-[40px]'>
@@ -592,12 +592,13 @@ export default function List() {
             </div>
             {/* 자료 업로드 - selectedWorkbook이 있을 때만 표시 */}
             {numericWorkBookId && (
-              <aside className='flex flex-2 shrink-0'>
+              <aside className='flex flex-2 shrink-0 h-full'>
                 <UploadedList
                   files={files}
                   maxFiles={30}
                   onDelete={handleDelete}
                   onClick={() => setIsUploadModalOpen(true)}
+                  className='h-full'
                 />
                 <UploadModal
                   isOpen={isUploadModalOpen}

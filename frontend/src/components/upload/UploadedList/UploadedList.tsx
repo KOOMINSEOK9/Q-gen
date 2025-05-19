@@ -57,6 +57,11 @@ function UploadedList({
   const [docxPreviewOpen, setDocxPreviewOpen] = useState(false);
   const [docxFileName, setDocxFileName] = useState<string>('');
 
+  // 높이 관련 클래스가 className에 포함되어 있는지 체크
+  const hasHeightClass = className?.match(
+    /h-(full|\\[.*?\\]|\\d+(vh|dvh|px|rem|em))/
+  );
+
   // 파일 상세 조회 핸들러
   const handleDetailOpen = async (file: UploadedFile) => {
     setDetailLoading(true);
@@ -202,7 +207,9 @@ function UploadedList({
         </div>
 
         {/* 파일 목록 */}
-        <SimpleBar className='h-full px-6'>
+        <SimpleBar
+          className={twMerge('px-6', hasHeightClass ? className : 'h-[50dvh]')}
+        >
           <div className='space-y-3'>
             {/* 전체 선택 체크박스 */}
             {!showAddButton && safeFiles.length > 0 && (

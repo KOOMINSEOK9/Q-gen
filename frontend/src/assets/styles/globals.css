@@ -56,38 +56,29 @@ button {
   font-size: 1.2rem !important;
 }
 
-@keyframes fadeInScale {
-  0% {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* SweetAlert2 icon color custom */
+.swal2-icon.swal2-success {
+  color: var(--color-main-mint) !important;
+  border-color: var(--color-main-mint) !important;
 }
-.animate-fade-in-scale {
-  animation: fadeInScale 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+.swal2-icon.swal2-error {
+  color: var(--color-main-pink) !important;
+  border-color: var(--color-main-pink) !important;
+}
+.swal2-icon.swal2-warning {
+  color: var(--color-main-yellow) !important;
+  border-color: var(--color-main-yellow) !important;
+}
+.swal2-icon.swal2-info {
+  color: var(--color-main-blue) !important;
+  border-color: var(--color-main-blue) !important;
+}
+.swal2-icon.swal2-question {
+  color: var(--color-main-purple) !important;
+  border-color: var(--color-main-purple) !important;
 }
 
-@keyframes fadeInScaleLoop {
-  0% {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  20% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  80% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-}
-.animate-fade-in-scale-loop {
-  animation: fadeInScaleLoop 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+.swal2-confirm {
+  background-color: #754aff !important;
+  border-color: #754aff !important;
 }
