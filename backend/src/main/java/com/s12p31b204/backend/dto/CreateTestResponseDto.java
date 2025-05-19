@@ -2,6 +2,7 @@ package com.s12p31b204.backend.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.s12p31b204.backend.domain.Test;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +28,10 @@ public class CreateTestResponseDto {
         private Test.Type type;
         private List<String> option;
         private List<String> explanation;
+
+        @JsonAlias("explanation_type")
         private String explanationType;
+
         private List<String> aliases;
         private String answer;
         private String comment;
