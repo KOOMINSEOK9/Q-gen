@@ -49,9 +49,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String serverName = request.getServerName();
 
         if ("localhost".equals(serverName)) {
-            redirectUrl = "http://localhost:5173/"; // 로그인 성공 시 리다이렉션(로컬)
+            redirectUrl = "http://localhost:5173/list"; // 로그인 성공 시 리다이렉션(로컬)
         } else {
-            redirectUrl = "https://" + serverName + "/"; // 로그인 성공 시 리다이렉션(서버)
+            redirectUrl = "https://" + serverName + "/list"; // 로그인 성공 시 리다이렉션(서버)
         }
 
         response.sendRedirect(redirectUrl);
