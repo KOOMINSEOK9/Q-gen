@@ -127,6 +127,7 @@ public class DocumentController {
     // document-05: 텍스트 입력 txt파일 변환
     @PostMapping("/text")
     public ResponseEntity<ResponseData<FindDocumentResponseDto>> convertTextToTxt(@RequestBody ConvertTxtRequestDto requestDto, HttpServletRequest request) {
+        log.info("converting text...");
         FindDocumentResponseDto response = documentService.convertTextToTxt(requestDto.getWorkBookId(), requestDto.getText());
         return ApiResponse.success(response, "txt파일 변환 성공", HttpStatus.OK, request.getRequestURI());
     }
@@ -138,6 +139,7 @@ public class DocumentController {
             @RequestParam("url") String url,
             HttpServletRequest request
     ) {
+        log.info("convert url...");
         FindDocumentResponseDto document = documentService.convertUrlToTxt(workBookId, url);
         return ApiResponse.success(document, "url txt파일 변환 성공", HttpStatus.OK, request.getRequestURI());
     }

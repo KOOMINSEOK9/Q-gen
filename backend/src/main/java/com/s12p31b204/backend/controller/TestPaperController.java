@@ -122,8 +122,10 @@ public class TestPaperController {
                 return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
             }
         } catch (NoSuchElementException e) {
+            log.error(e.getMessage());
             return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
         } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
             return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -160,11 +162,11 @@ public class TestPaperController {
                 log.info("modifying TestPaper...");
                 TestPaperResponseDto response = testPaperService.updateTestPaper(updateTestPaperRequestDto);
                 return ApiResponse.success(response, "시험지 수정 성공", HttpStatus.OK, request.getRequestURI());
-
             } else {
                 return ApiResponse.failure("권한이 없습니다.", HttpStatus.FORBIDDEN, request.getRequestURI());
             }
         } catch (NoSuchElementException e) {
+            log.error(e.getMessage());
             return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
         } catch (Exception e) {
             log.error(e.getMessage());
