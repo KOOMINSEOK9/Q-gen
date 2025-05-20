@@ -155,115 +155,120 @@ function Test({
   };
 
   return (
-    <div className='w-full h-full min-h-0 bg-white rounded-3xl p-6 shadow-sm flex flex-col'>
-      <div className='flex justify-between mb-2'>
-        {/* 문제 번호 */}
-        <div className='flex items-center gap-1'>
-          <p className='text-base font-bold mr-1'>
-            문제 {currentNumber}/{totalNumber}
-          </p>
-          <div className='flex items-center gap-1 px-2 py-1'>
-            <div className='bg-rose-400 text-white text-sm rounded-lg px-2 py-1'>
-              오답 {incorrectCount}회
-            </div>
-          </div>
-          <Button
-            variant='filled'
-            className='py-1 px-2.5 text-sm rounded-lg'
-            onClick={() => setModalOpen(true)}
-          >
-            제출이력
-          </Button>
-        </div>
-        <div className='flex items-center gap-2'>
-          <Button onClick={onPrev} variant='small' className='my-1 text-xs'>
-            이전
-          </Button>
-          <Button onClick={onNext} variant='small' className='my-1 text-xs'>
-            다음
-          </Button>
-        </div>
-      </div>
-      {/* 문제 내용 */}
-      <div className='mb-4'>
-        <h2 className='text-lg font-bold'>{test}</h2>
-        {explanationBox && explanationBox.length > 0 && (
-          <div className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0'>
-            {explanationBox.map((exp, idx) => (
-              <div key={idx} className='flex items-center'>
-                <span className='mr-2 text-gray-700'>•</span>
-                {exp}
+    <div className='w-full h-full min-h-0 bg-white rounded-3xl py-6 pl-6 shadow-sm flex flex-col min-h-[calc(100dvh-114px)]'>
+      <SimpleBar
+        style={{ flex: 1 }}
+        className='flex flex-col h-full min-h-0 pr-6'
+      >
+        <div className='flex justify-between mb-2'>
+          {/* 문제 번호 */}
+          <div className='flex items-center gap-1'>
+            <p className='text-base font-bold mr-1'>
+              문제 {currentNumber}/{totalNumber}
+            </p>
+            <div className='flex items-center gap-1 px-2 py-1'>
+              <div className='bg-rose-400 text-white text-sm rounded-lg px-2 py-1'>
+                오답 {incorrectCount}회
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className='flex-1 min-h-0 flex flex-col'>
-        {/* 문제 유형에 따른 렌더링 */}
-        {renderQuestion()}
-        {/* 해설 */}
-        {isSubmitted && (
-          <SimpleBar className='mt-2 mb-0 bg-[#CAC7FC]/20 rounded-3xl max-h-52 flex flex-col p-6 w-full overflow-auto'>
-            <div className='font-semibold mb-2 text-gray-700'>해설</div>
-            <div className='text-gray-700'>{explanation}</div>
-          </SimpleBar>
-        )}
-      </div>
-      {/* Modal for test history */}
-      {modalOpen && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center'>
-          <div
-            className='absolute inset-0 bg-black/30'
-            onClick={() => setModalOpen(false)}
-          />
-          <div className='relative bg-white rounded-2xl w-[420px] max-h-[80vh] p-8 flex flex-col items-center shadow-lg z-10'>
-            <div className='w-full flex items-center justify-between mb-6'>
-              <h2 className='text-xl font-bold'>제출 이력</h2>
-              <button
-                onClick={() => setModalOpen(false)}
-                className='text-gray-400 hover:text-gray-600 text-2xl'
-              >
-                ×
-              </button>
             </div>
-            <div className='w-full flex flex-col gap-2 overflow-y-auto'>
-              <div className='grid grid-cols-3 gap-2 px-2 py-1 border-b border-gray-700 text-sm font-semibold text-gray-700 rounded-t-lg'>
-                <div>제출일</div>
-                <div className='text-center'>내 답안</div>
-                <div className='text-center'>정오답</div>
-              </div>
-              {testHistoryList.length === 0 ? (
-                <div className='text-center text-gray-500 py-8'>
-                  이력이 없습니다.
+            <Button
+              variant='filled'
+              className='py-1 px-2.5 text-sm rounded-lg'
+              onClick={() => setModalOpen(true)}
+            >
+              제출이력
+            </Button>
+          </div>
+          <div className='flex items-center gap-2'>
+            <Button onClick={onPrev} variant='small'>
+              이전
+            </Button>
+            <Button onClick={onNext} variant='small'>
+              다음
+            </Button>
+          </div>
+        </div>
+        {/* 문제 내용 */}
+        <div className='mb-4'>
+          <h2 className='text-lg font-bold'>{test}</h2>
+          {explanationBox && explanationBox.length > 0 && (
+            <div className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0'>
+              {explanationBox.map((exp, idx) => (
+                <div key={idx} className='flex items-center'>
+                  <span className='mr-2 text-gray-700'>•</span>
+                  {exp}
                 </div>
-              ) : (
-                testHistoryList.map((history) => (
-                  <div
-                    key={history.testHistoryId}
-                    className={`grid grid-cols-3 gap-2 px-2 py-2 items-center text-sm rounded-lg ${history.correct ? 'bg-green-50' : 'bg-rose-50'}`}
-                  >
-                    <div className='truncate text-xs text-gray-700'>
-                      {formatDate(history.createAt)}
-                    </div>
-                    <div
-                      className={`text-center font-semibold ${history.correct ? 'text-[#009d77]/80' : 'text-[#ff4339]/80'}`}
-                    >
-                      {history.userAnswer}
-                    </div>
-                    <div className='text-center'>
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${history.correct ? 'bg-green-200 text-[#009d77]/80' : 'bg-rose-200 text-[#ff4339]/80'}`}
-                      >
-                        {history.correct ? '정답' : '오답'}
-                      </span>
-                    </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className='flex-1 min-h-0 flex flex-col'>
+          {/* 문제 유형에 따른 렌더링 */}
+          {renderQuestion()}
+          {/* 해설 */}
+          {isSubmitted && (
+            <div className='mt-2 p-6 bg-[#CAC7FC]/20 rounded-3xl flex flex-col w-full'>
+              <div className='font-semibold mb-2 text-gray-700'>해설</div>
+              <div className='text-gray-700'>{explanation}</div>
+            </div>
+          )}
+        </div>
+        {/* Modal for test history */}
+        {modalOpen && (
+          <div className='fixed inset-0 z-50 flex items-center justify-center'>
+            <div
+              className='absolute inset-0 bg-black/30'
+              onClick={() => setModalOpen(false)}
+            />
+            <div className='relative bg-white rounded-2xl w-[420px] max-h-[80vh] p-8 flex flex-col items-center shadow-lg z-10'>
+              <div className='w-full flex items-center justify-between mb-6'>
+                <h2 className='text-xl font-bold'>제출 이력</h2>
+                <button
+                  onClick={() => setModalOpen(false)}
+                  className='text-gray-400 hover:text-gray-600 text-2xl'
+                >
+                  ×
+                </button>
+              </div>
+              <div className='w-full flex flex-col gap-2 overflow-y-auto'>
+                <div className='grid grid-cols-3 gap-2 px-2 py-1 border-b border-gray-700 text-sm font-semibold text-gray-700 rounded-t-lg'>
+                  <div>제출일</div>
+                  <div className='text-center'>내 답안</div>
+                  <div className='text-center'>정오답</div>
+                </div>
+                {testHistoryList.length === 0 ? (
+                  <div className='text-center text-gray-500 py-8'>
+                    이력이 없습니다.
                   </div>
-                ))
-              )}
+                ) : (
+                  testHistoryList.map((history) => (
+                    <div
+                      key={history.testHistoryId}
+                      className={`grid grid-cols-3 gap-2 px-2 py-2 items-center text-sm rounded-lg ${history.correct ? 'bg-green-50' : 'bg-rose-50'}`}
+                    >
+                      <div className='truncate text-xs text-gray-700'>
+                        {formatDate(history.createAt)}
+                      </div>
+                      <div
+                        className={`text-center font-semibold ${history.correct ? 'text-[#009d77]/80' : 'text-[#ff4339]/80'}`}
+                      >
+                        {history.userAnswer}
+                      </div>
+                      <div className='text-center'>
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${history.correct ? 'bg-green-200 text-[#009d77]/80' : 'bg-rose-200 text-[#ff4339]/80'}`}
+                        >
+                          {history.correct ? '정답' : '오답'}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </SimpleBar>
     </div>
   );
 }

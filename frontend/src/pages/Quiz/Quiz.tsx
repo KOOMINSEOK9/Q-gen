@@ -9,6 +9,7 @@ import {
 } from '../../apis/quiz/quiz';
 import { TestQuestion, TestResult } from '../../types/quiz';
 import QuizEnd from './QuizEnd';
+import SimpleBar from 'simplebar-react';
 
 type AnswerStatus = 'none' | 'correct' | 'wrong';
 
@@ -189,17 +190,8 @@ function QuizPage() {
   }
 
   return (
-    <div className='flex gap-4 h-full'>
-      {/* QuestionFrame (4/5) */}
+    <div className='flex gap-4 h-full min-h-0'>
       <div style={{ flex: 4 }} className='flex flex-col h-full min-h-0'>
-        {/* <div className='flex items-center mb-4'>
-          <img
-            src='/src/assets/images/chart.png'
-            alt='시험 아이콘'
-            className='w-11 h-11'
-          />
-          <h1 className='text-2xl font-bold'>정보처리기사 필기 1회</h1>
-        </div> */}
         <QuestionFrame
           currentNumber={current + 1}
           totalNumber={totalQuestions}
@@ -228,7 +220,6 @@ function QuizPage() {
           explanationBox={currentQuestion?.explanation}
         />
       </div>
-      {/* ExamSidebar (1/5) */}
       <div style={{ flex: 1 }} className='flex flex-col h-full min-h-0'>
         <ExamSidebar
           currentNumber={current + 1}

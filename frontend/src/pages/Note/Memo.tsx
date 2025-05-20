@@ -5,6 +5,7 @@ import {
   RichUtils,
   convertToRaw,
   convertFromRaw,
+  ContentBlock,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 import BoldIcon from '@/assets/icons/bold.svg?react';
@@ -82,6 +83,19 @@ const Memo = ({ testId, initialMemo }: MemoProps) => {
       RichUtils.toggleBlockType(editorState, 'unordered-list-item')
     );
 
+  // placeholder 노출 여부: 텍스트가 없고, 리스트 블록도 없으면 true
+  const content = editorState.getCurrentContent();
+  const hasText = content.hasText();
+  const hasListBlock = content
+    .getBlockMap()
+    .some(
+      (block) =>
+        !!block &&
+        (block.getType() === 'unordered-list-item' ||
+          block.getType() === 'ordered-list-item')
+    );
+  const showPlaceholder = !hasText && !hasListBlock;
+
   return (
     <div className='bg-white rounded-3xl p-6 shadow-sm flex flex-col h-full relative'>
       <div className='flex items-center justify-between mb-2'>
@@ -123,7 +137,9 @@ const Memo = ({ testId, initialMemo }: MemoProps) => {
         <Editor
           editorState={editorState}
           onChange={setEditorState}
-          placeholder={`나만의 해설이나 메모를 기록해보세요.`}
+          placeholder={
+            showPlaceholder ? `나만의 해설이나 메모를 기록해보세요.` : ''
+          }
         />
         <style>{`
           .public-DraftEditor-content {

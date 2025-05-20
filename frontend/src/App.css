@@ -7,13 +7,22 @@
   background: #754aff !important;
 }
 .simplebar-track.simplebar-vertical {
+  right: 0 !important;
+  left: auto !important;
   width: 8px !important;
   background: transparent !important;
-  top: 11px !important;
-  bottom: 11px !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  z-index: 10;
+  pointer-events: auto;
 }
 .simplebar-scrollbar.simplebar-visible:before {
   opacity: 1 !important;
+}
+.simplebar-content-wrapper {
+  /* 스크롤바가 겹쳐도 컨텐츠 클릭 가능하게 */
+  overflow: auto !important;
 }
 
 @keyframes gradient-move-bg {
