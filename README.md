@@ -4,7 +4,7 @@
 - RAG 기반 문제 생성 서비스
 - RAG를 활용하여 사용자가 입력한 데이터를 기반으로 유사도 검색을 하여 정밀한 문제를 생성해주는 서비스 입니다. 
 - **프로젝트 기간:** 2025/4/14 ~ 2025/5/21 
-
+<br>
 ### 💡 서비스 특징
 #### 1. 문서/자료 업로드 기반 AI 문제 생성
 사용자는 PDF, DOCX, 텍스트 등 다양한 형태의 학습 자료를 업로드할 수 있습니다.
@@ -22,17 +22,6 @@
 #### 5. 학습 몰입도 향상을 위한 디자인
 차분한 컬러와 친근한 캐릭터(돌고래 등)로 직관적인 UI를 구성하여 학습 몰입도 향상
 <br>
-
-### 👭팀원 정보 및 업무 분담 내역
-| 이름           | 역할 및 구현 기능                                                                                                                                                                                                                       |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🟧황연주(팀장) | **Frontend**<br>- figma 디자인 <br>  - SockJS와 STOMP 프로토콜 활용한 서비스 내 실시간 채팅 컴포넌트 구현 <br>- 사용자 및 후보자 정보 관리 구현<br>- 선거 유세를 위한 라이브 화면 구현 <br>                                                                                                                                                                                            |
-| 🟩구민석(팀원) | **Frontend**<br>- 투표 API 개발<br>- 선거 API 개발<br>- 조회 로직 redis 캐싱<br> - 후보자 초성 검색 구현<br>- JPA 쿼리 최적화                                                                                                                                                                                                           |
-| 🟦이신욱(팀원) | **Frontend**<br>- 스트리밍 API 개발<br>- WebSocket으로 스트림 수신<br>- 스트림을 FFmpeg로 RTMP 변환<br> <br>**Infra**<br>- 프로젝트 전체 구조 설정<br>- Docker, Docker-compose로 프로젝트 실행과 배포 환경 구축<br>- Jenkins로 CI/CD 구축<br>- RTMP-HLS 스트리밍 환경 구축 |
-| 🟥최현만(팀원) | **INFRA, AI**<br>- figma 디자인<br>- client 프로젝트 구조 설정<br>- WebSocket과 hls.js를 활용한 라이브 스트리밍 구현<br>- 선거 및 투표 만들기 구현 <br>- 선거 메인 화면 구현 <br>- 유틸 기능 구현 (글자수 처리, 날짜 데이터 처리 등)<br> |
-| 🟨장인영(팀원) | **Backend, DATA**<br>- figma 디자인<br>- 페이지 마크업 및 스타일링<br>- axios, zustand, react-qeury를 활용한 데이터 바인딩 <br> - 투표하기 Session 구현 <br> - Web Socket을 활용한 실시간 투표 정보 제공<br>                                 |
-| 🟪홍정표(팀원) | **Backend**<br>- figma 디자인 <br>  - SockJS와 STOMP 프로토콜 활용한 서비스 내 실시간 채팅 컴포넌트 구현 <br>- 사용자 및 후보자 정보 관리 구현<br>- 선거 유세를 위한 라이브 화면 구현 <br>   <br>                                                                                                                                                                                                     |
-
 <br>
 
 # 2. 설계 및 구현
@@ -44,7 +33,7 @@
 ![React Query](https://img.shields.io/badge/react_query-FF4154.svg?style=for-the-badge&logo=reactquery&logoColor=white)
 ![Yarn Berry](https://img.shields.io/badge/yarn_berry-2C8EBB.svg?style=for-the-badge&logo=yarn&logoColor=white)
 ![Storybook](https://img.shields.io/badge/storybook-FF4785.svg?style=for-the-badge&logo=storybook&logoColor=white)
-![Tailwind CSS]](https://img.shields.io/badge/sass-CC6699.svg?style=for-the-badge&logo=sass&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-0ea5e9?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-3178C6.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![Zustand](https://img.shields.io/badge/zustand-E26529.svg?style=for-the-badge&logo=zustand&logoColor=white)
 
