@@ -45,6 +45,7 @@ public class TestPaper {
     private int choiceAns;
     private int shortAns;
     private int oxAns;
+    private int wordAns;
 
     @Column(nullable = false)
     private int quantity;
@@ -61,12 +62,13 @@ public class TestPaper {
     @CreatedDate
     private LocalDateTime createAt;
 
-    public TestPaper(WorkBook workBook, String title, int choiceAns, int shortAns, int oxAns, int quantity) {
+    public TestPaper(WorkBook workBook, String title, int choiceAns, int shortAns, int oxAns, int wordAns, int quantity) {
         this.workBook = workBook;
         this.title = title;
         this.choiceAns = choiceAns;
         this.shortAns = shortAns;
         this.oxAns = oxAns;
+        this.wordAns = wordAns;
         this.quantity = quantity;
     }
 
