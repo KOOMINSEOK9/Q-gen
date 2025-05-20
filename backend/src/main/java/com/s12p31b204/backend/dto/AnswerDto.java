@@ -9,4 +9,5 @@ public class AnswerDto {
     private int number;
     private String answer;
     private String comment;
+    private String type; // "TYPE_CHOICE", "TYPE_OX", "TYPE_SHORT"
 }

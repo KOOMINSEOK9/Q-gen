@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.openhtmltopdf.extend.FSSupplier;
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.s12p31b204.backend.domain.Test;
+import com.s12p31b204.backend.domain.TestPaper;
 import com.s12p31b204.backend.dto.AnswerDto;
 import com.s12p31b204.backend.dto.AnswerToHtmlDto;
 import com.s12p31b204.backend.dto.ConvertPdfRequestDto;
@@ -37,6 +39,7 @@ import com.s12p31b204.backend.dto.GenerateTestPaperRequestDto;
 import com.s12p31b204.backend.dto.QuestionDto;
 import com.s12p31b204.backend.dto.TestPaperResponseDto;
 import com.s12p31b204.backend.dto.QuestionToHtmlDto;
+import com.s12p31b204.backend.dto.TestPaperToHtmlDto;
 import com.s12p31b204.backend.dto.UpdateTestPaperRequestDto;
 import com.s12p31b204.backend.oauth2.CustomOAuth2User;
 import com.s12p31b204.backend.service.AuthorizationService;
@@ -195,6 +198,7 @@ public class TestPaperController {
         try {
             log.info("Convert TestPaper To PDF...");
             List<Test> tests = testService.findTestAll(convertPdfRequestDto.getTestPaperId());
+            TestPaper testPaper = testPaperService.findTestPaperById(convertPdfRequestDto.getTestPaperId());
 
             List<QuestionDto> allQuestions = new ArrayList<>();
             List<AnswerDto> allAnswers = new ArrayList<>();
@@ -202,32 +206,47 @@ public class TestPaperController {
             // 객관식 문제
             for (int i = 0; i < tests.size(); i++) {
                 Test test = tests.get(i);
+                String answer = test.getAnswer();
                 if(test.getType() == Test.Type.TYPE_CHOICE) {
+                    List<String> explanations = null;
+                    if(test.getExplanations() != null) {
+                        String[] split = test.getExplanations().split("///");
+                        explanations = new ArrayList<>();
+                        for(String ex : split) {
+                            explanations.add(ex);
+                        }
+                    }
                     allQuestions.add(new QuestionDto(
                             i + 1,
                             test.getQuestion(),
+                            explanations,
                             List.of(test.getOption1(), test.getOption2(), test.getOption3(), test.getOption4()),
                             test.getType().toString()
                     ));
+                    String symbol = "①②③④";
+                    int index = Integer.parseInt(answer) - 1;
+                    answer = String.valueOf(symbol.charAt(index));
                 } else {
                     allQuestions.add(new QuestionDto(
                             i + 1,
                             test.getQuestion(),
+                            null,
                             null,
                             test.getType().toString()
                     ));
                 }
                 allAnswers.add(new AnswerDto(
                         i + 1,
-                        test.getAnswer(),
-                        test.getComment()
+                        answer,
+                        test.getComment(),
+                        test.getType().toString()
                 ));
             }
 
             // 페이징 처리(왼쪽, 오른쪽)
             List<QuestionToHtmlDto> questions = new ArrayList<>();
             List<AnswerToHtmlDto> answers = new ArrayList<>();
-            int pageSize = 10;
+            int pageSize = 8;
             int leftSize = pageSize / 2;
 
             for (int start = 0; start < allQuestions.size(); start += pageSize) {
@@ -261,6 +280,12 @@ public class TestPaperController {
             if(convertPdfRequestDto.isIncludeAnswer()) {
                 variables.put("answers", answers);
             }
+            String createAt = testPaper.getCreateAt().format(DateTimeFormatter.ofPattern("YYYY-MM-dd"));
+            TestPaperToHtmlDto testPaperToHtmlDto = new TestPaperToHtmlDto(
+                    testPaper.getTitle(), createAt, testPaper.getQuantity());
+            variables.put("testPaper", testPaperToHtmlDto);
+            String base64 = testPaperService.imageToBase64("images/logo-title.png");
+            variables.put("logo", base64);
             context.setVariables(variables);
 
             // HTML 렌더링
@@ -271,12 +296,13 @@ public class TestPaperController {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.withHtmlContent(htmlContent, null);
 
-            ClassPathResource fontResource = new ClassPathResource("fonts/AppleSDGothicNeoB.ttf"); // 폰트 파일 위치
+            ClassPathResource appleFontResource = new ClassPathResource("fonts/AppleSDGothicNeoB.ttf"); // 폰트 파일 위치
+            ClassPathResource pretendardFontResource = new ClassPathResource("fonts/Pretendard-Bold.ttf");
 
             builder.useFont(
                     () -> {
                         try {
-                            return fontResource.getInputStream();
+                            return appleFontResource.getInputStream();
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -285,6 +311,19 @@ public class TestPaperController {
                     400,
                     BaseRendererBuilder.FontStyle.NORMAL,
                     true
+            );
+            builder.useFont(
+                    () -> {
+                        try {
+                            return pretendardFontResource.getInputStream();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    "Pretendard",
+                    400,
+                    BaseRendererBuilder.FontStyle.NORMAL,
+                    false
             );
 
             builder.toStream(stream);

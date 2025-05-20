@@ -218,6 +218,13 @@ public class TestPaperService {
     }
 
     @Transactional(readOnly = true)
+    public TestPaper findTestPaperById(Long testPaperId) throws Exception {
+        return testPaperRepository.findById(testPaperId).orElseThrow(
+                () -> new NoSuchElementException("시험지를 찾을 수 없습니다.")
+        );
+    }
+
+    @Transactional(readOnly = true)
     public Long findWorkBookByTestPaperId(Long testPaperId) {
         return testPaperRepository.findWorkBookIdByTestPaperId(testPaperId);
     }
