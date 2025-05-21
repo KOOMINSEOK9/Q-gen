@@ -9,12 +9,14 @@ interface TextUploadModalProps {
   onClose: () => void;
   onSubmit: (result: DocumentInfo) => void;
   workBookId: number;
+  setUploading?: (uploading: boolean) => void;
 }
 
 const TextUploadModal: React.FC<TextUploadModalProps> = ({
   onClose,
   onSubmit,
   workBookId,
+  setUploading,
 }) => {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,7 +24,20 @@ const TextUploadModal: React.FC<TextUploadModalProps> = ({
 
   const handleSubmit = async () => {
     if (!text.trim()) return;
+    // 텍스트 용량 체크 (UTF-8)
+    const encoder = new TextEncoder();
+    const byteLength = encoder.encode(text).length;
+    if (byteLength > 10 * 1024 * 1024) {
+      Swal.fire({
+        icon: 'warning',
+        title: '10MB 이하 텍스트만 업로드할 수 있습니다.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return;
+    }
     setLoading(true);
+    setUploading?.(true);
     try {
       const result = await convertTextToTxt(workBookId, text);
       onSubmit(result);
@@ -36,6 +51,7 @@ const TextUploadModal: React.FC<TextUploadModalProps> = ({
       });
     } finally {
       setLoading(false);
+      setUploading?.(false);
     }
   };
 

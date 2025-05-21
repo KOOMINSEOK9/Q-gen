@@ -315,7 +315,7 @@ const Note = () => {
         )}
       </div>
 
-      {/* Note (1/5) */}
+      {/* Memo (1/5) */}
       <div style={{ flex: 1.2 }} className='flex flex-col h-full min-h-0'>
         {currentTestDetail ? (
           <Memo

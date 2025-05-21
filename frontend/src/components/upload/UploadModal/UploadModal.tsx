@@ -11,6 +11,7 @@ interface UploadModalProps {
   onLinkSubmit: (result: DocumentInfo) => void;
   onTextSubmit: (result: DocumentInfo) => void;
   workBookId?: number;
+  setUploading?: (uploading: boolean) => void;
 }
 
 const UploadModal: React.FC<UploadModalProps> = ({
@@ -20,6 +21,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   onLinkSubmit,
   onTextSubmit,
   workBookId,
+  setUploading,
 }) => {
   if (!isOpen) return null;
 
@@ -46,6 +48,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
           onLinkSubmit={onLinkSubmit}
           onTextSubmit={onTextSubmit}
           // workBookId={workBookId || 0}
+          setUploading={setUploading}
         />
       </div>
     </div>

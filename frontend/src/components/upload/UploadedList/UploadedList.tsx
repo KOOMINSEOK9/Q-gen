@@ -34,6 +34,7 @@ interface UploadedListProps {
   selectedIds?: string[];
   onSelect?: (id: string) => void;
   lastUploadedId?: string | null;
+  uploading?: boolean; // 파일 업로드 중 여부
 }
 
 function UploadedList({
@@ -47,6 +48,7 @@ function UploadedList({
   selectedIds = [],
   onSelect,
   lastUploadedId,
+  uploading = false,
 }: UploadedListProps) {
   // files가 null이거나 undefined일 경우를 대비해 기본값 처리
   const safeFiles = files ?? [];
@@ -181,7 +183,13 @@ function UploadedList({
   const sortedFiles = [...safeFiles].reverse();
 
   return (
-    <div className='flex-1 bg-white rounded-3xl shadow-sm '>
+    <div className='relative flex-1 bg-white rounded-3xl shadow-sm '>
+      {/* 업로드 중 스피너 오버레이 */}
+      {uploading && (
+        <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center z-20 backdrop-blur-sm'>
+          <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500'></div>
+        </div>
+      )}
       <div className={twMerge('w-full space-y-4 py-6', className)}>
         <div className='flex justify-between items-center px-6'>
           <h2 className='text-xl font-bold'>업로드 된 자료</h2>

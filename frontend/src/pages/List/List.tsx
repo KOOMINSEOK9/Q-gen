@@ -96,6 +96,7 @@ export default function List() {
   const [lastUploadedId, setLastUploadedId] = useState<string | null>(null);
 
   const [showGuideModal, setShowGuideModal] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   // 로그인 체크
   useEffect(() => {
@@ -632,6 +633,7 @@ export default function List() {
                   onClick={() => setIsUploadModalOpen(true)}
                   className='h-full'
                   lastUploadedId={lastUploadedId}
+                  uploading={uploading}
                 />
                 <UploadModal
                   isOpen={isUploadModalOpen}
@@ -640,6 +642,7 @@ export default function List() {
                   onLinkSubmit={handleLinkSubmit}
                   onTextSubmit={handleTextSubmit}
                   workBookId={numericWorkBookId || 0}
+                  setUploading={setUploading}
                 />
               </aside>
             )}

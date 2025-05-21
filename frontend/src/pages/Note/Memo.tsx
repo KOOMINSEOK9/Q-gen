@@ -14,6 +14,7 @@ import ListIcon from '@/assets/icons/list.svg?react';
 import TrashIcon from '@/assets/icons/trash.svg?react';
 import debounce from 'lodash.debounce';
 import { patchNoteMemo } from '@/apis/note/note';
+import SimpleBar from 'simplebar-react';
 
 interface MemoProps {
   testId: number;
@@ -97,11 +98,11 @@ const Memo = ({ testId, initialMemo }: MemoProps) => {
   const showPlaceholder = !hasText && !hasListBlock;
 
   return (
-    <div className='bg-white rounded-3xl p-6 shadow-sm flex flex-col h-full relative'>
+    <div className='bg-white rounded-3xl py-6 pl-6 shadow-sm flex flex-col h-full relative'>
       <div className='flex items-center justify-between mb-2'>
         <div className='text-lg font-bold'>문제별 노트</div>
       </div>
-      <div className='flex items-center gap-4 mb-2'>
+      <div className='flex items-center gap-4 mb-2 pr-6'>
         <button
           type='button'
           className='text-gray-700 hover:text-[#754AFF] text-lg cursor-pointer'
@@ -132,8 +133,8 @@ const Memo = ({ testId, initialMemo }: MemoProps) => {
           <TrashIcon />
         </button>
       </div>
-      <div className='border-b border-gray-700 mb-2' />
-      <div className='flex-1 text-sm w-full min-w-0 break-words'>
+      <div className='border-b border-gray-700 mb-2 mr-6' />
+      <SimpleBar className='flex-1 text-sm w-full min-w-0 break-words h-full overflow-y-auto pr-6'>
         <Editor
           editorState={editorState}
           onChange={setEditorState}
@@ -151,7 +152,7 @@ const Memo = ({ testId, initialMemo }: MemoProps) => {
             box-sizing: border-box;
           }
         `}</style>
-      </div>
+      </SimpleBar>
     </div>
   );
 };

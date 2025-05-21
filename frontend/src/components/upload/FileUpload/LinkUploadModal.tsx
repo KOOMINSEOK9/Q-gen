@@ -9,12 +9,14 @@ interface LinkUploadModalProps {
   onClose: () => void;
   onSubmit: (result: DocumentInfo) => void;
   workBookId: number;
+  setUploading?: (uploading: boolean) => void;
 }
 
 const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
   onClose,
   onSubmit,
   workBookId,
+  setUploading,
 }) => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,8 +25,22 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
   const handleSubmit = async () => {
     if (!url.trim()) return;
     setLoading(true);
+    setUploading?.(true);
     try {
       const result = await convertUrlToTxt(workBookId, url);
+      const encoder = new TextEncoder();
+      const byteLength = encoder.encode(result.documentContent || '').length;
+      if (byteLength > 10 * 1024 * 1024) {
+        Swal.fire({
+          icon: 'warning',
+          title: '10MB 이하 텍스트만 업로드할 수 있습니다.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        setUploading?.(false);
+        setLoading(false);
+        return;
+      }
       onSubmit(result);
       onClose();
     } catch (e) {
@@ -37,6 +53,7 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
       });
     } finally {
       setLoading(false);
+      setUploading?.(false);
     }
   };
 

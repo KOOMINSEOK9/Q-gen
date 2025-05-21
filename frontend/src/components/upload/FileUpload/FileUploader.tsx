@@ -15,6 +15,7 @@ interface FileUploaderProps {
   onLinkSubmit: (result: DocumentInfo) => void;
   onTextSubmit: (result: DocumentInfo) => void;
   className?: string;
+  setUploading?: (uploading: boolean) => void;
 }
 
 const pulseAnimation = `
@@ -35,6 +36,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   onLinkSubmit,
   onTextSubmit,
   className = '',
+  setUploading,
 }) => {
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [showTextModal, setShowTextModal] = useState(false);
@@ -69,9 +71,18 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       const file = files[0];
+      if (file.size > 10 * 1024 * 1024) {
+        Swal.fire({
+          icon: 'warning',
+          title: '10MB 이하 파일만 업로드할 수 있습니다.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        return;
+      }
       try {
-        // await uploadDocument(file, workBookId);
-        onFileUpload(file);
+        setUploading?.(true);
+        await onFileUpload(file);
       } catch (error) {
         Swal.fire({
           icon: 'error',
@@ -79,6 +90,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           timer: 2000,
           showConfirmButton: false,
         });
+      } finally {
+        setUploading?.(false);
       }
     }
   };
@@ -87,9 +100,18 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
+      if (file.size > 10 * 1024 * 1024) {
+        Swal.fire({
+          icon: 'warning',
+          title: '10MB 이하 파일만 업로드할 수 있습니다.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        return;
+      }
       try {
-        // await uploadDocument(file, workBookId);
-        onFileUpload(file);
+        setUploading?.(true);
+        await onFileUpload(file);
       } catch (error) {
         Swal.fire({
           icon: 'error',
@@ -97,6 +119,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           timer: 2000,
           showConfirmButton: false,
         });
+      } finally {
+        setUploading?.(false);
       }
     }
   };
@@ -208,6 +232,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             setShowLinkModal(false);
           }}
           workBookId={numericWorkBookId}
+          setUploading={setUploading}
         />
       )}
       {/* Text Upload Modal */}
@@ -219,6 +244,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             setShowTextModal(false);
           }}
           workBookId={numericWorkBookId}
+          setUploading={setUploading}
         />
       )}
     </div>

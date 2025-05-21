@@ -26,6 +26,7 @@ const Generate = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [selectedDocumentIds, setSelectedDocumentIds] = useState<number[]>([]);
   const [lastUploadedId, setLastUploadedId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const totalProblems = useMemo(() => {
     return testTypes.reduce((sum, type) => sum + type.count, 0);
@@ -275,6 +276,7 @@ const Generate = () => {
               onLinkSubmit={handleLinkSubmit}
               onTextSubmit={handleTextSubmit}
               className='md:col-span-2'
+              setUploading={setUploading}
             />
           </div>
           <div className='flex flex-col gap-4'>
@@ -287,6 +289,7 @@ const Generate = () => {
               selectedIds={selectedDocumentIds.map(String)}
               onSelect={handleDocumentSelect}
               lastUploadedId={lastUploadedId}
+              uploading={uploading}
             />
             <ProblemTypeSelector
               testTypes={testTypes}
