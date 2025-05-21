@@ -68,15 +68,12 @@ public class TestService {
         boolean isCorrect = false;
 
         // 히스토리 저장
-        String match = "[^\uAC00-\uD7A30-9a-zA-Z]";
         String correctAnswer = test.getAnswer()
                 .trim()
-                .toLowerCase()
-                .replaceAll(match, "");
+                .toLowerCase();
         String userAnswer = solvingTestRequestDto.getUserAnswer()
                 .trim()
-                .toLowerCase()
-                .replaceAll(match, "");
+                .toLowerCase();
 
         List<String> explanations = null;
         if(test.getExplanations() != null) {
@@ -92,7 +89,7 @@ public class TestService {
         } else if(test.getType().equals(Test.Type.TYPE_SHORT)) {
             String[] aliases = test.getAliases().split("///");
             for(String alias : aliases) {
-                alias = alias.trim().toLowerCase().replaceAll(match, "");
+                alias = alias.trim().toLowerCase();
                 if(alias.equals(userAnswer)) {
                     isCorrect = true;
                     break;

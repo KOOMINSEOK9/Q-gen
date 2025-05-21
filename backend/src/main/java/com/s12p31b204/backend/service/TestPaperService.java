@@ -135,6 +135,7 @@ public class TestPaperService {
                                 "COMPLETED"));
             });
         } catch (Exception e) {
+            log.error(e.getMessage());
             emitterService.sendEvent(userId,
                     "testpaper created",
                     new CreateTestPaperEventDto(savedTestPaper.getTestPaperId(),
