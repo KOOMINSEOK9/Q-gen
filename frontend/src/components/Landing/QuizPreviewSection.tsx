@@ -61,7 +61,7 @@ export default function QuizPreviewSection() {
   return (
     <section className='pb-16 min-h-[420px] flex items-start scroll-snap-start bg-transparent'>
       <div className='bg-white rounded-[24px] container mx-auto px-4 py-16 md:py-20 overflow-hidden'>
-        <h2 className='text-4xl font-bold text-center mb-8 mt-8 tracking-tight'>
+        <h2 className='text-4xl font-bold text-center mb-6 mt-6 tracking-tight'>
           시험지 미리보기
         </h2>
         <div className='flex justify-center items-start min-h-[360px]'>

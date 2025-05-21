@@ -1,8 +1,18 @@
+import React from 'react';
 import { useTestPaperCreationStore } from '@/stores/testPaperCreationStore';
 import { toast } from 'react-toastify';
 
 // SSE 연결 인스턴스를 전역에서 관리
 let eventSource: EventSource | null = null;
+
+function getToastContent(title: string, message: string): React.ReactNode {
+  return (
+    <div>
+      <div style={{ fontWeight: 700 }}>{title}</div>
+      <div>{message}</div>
+    </div>
+  );
+}
 
 export const connectSSE = (userId: number) => {
   // 이미 연결되어 있으면 기존 인스턴스 반환
@@ -34,10 +44,13 @@ export const connectSSE = (userId: number) => {
           window.dispatchEvent(new Event('refreshTestPapers'));
 
           // 토스트 메시지 표시
+          const title = data.title || '제목 없음';
           if (data.status === 'COMPLETED') {
-            toast.success('시험지 생성이 완료되었습니다!');
+            toast.success(
+              getToastContent(title, '시험지 생성이 완료되었습니다!')
+            );
           } else if (data.status === 'FAILED') {
-            toast.error('시험지 생성에 실패했습니다.');
+            toast.error(getToastContent(title, '시험지 생성에 실패했습니다.'));
           }
         }
       } catch (e) {}
