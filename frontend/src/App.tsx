@@ -24,7 +24,7 @@ function App() {
 
   const { showBasicGuideModal, setShowBasicGuideModal } = useModalStore();
 
-  const arcPages = ['/quiz', '/note'];
+  // const arcPages = ['/quiz', '/note'];
   const location = useLocation();
 
   // 페이지 타입 계산을 메모이제이션
