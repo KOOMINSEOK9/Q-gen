@@ -1,5 +1,7 @@
 package com.s12p31b204.backend.controller;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +75,7 @@ public class MainController {
     public SseEmitter getEmitter(@PathVariable Long userId) {
         try {
             log.info("Try SSE Connect...");
-            return emitterService.addEmitter(userId);
+            return emitterService.addEmitter(userId, new SseEmitter(TimeUnit.HOURS.toMillis(1)));
         } catch (Exception e) {
             log.info(e.getMessage());
             return null;

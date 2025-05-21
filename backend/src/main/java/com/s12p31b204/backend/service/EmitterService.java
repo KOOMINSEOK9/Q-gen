@@ -1,6 +1,8 @@
 package com.s12p31b204.backend.service;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,16 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class EmitterService {
 
-    private final ConcurrentHashMap<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
 
-    public SseEmitter getEmitter(Long userId) {
+    public List<SseEmitter> getEmitter(Long userId) {
         return emitters.get(userId);
     }
     public SseEmitter addEmitter(Long userId, SseEmitter emitter) throws Exception {
-        emitters.computeIfAbsent(userId, key -> emitter);
-        emitter.onCompletion(() -> emitters.remove(userId));
-        emitter.onTimeout(() -> emitters.remove(userId));
+        emitters.computeIfAbsent(userId, key -> new CopyOnWriteArrayList<>()).add(emitter);
+        emitter.onCompletion(() -> removeEmitter(userId, emitter));
+        emitter.onTimeout(() -> removeEmitter(userId, emitter));
+        emitter.onError((e) -> removeEmitter(userId, emitter));
 
         emitter.send("SSE Connection Success");
         log.info("SSE Connection Success : " + userId);
@@ -34,28 +37,28 @@ public class EmitterService {
         return emitter;
     }
 
-    public SseEmitter addEmitter(Long userId) throws Exception {
-        SseEmitter emitter = emitters.get(userId);
-        if(emitter != null) {
-            emitter.complete();
-            emitters.remove(userId);
+    public void removeEmitter(Long userId, SseEmitter emitter) {
+        List<SseEmitter> emitterList = emitters.get(userId);
+        if(emitterList != null) {
+            emitterList.remove(emitter);
         }
-        emitter = new SseEmitter(TimeUnit.HOURS.toMillis(1));
-
-        return addEmitter(userId, emitter);
     }
 
     public <E> void sendEvent(Long userId, String eventName, E eventData) {
-        try {
-            SseEmitter emitter = getEmitter(userId);
+            List<SseEmitter> emitterList = getEmitter(userId);
             SseEmitter.SseEventBuilder event = SseEmitter.event()
                     .name(eventName)
                     .data(eventData);
-            emitter.send(event);
+            for(SseEmitter emitter : emitterList) {
+                try {
+                    emitter.send(event);
+                } catch (Exception e) {
+                    emitter.complete();
+                    emitterList.remove(emitter);
+                    log.error("failed to send " + eventName, e);
+                }
+            }
             log.info("send " + eventName);
-        } catch (Exception e) {
-            log.error("failed to send " + eventName, e);
-        }
     }
 
     @PostConstruct
@@ -67,16 +70,15 @@ public class EmitterService {
             @Override
             public void run() {
                 for(Long userId : emitters.keySet()) {
-                    try {
-                        SseEmitter emitter = emitters.get(userId);
-                        if(emitter == null) {
-                            emitters.remove(userId);
-                        } else {
+                    List<SseEmitter> emitterList = getEmitter(userId);
+                    for(SseEmitter emitter : emitterList) {
+                        try {
                             emitter.send("SSE HeartBeat");
+                        } catch (Exception e) {
+                            log.error(e.getMessage());
+                            emitter.complete();
+                            emitterList.remove(emitter);
                         }
-                    } catch (Exception e) {
-                        log.error(e.getMessage());
-                        emitters.remove(userId);
                     }
                 }
             }

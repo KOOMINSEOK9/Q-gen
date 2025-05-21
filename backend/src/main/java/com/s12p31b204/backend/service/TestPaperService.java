@@ -11,10 +11,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.s12p31b204.backend.domain.Document;
 import com.s12p31b204.backend.domain.Test;
@@ -134,6 +136,15 @@ public class TestPaperService {
                                 savedTestPaper.getTitle(),
                                 "COMPLETED"));
             });
+        } catch (WebClientResponseException e) {
+            HttpStatusCode statusCode = e.getStatusCode();
+            String responseBody = e.getResponseBodyAsString();
+            log.error(statusCode + " " + responseBody);
+            emitterService.sendEvent(userId,
+                    "testpaper created",
+                    new CreateTestPaperEventDto(savedTestPaper.getTestPaperId(),
+                            savedTestPaper.getTitle(),
+                            "FAILED"));
         } catch (Exception e) {
             log.error(e.getMessage());
             emitterService.sendEvent(userId,
