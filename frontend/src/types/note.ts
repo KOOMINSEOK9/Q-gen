@@ -59,6 +59,7 @@ export interface NoteTestDetail {
   testHistoryList: NoteTestHistory[];
   incorrectCount: number;
   explanation?: string[];
+  explanationType?: 'text' | 'code';
 }
 
 export interface GetNoteTestDetailResponse {

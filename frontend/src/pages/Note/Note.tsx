@@ -297,6 +297,7 @@ const Note = () => {
                     answerIndex={answerIndex}
                     explanation={currentTestDetail.comment}
                     explanationBox={currentTestDetail.explanation}
+                    explanationType={currentTestDetail.explanationType}
                     incorrectCount={currentTestDetail.incorrectCount}
                     onNext={handleNext}
                     onPrev={handlePrev}

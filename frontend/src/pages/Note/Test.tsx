@@ -21,11 +21,13 @@ function Test({
   testHistoryList,
   type,
   answer,
+  explanationType,
 }: Omit<NoteProps, 'onSelect'> & {
   testHistoryList: NoteTestHistory[];
   answer: string;
   type: 'choiceAns' | 'shortAns' | 'oxAns';
   explanationBox?: string[];
+  explanationType?: 'text' | 'code';
 }) {
   const explanationRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -191,16 +193,22 @@ function Test({
         {/* 문제 내용 */}
         <div className='mb-4'>
           <h2 className='text-lg font-bold'>{test}</h2>
-          {explanationBox && explanationBox.length > 0 && (
-            <div className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0'>
-              {explanationBox.map((exp, idx) => (
-                <div key={idx} className='flex items-center'>
-                  <span className='mr-2 text-gray-700'>•</span>
-                  {exp}
-                </div>
-              ))}
-            </div>
-          )}
+          {explanationBox &&
+            explanationBox.length > 0 &&
+            (explanationType === 'code' ? (
+              <pre className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0 overflow-x-auto'>
+                <code>{explanationBox.join('\n')}</code>
+              </pre>
+            ) : (
+              <div className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0'>
+                {explanationBox.map((exp, idx) => (
+                  <div key={idx} className='flex items-center'>
+                    <span className='mr-2 text-gray-700'>•</span>
+                    {exp}
+                  </div>
+                ))}
+              </div>
+            ))}
         </div>
         <div className='flex-1 min-h-0 flex flex-col'>
           {/* 문제 유형에 따른 렌더링 */}

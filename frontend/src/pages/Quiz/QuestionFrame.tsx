@@ -18,6 +18,7 @@ interface QuestionFrameProps {
   onNext: () => void;
   questionType?: 'choiceAns' | 'shortAns' | 'oxAns';
   isCorrect?: boolean;
+  explanationType?: 'text' | 'code';
 }
 
 function QuestionFrame({
@@ -35,6 +36,7 @@ function QuestionFrame({
   onNext,
   questionType = 'choiceAns',
   isCorrect,
+  explanationType,
 }: QuestionFrameProps) {
   const explanationRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -270,16 +272,22 @@ function QuestionFrame({
           {/* 문제 내용 */}
           <div className='mb-4'>
             <h2 className='text-lg font-bold'>{question}</h2>
-            {explanationBox && explanationBox.length > 0 && (
-              <div className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0'>
-                {explanationBox.map((exp, idx) => (
-                  <div key={idx} className='flex items-center'>
-                    <span className='mr-2 text-gray-700'>•</span>
-                    {exp}
-                  </div>
-                ))}
-              </div>
-            )}
+            {explanationBox &&
+              explanationBox.length > 0 &&
+              (explanationType === 'code' ? (
+                <pre className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0 overflow-x-auto'>
+                  <code>{explanationBox.join('\n')}</code>
+                </pre>
+              ) : (
+                <div className='border border-gray-200 p-4 rounded-lg bg-white mt-4 mb-0'>
+                  {explanationBox.map((exp, idx) => (
+                    <div key={idx} className='flex items-center'>
+                      <span className='mr-2 text-gray-700'>•</span>
+                      {exp}
+                    </div>
+                  ))}
+                </div>
+              ))}
           </div>
           {/* 문제 유형에 따른 렌더링 */}
           {renderQuestion()}
