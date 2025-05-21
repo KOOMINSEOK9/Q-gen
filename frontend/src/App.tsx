@@ -9,59 +9,69 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import PCRecommendModal from './components/common/PCRecommendModal/PCRecommendModal';
 import StickyGuideButton from './components/common/StickyGuideButton/StickyGuideButton';
 import GuideModal from './components/common/GuideModal/GuideModal';
+import { connectSSE, disconnectSSE } from '@/utils/sse';
 
 function App() {
-  useAuth(); // 앱 전체에서 한 번만 인증 동기화
-  const [showPCRecommend, setShowPCRecommend] = useState(false);
+  const userId = useAuth().userId;
+  const isConnected = useRef(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
-  const arcPages = ['/quiz', '/note'];
   const location = useLocation();
-  const isArcPage = arcPages.some((path) => location.pathname.startsWith(path));
 
-  // 보여줄 경로 배열 (원하는 경로로 수정)
+  // 페이지 타입 계산을 메모이제이션
+  const { isArcPage, mainPageType } = useMemo(() => {
+    const isArcPage =
+      location.pathname.startsWith('/quiz') ||
+      location.pathname.startsWith('/note') ||
+      location.pathname.startsWith('/login');
+    return {
+      isArcPage,
+      mainPageType: isArcPage ? 'fixed' : ('default' as const),
+    };
+  }, [location.pathname]);
+
   const showGuideButtonPaths = ['/generate', '/list', '/note'];
   // 현재 경로가 배열에 포함되는지 체크
   const shouldShowGuideButton = showGuideButtonPaths.some((path) =>
     location.pathname.startsWith(path)
   );
 
-  // mainPageType: 'default' | 'fixed' 두 가지 타입 사용
-  let mainPageType: 'default' | 'fixed' = 'default';
-  if (
-    location.pathname.startsWith('/quiz') ||
-    location.pathname.startsWith('/note') ||
-    location.pathname.startsWith('/login')
-  ) {
-    mainPageType = 'fixed';
-  }
+  // SSE 연결 관리
+  useEffect(() => {
+    if (!userId || isConnected.current) return;
 
-  const BackgroundComponent = isArcPage ? ArcBackground : BlurBackground;
+    connectSSE(userId);
+    isConnected.current = true;
+
+    return () => {
+      if (isConnected.current) {
+        disconnectSSE();
+        isConnected.current = false;
+      }
+    };
+  }, [userId]);
+
+  // PC 추천 모달 상태 관리
+  const [showPCRecommend, setShowPCRecommend] = useState(false);
+
+  // 화면 크기 체크 로직을 메모이제이션
+  const checkScreenWidth = useCallback(() => {
+    const isSmallScreen = window.innerWidth <= 1024;
+    const isPCVersion =
+      new URLSearchParams(window.location.search).get('pc') === '1';
+    setShowPCRecommend(isSmallScreen && !isPCVersion);
+  }, []);
 
   useEffect(() => {
-    // 화면 너비 체크 함수
-    const checkScreenWidth = () => {
-      const isSmallScreen = window.innerWidth <= 1024;
-      // URL에 pc=1 파라미터가 있으면 모달을 표시하지 않음
-      const isPCVersion =
-        new URLSearchParams(window.location.search).get('pc') === '1';
-      setShowPCRecommend(isSmallScreen && !isPCVersion);
-    };
-
-    // 초기 체크
     checkScreenWidth();
-
-    // 화면 크기 변경 시 체크
     window.addEventListener('resize', checkScreenWidth);
+    return () => window.removeEventListener('resize', checkScreenWidth);
+  }, [checkScreenWidth]);
 
-    // 클린업
-    return () => {
-      window.removeEventListener('resize', checkScreenWidth);
-    };
-  }, []);
+  const BackgroundComponent = isArcPage ? ArcBackground : BlurBackground;
 
   return (
     <div className='flex flex-col w-full'>
@@ -74,7 +84,6 @@ function App() {
           )}
         >
           <Header />
-
           <main
             className={twMerge(
               'flex-1 py-4 min-h-0',

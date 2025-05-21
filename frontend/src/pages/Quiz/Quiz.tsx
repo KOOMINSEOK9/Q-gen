@@ -218,6 +218,7 @@ function QuizPage() {
           }
           isCorrect={resultArr[current]?.correct}
           explanationBox={currentQuestion?.explanation}
+          explanationType={currentQuestion?.explanationType}
         />
       </div>
       <div style={{ flex: 1 }} className='flex flex-col h-full min-h-0'>

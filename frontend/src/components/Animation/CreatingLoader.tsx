@@ -14,7 +14,7 @@ const CreatingLoader: React.FC = () => {
 
   return (
     <span className='text-purple-600 font-bold text-lg animate-pulse'>
-      Creating{DOTS[step]}
+      생성중{DOTS[step]}
     </span>
   );
 };

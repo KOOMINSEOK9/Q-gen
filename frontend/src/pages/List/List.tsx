@@ -383,16 +383,6 @@ export default function List() {
     setIsTitleModalOpen(false);
   };
 
-  // SSE 연결
-  useEffect(() => {
-    if (isLoggedIn && userId) {
-      const eventSource = connectSSE(userId);
-      return () => {
-        eventSource?.close();
-      };
-    }
-  }, [isLoggedIn, userId]);
-
   // PDF 다운로드 핸들러 추가
   const handlePdfDownload = async (option: '문제만' | '정답/해설포함') => {
     if (!selectedPaper) return;

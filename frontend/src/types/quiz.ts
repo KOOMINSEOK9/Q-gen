@@ -14,6 +14,7 @@ export interface TestQuestion {
   type: 'choiceAns' | 'shortAns' | 'oxAns';
   question: string;
   explanation: string[];
+  explanationType: 'text' | 'code';
   option1: string;
   option2: string;
   option3: string;

@@ -1,49 +1,59 @@
 import { useTestPaperCreationStore } from '@/stores/testPaperCreationStore';
 import { toast } from 'react-toastify';
 
+// SSE 연결 인스턴스를 전역에서 관리
 let eventSource: EventSource | null = null;
 
 export const connectSSE = (userId: number) => {
-  if (eventSource) {
-    eventSource.close();
+  // 이미 연결되어 있으면 기존 인스턴스 반환
+  if (eventSource && eventSource.readyState !== EventSource.CLOSED) {
+    return eventSource;
   }
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-  eventSource = new EventSource(`${baseUrl}/api/sse/${userId}`);
+  const sseUrl = `${baseUrl}/api/sse/${userId}`;
 
-  // 시험지 생성 관련 이벤트
-  eventSource.addEventListener('testpaper created', (event: MessageEvent) => {
-    try {
-      const data = JSON.parse(event.data);
-      if (
-        data &&
-        data.testPaperId &&
-        (data.status === 'COMPLETED' || data.status === 'FAILED')
-      ) {
-        useTestPaperCreationStore
-          .getState()
-          .removeCreatingTestPaper(Number(data.testPaperId));
-        if (data.status === 'COMPLETED') {
-          toast.success('시험지 생성이 완료되었습니다!');
-        } else if (data.status === 'FAILED') {
-          toast.error('시험지 생성에 실패했습니다.');
+  try {
+    eventSource = new EventSource(sseUrl);
+
+    // 'testpaper created' 이벤트 리스너
+    eventSource.addEventListener('testpaper created', (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (
+          data &&
+          data.testPaperId &&
+          (data.status === 'COMPLETED' || data.status === 'FAILED')
+        ) {
+          // Zustand store 갱신
+          useTestPaperCreationStore
+            .getState()
+            .removeCreatingTestPaper(Number(data.testPaperId));
+
+          // List 페이지에 시험지 목록 새로고침 알림
+          window.dispatchEvent(new Event('refreshTestPapers'));
+
+          // 토스트 메시지 표시
+          if (data.status === 'COMPLETED') {
+            toast.success('시험지 생성이 완료되었습니다!');
+          } else if (data.status === 'FAILED') {
+            toast.error('시험지 생성에 실패했습니다.');
+          }
         }
+      } catch (e) {}
+    });
+
+    eventSource.onerror = (err) => {
+      if (eventSource && eventSource.readyState === EventSource.CLOSED) {
+        eventSource = null;
       }
-    } catch (e) {
-      // 파싱 에러 무시
-    }
-  });
+    };
 
-  // 하트비트 이벤트
-  eventSource.addEventListener('heartbeat', (event: MessageEvent) => {
-    // 필요하다면 마지막 하트비트 시간 기록 등 추가 가능
-  });
-
-  eventSource.onerror = (err) => {
-    eventSource?.close();
-  };
-
-  return eventSource;
+    return eventSource;
+  } catch (error) {
+    eventSource = null;
+    return null;
+  }
 };
 
 export const disconnectSSE = () => {
