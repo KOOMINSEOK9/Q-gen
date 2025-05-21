@@ -441,6 +441,23 @@ export default function List() {
     return [...workbooks].sort((a, b) => a.title.localeCompare(b.title, 'ko'));
   };
 
+  // SSE를 통한 시험지 목록 자동 갱신
+  useEffect(() => {
+    // refreshTestPapers 이벤트 리스너 등록
+    const handleRefresh = () => {
+      if (numericWorkBookId) {
+        getTestPapers(numericWorkBookId);
+      }
+    };
+
+    window.addEventListener('refreshTestPapers', handleRefresh);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('refreshTestPapers', handleRefresh);
+    };
+  }, [numericWorkBookId]);
+
   return (
     <div className='pb-8 flex flex-col gap-0'>
       {/* 인사 및 알림 카드 */}

@@ -167,6 +167,10 @@ const Generate = () => {
     try {
       await deleteDocument(Number(id));
       await fetchDocuments();
+      // 삭제된 파일을 selectedDocumentIds에서도 제거
+      setSelectedDocumentIds((prev) =>
+        prev.filter((docId) => docId !== Number(id))
+      );
     } catch (err) {
       console.error('파일 삭제 실패:', err);
       Swal.fire({
@@ -208,6 +212,11 @@ const Generate = () => {
       return;
     }
 
+    // 실제 남아있는 파일만 필터링
+    const validDocumentIds = selectedDocumentIds.filter((id) =>
+      uploadedFiles.some((file) => Number(file.id) === id)
+    );
+
     const request = {
       workBookId: numericWorkBookId,
       title: testName || '제목없는 시험지',
@@ -215,7 +224,7 @@ const Generate = () => {
       shortAns: testTypes.find((t) => t.name === '주관식')?.count || 0,
       oxAns: testTypes.find((t) => t.name === 'OX퀴즈')?.count || 0,
       quantity: totalProblems,
-      documentIds: selectedDocumentIds.map(Number),
+      documentIds: validDocumentIds,
     };
 
     try {
