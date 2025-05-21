@@ -58,8 +58,6 @@ export default function GuideModal({
   onClose,
   mode = 'default',
 }: GuideModalProps) {
-  console.log('GuideModal ::: 렌더링 됨 ::: ', mode);
-
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFading, setIsFading] = useState(false);
