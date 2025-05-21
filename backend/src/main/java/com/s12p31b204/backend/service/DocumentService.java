@@ -8,6 +8,8 @@ import com.s12p31b204.backend.repository.WorkBookRepository;
 import com.s12p31b204.backend.util.CustomMultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
@@ -101,12 +104,17 @@ public class DocumentService {
     }
 
     @Transactional
-    public FindDocumentResponseDto convertUrlToTxt(Long workBookId, String url) {
+    public FindDocumentResponseDto convertUrlToTxt(Long workBookId, String url) throws IOException {
         try {
             // 1. Jsoup으로 웹페이지 크롤링 및 텍스트 추출
             org.jsoup.nodes.Document doc = Jsoup.connect(url).get();
             String text = doc.text();
             String title = doc.title();
+
+            if(text == null || text.isBlank() || text.length() < 100) {
+                throw new RuntimeException("웹페이지의 내용을 추출할 수 없습니다.");
+            }
+
             // 파일명에 사용할 수 없는 문자 제거 (예: \/:*?"<>|)
             String safeTitle = title.replaceAll("[\\\\/:*?\"<>|]", "");
             if (safeTitle.isBlank()) safeTitle = "URL";
@@ -128,8 +136,12 @@ public class DocumentService {
                     tempFile.delete();
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException("웹페이지 크롤링/업로드 실패: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new IOException("웹페이지 크롤링/업로드 실패");
         }
     }
 

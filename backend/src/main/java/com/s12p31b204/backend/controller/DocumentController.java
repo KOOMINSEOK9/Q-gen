@@ -139,9 +139,15 @@ public class DocumentController {
             @RequestParam("url") String url,
             HttpServletRequest request
     ) {
-        log.info("convert url...");
-        FindDocumentResponseDto document = documentService.convertUrlToTxt(workBookId, url);
-        return ApiResponse.success(document, "url txt파일 변환 성공", HttpStatus.OK, request.getRequestURI());
+        try {
+            log.info("convert url...");
+            FindDocumentResponseDto document = documentService.convertUrlToTxt(workBookId, url);
+            return ApiResponse.success(document, "url txt파일 변환 성공", HttpStatus.OK, request.getRequestURI());
+        } catch (RuntimeException e) {
+            return ApiResponse.failure(e.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
+        } catch (Exception e) {
+            return ApiResponse.failure(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI());
+        }
     }
 
     // document-07: 파일 다운로드
