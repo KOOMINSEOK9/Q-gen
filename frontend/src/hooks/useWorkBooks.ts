@@ -13,7 +13,7 @@ interface UseWorkBookReturn {
   setWorkbooks: (workbooks: WorkBook[]) => void;
   isLoading: boolean;
   error: Error | null;
-  fetchWorkBooks: () => Promise<void>;
+  fetchWorkBooks: () => Promise<WorkBook[]>;
   createNewWorkBook: (title: string) => Promise<void>;
   removeWorkBook: (workBookId: number) => Promise<void>;
   editWorkBook: (workBookId: number, title: string) => Promise<void>;
@@ -31,10 +31,12 @@ export const useWorkBook = (): UseWorkBookReturn => {
     try {
       const response = await getWorkBooks();
       setWorkbooks(response);
+      return response;
     } catch (err) {
       setError(
         err instanceof Error ? err : new Error('Failed to fetch workbooks')
       );
+      return [];
     } finally {
       setIsLoading(false);
     }

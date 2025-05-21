@@ -26,6 +26,7 @@ import Swal from 'sweetalert2';
 import { useAuth } from '@/hooks/useAuth';
 import GuideModal from '@/components/common/GuideModal/GuideModal';
 import SortDropdown from './SortDropdown';
+import { useWorkbookStore } from '@/stores/workbookStore';
 
 export default function List() {
   const { workBookId } = useParams(); // URL 파라미터에서 workBookId 추출
@@ -34,6 +35,12 @@ export default function List() {
   const isLoggedIn = userId !== null;
   const navigate = useNavigate();
   const { userName } = useAuth(); // useAuth 훅 사용
+
+  // workbookStore 사용
+  const setWorkbooks = useWorkbookStore((s) => s.setWorkbooks);
+  const setCurrentWorkbookTitle = useWorkbookStore(
+    (s) => s.setCurrentWorkbookTitle
+  );
 
   // 커스텀 훅 사용
   const {
@@ -117,9 +124,24 @@ export default function List() {
   // 문제집 목록 불러오기
   useEffect(() => {
     if (isLoggedIn) {
-      fetchWorkBooks();
+      fetchWorkBooks().then((loadedWorkbooks) => {
+        // workbookStore에 문제집 정보 저장
+        if (loadedWorkbooks) {
+          setWorkbooks(loadedWorkbooks);
+
+          // 현재 선택된 workbookId가 있으면 해당 문제집 제목을 currentWorkbookTitle로 설정
+          if (numericWorkBookId) {
+            const currentWorkbook = loadedWorkbooks.find(
+              (wb) => wb.workBookId === numericWorkBookId
+            );
+            if (currentWorkbook && currentWorkbook.title) {
+              setCurrentWorkbookTitle(numericWorkBookId, currentWorkbook.title);
+            }
+          }
+        }
+      });
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, numericWorkBookId, setWorkbooks, setCurrentWorkbookTitle]);
 
   // 컴포넌트 마운트 시 localStorage 체크
   useEffect(() => {

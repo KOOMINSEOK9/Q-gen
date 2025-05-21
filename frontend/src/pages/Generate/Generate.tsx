@@ -12,12 +12,33 @@ import GradientTitle from '@/components/common/GradientTitle/GradientTitle';
 import { useDocuments } from '@/hooks/useDocument';
 import Swal from 'sweetalert2';
 import NoDocumentWarningModal from '@/components/common/NoDocumentWarningModal/NoDocumentWarningModal';
+import axiosInstance from '@/apis/axiosInstance';
+import { fetchTestPapers } from '@/apis/testpaper/testpaper';
+import { getWorkBooks } from '@/apis/workbook/workbook';
+import { useWorkbookStore } from '@/stores/workbookStore';
 
 const Generate = () => {
   const { workBookId } = useParams();
   const navigate = useNavigate();
   const numericWorkBookId = workBookId ? Number(workBookId) : undefined;
 
+  // workbookStore에서 문제집 정보 가져오기
+  const getCurrentWorkbookTitle = useWorkbookStore(
+    (state) => state.getCurrentWorkbookTitle
+  );
+  const getLastNumber = useWorkbookStore((state) => state.getLastNumber);
+  const updateLastNumber = useWorkbookStore((state) => state.updateLastNumber);
+  const setCurrentWorkbookTitle = useWorkbookStore(
+    (state) => state.setCurrentWorkbookTitle
+  );
+
+  // 초기 제목 설정 - store에서 문제집 제목과 마지막 숫자 가져오기
+  const storedWorkbookTitle = numericWorkBookId
+    ? getCurrentWorkbookTitle(numericWorkBookId)
+    : null;
+  const lastNumber = numericWorkBookId ? getLastNumber(numericWorkBookId) : 0;
+
+  // 시험지 제목은 빈 문자열로 시작 (placeholder만 사용)
   const [testName, setTestName] = useState('');
   const [testTypes, setTestTypes] = useState<TestType[]>([
     { name: '객관식', count: 0 },
@@ -31,6 +52,14 @@ const Generate = () => {
   const [showNoDocumentWarning, setShowNoDocumentWarning] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  // 문제집 이름을 기반으로 한 플레이스홀더
+  // 저장된 제목이 있으면 바로 사용, 없으면 기본값
+  const [titlePlaceholder, setTitlePlaceholder] = useState(
+    storedWorkbookTitle
+      ? `${storedWorkbookTitle}${lastNumber + 1}`
+      : '제목없는 시험지'
+  );
+
   const totalProblems = useMemo(() => {
     return testTypes.reduce((sum, type) => sum + type.count, 0);
   }, [testTypes]);
@@ -39,6 +68,7 @@ const Generate = () => {
   const { getDocuments, deleteDocument, uploadDocument } = useDocuments();
   const setGenerated = useGenerateStore((state) => state.setGenerated);
 
+  // 문서 목록 조회
   const fetchDocuments = useCallback(async () => {
     if (numericWorkBookId) {
       try {
@@ -55,10 +85,70 @@ const Generate = () => {
     }
   }, [numericWorkBookId, getDocuments]);
 
-  // 컴포넌트 마운트 시 파일 목록 조회
+  // 문제집 및 시험지 정보 가져오기 - 페이지 진입 시 즉시 실행
   useEffect(() => {
+    if (!numericWorkBookId) return;
+
+    // 이미 로컬 스토리지에 저장된 제목이 있으면 시험지 목록만 가져오기
+    const loadWorkbookInfo = async () => {
+      try {
+        // 문제집 정보가 없는 경우에만 정보 가져오기
+        if (!storedWorkbookTitle) {
+          // 문제집 목록 가져오기
+          const workbooks = await getWorkBooks();
+
+          // 현재 문제집 찾기
+          const currentWorkbook = workbooks.find(
+            (wb) => wb.workBookId === numericWorkBookId
+          );
+
+          if (currentWorkbook && currentWorkbook.title) {
+            // 찾은 문제집 제목을 스토어에 저장
+            setCurrentWorkbookTitle(numericWorkBookId, currentWorkbook.title);
+          }
+        }
+
+        // 시험지 목록 가져오기
+        const testPapersResponse = await fetchTestPapers(numericWorkBookId);
+        const testpapers = testPapersResponse.data || [];
+
+        if (testpapers.length > 0 && storedWorkbookTitle) {
+          // 패턴 매칭으로 시험지 번호 찾기
+          let maxNumber = 0;
+          const pattern = new RegExp(`^${storedWorkbookTitle}(\\d+)$`);
+
+          testpapers.forEach((paper: any) => {
+            const match = paper.title.match(pattern);
+            if (match && match[1]) {
+              const num = parseInt(match[1], 10);
+              if (num > maxNumber) {
+                maxNumber = num;
+              }
+            }
+          });
+
+          // 마지막 번호를 스토어에 저장
+          updateLastNumber(numericWorkBookId, maxNumber);
+
+          // 다음 번호로 새 플레이스홀더 설정 (입력 필드는 빈 값 유지)
+          const nextNumber = maxNumber + 1;
+          const newTitle = `${storedWorkbookTitle}${nextNumber}`;
+          setTitlePlaceholder(newTitle);
+        }
+      } catch (error) {
+        console.error('문제집/시험지 정보 로드 실패:', error);
+      }
+    };
+
+    loadWorkbookInfo();
     fetchDocuments();
-  }, [numericWorkBookId]); // workBookId가 변경될 때만 실행
+  }, [
+    numericWorkBookId,
+    fetchDocuments,
+    storedWorkbookTitle,
+    updateLastNumber,
+    setCurrentWorkbookTitle,
+  ]);
 
   const handleTypeClick = (typeName: string) => {
     setTestTypes((prev) =>
@@ -97,7 +187,6 @@ const Generate = () => {
       await uploadDocument(file, numericWorkBookId);
       await fetchDocuments();
 
-      // 파일 목록이 최신화된 후, 마지막 파일을 자동 선택
       setUploadedFiles((files) => {
         if (files.length === 0) return files;
         const lastFile = files[files.length - 1];
@@ -167,7 +256,6 @@ const Generate = () => {
     try {
       await deleteDocument(Number(id));
       await fetchDocuments();
-      // 삭제된 파일을 selectedDocumentIds에서도 제거
       setSelectedDocumentIds((prev) =>
         prev.filter((docId) => docId !== Number(id))
       );
@@ -212,14 +300,21 @@ const Generate = () => {
       return;
     }
 
-    // 실제 남아있는 파일만 필터링
     const validDocumentIds = selectedDocumentIds.filter((id) =>
       uploadedFiles.some((file) => Number(file.id) === id)
     );
 
+    const finalTitle = testName || titlePlaceholder;
+
+    // 시험지 생성 시 lastNumber를 1 증가시킴
+    if (!testName && numericWorkBookId && storedWorkbookTitle) {
+      const currentLastNumber = getLastNumber(numericWorkBookId);
+      updateLastNumber(numericWorkBookId, currentLastNumber + 1);
+    }
+
     const request = {
       workBookId: numericWorkBookId,
-      title: testName || '제목없는 시험지',
+      title: finalTitle,
       choiceAns: testTypes.find((t) => t.name === '객관식')?.count || 0,
       shortAns: testTypes.find((t) => t.name === '주관식')?.count || 0,
       oxAns: testTypes.find((t) => t.name === 'OX퀴즈')?.count || 0,
@@ -242,7 +337,6 @@ const Generate = () => {
     }
   };
 
-  // 문서 선택 핸들러
   const handleDocumentSelect = (id: string) => {
     setSelectedDocumentIds((prev) => {
       if (prev.includes(Number(id))) {
@@ -256,7 +350,6 @@ const Generate = () => {
   return (
     <div>
       <div className='flex flex-col items-start justify-start min-h-screen w-full mx-auto gap-4'>
-        {/* Title Section */}
         <div className='flex justify-between items-center w-full'>
           <GradientTitle highlight='시험지' after='생성하기' />
           <Button
@@ -268,7 +361,6 @@ const Generate = () => {
           </Button>
         </div>
 
-        {/* Test Name Input Section */}
         <div className='w-full bg-white rounded-3xl shadow-sm p-6 md:col-span-2'>
           <div className='flex justify-start gap-2 items-end mb-5'>
             <h2 className='text-xl font-semibold'>시험지 이름</h2>
@@ -277,7 +369,7 @@ const Generate = () => {
           <div className='border-b-1 border-gray-300 pb-2 transition-colors focus-within:border-[#754AFF]'>
             <input
               type='text'
-              placeholder='제목없는 시험지'
+              placeholder={titlePlaceholder}
               value={testName}
               onChange={handleTestNameChange}
               className='w-full bg-transparent border-none outline-none text-lg text-gray-800 placeholder-gray-400'
@@ -285,7 +377,6 @@ const Generate = () => {
           </div>
         </div>
 
-        {/* File Upload and List Section */}
         <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-4 '>
           <div className='flex md:col-span-2 p-6 bg-white rounded-3xl shadow-sm min-h-[80dvh]'>
             <FileUploader
@@ -318,7 +409,6 @@ const Generate = () => {
           </div>
         </div>
 
-        {/* 버튼을 여기로 이동 */}
         <div className='flex w-full justify-center mt-8'>
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <Button
@@ -343,14 +433,6 @@ const Generate = () => {
                   zIndex: 10,
                 }}
                 onClick={() => {
-                  // if (selectedDocumentIds.length === 0) {
-                  //   Swal.fire({
-                  //     icon: 'warning',
-                  //     title: '자료를 업로드하여 선택해주세요.',
-                  //     timer: 2000,
-                  //     showConfirmButton: false,
-                  //   });
-                  // } else
                   if (totalProblems === 0) {
                     Swal.fire({
                       icon: 'warning',
@@ -367,7 +449,6 @@ const Generate = () => {
       </div>
       <NoDocumentWarningModal
         isOpen={showNoDocumentWarning}
-        // isOpen={true}
         onClose={() => setShowNoDocumentWarning(false)}
       />
     </div>
