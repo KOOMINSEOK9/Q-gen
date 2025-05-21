@@ -27,12 +27,12 @@ const guideSlides: GuideSlide[] = [
     image: '/images/guideImgs/Guide2.gif',
     title: '2. 문제집으로 들어가 시험지 생성을 클릭',
     description:
-      '생성한 문제집을 클릭한 후, "새 시험지 만들기"를 클릭해 \n 시험지 생성 페이지로 이동합니다.',
+      '생성한 문제집을 클릭한 후, \n "새 시험지 만들기"를 클릭해 \n 시험지 생성 페이지로 이동합니다.',
   },
   {
     image: '/images/guideImgs/Guide3.gif',
-    title: '3. 시험지명을 입력하고 업로드할 공부자료를 첨부하기',
-    description: '문제를 출력하고 싶은 주제의 공부자료를 업로드 합니다.',
+    title: '3. 시험지명 입력 및 공부자료 첨부하기',
+    description: '문제를 출력하고 싶은 주제의\n 공부자료를 업로드 합니다.',
   },
   {
     image: '/images/guideImgs/Guide4.gif',
@@ -49,7 +49,7 @@ const guideSlides: GuideSlide[] = [
     image: '/images/guideImgs/Guide6.gif',
     title: '6. 문제도 풀고, 이력보며 복습하기',
     description:
-      '이제 직접 문제를 풀어보고,\n 풀이 기록과 학습 이력을 체계적으로 관리할 수 있습니다.',
+      '이제 직접 문제를 풀어보고,\n 풀이 기록과 학습 이력을 \n체계적으로 관리할 수 있습니다.',
   },
 ];
 
@@ -58,20 +58,22 @@ export default function GuideModal({
   onClose,
   mode = 'default',
 }: GuideModalProps) {
+  console.log('GuideModal ::: 렌더링 됨 ::: ', mode);
+
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFading, setIsFading] = useState(false);
 
-  // localStorage에서 설정 불러오기
+  // localStorage 체크 로직 제거 (App.tsx에서 처리)
   useEffect(() => {
-    const shouldShow = localStorage.getItem('showGuideModal');
-    if (shouldShow === 'false') {
-      onClose();
+    if (mode === 'default' && isOpen) {
+      // 컴포넌트가 마운트될 때 슬라이드 초기화
+      setCurrentSlide(0);
     }
-  }, []);
+  }, [isOpen, mode]);
 
   const handleClose = () => {
-    if (dontShowAgain) {
+    if (mode === 'default' && dontShowAgain) {
       localStorage.setItem('showGuideModal', 'false');
     }
     onClose();
@@ -100,7 +102,7 @@ export default function GuideModal({
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center'>
       <div className='absolute inset-0 bg-black/40' onClick={handleClose} />
-      <div className='relative bg-white rounded-2xl w-[90%] max-w-[600px] py-8 px-12 flex flex-col items-center shadow-lg z-10'>
+      <div className='relative bg-white rounded-2xl w-[90%] max-w-[440px] py-8 px-12 flex flex-col items-center shadow-lg z-10'>
         <button
           onClick={handleClose}
           className='absolute right-4 top-4 p-1 rounded-full cursor-pointer'
@@ -132,7 +134,7 @@ export default function GuideModal({
                     className='w-full h-full object-contain rounded-lg'
                   />
                 </div>
-                <div className='min-h-[100px] flex flex-col justify-start items-center'>
+                <div className='h-full flex flex-col justify-center items-center'>
                   <h3 className='text-lg font-semibold mb-2'>{slide.title}</h3>
                   <p className='text-gray-600 text-center'>
                     {slide.description.split('\n').map((line, idx) => (
@@ -151,7 +153,7 @@ export default function GuideModal({
           <button
             onClick={handlePrevSlide}
             disabled={isFading || currentSlide === 0}
-            className='absolute left-[-24px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed'
+            className='absolute left-[-70px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed'
           >
             <IconBox
               name='chevronDown'
@@ -163,7 +165,7 @@ export default function GuideModal({
           <button
             onClick={handleNextSlide}
             disabled={isFading || currentSlide === guideSlides.length - 1}
-            className='absolute right-[-24px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed'
+            className='absolute right-[-70px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed'
           >
             <IconBox
               name='chevronDown'

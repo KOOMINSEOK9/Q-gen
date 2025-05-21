@@ -25,6 +25,7 @@ import { downloadPdf } from '@/utils/file';
 import Swal from 'sweetalert2';
 import { useAuth } from '@/hooks/useAuth';
 import GuideModal from '@/components/common/GuideModal/GuideModal';
+import SortDropdown from './SortDropdown';
 
 export default function List() {
   const { workBookId } = useParams(); // URL 파라미터에서 workBookId 추출
@@ -97,6 +98,14 @@ export default function List() {
 
   const [showGuideModal, setShowGuideModal] = useState(true);
   const [uploading, setUploading] = useState(false);
+
+  const sortOptions = [
+    { value: 'date', label: '최신순' },
+    { value: 'title', label: '이름 순' },
+    // 필요시 더 추가
+  ];
+
+  const [sortType, setSortType] = useState('date');
 
   // 로그인 체크
   useEffect(() => {
@@ -331,7 +340,21 @@ export default function List() {
       navigate('/login');
       return;
     }
-    if (!window.confirm('이 문제집을 삭제하시겠습니까?')) return;
+
+    // SweetAlert2로 삭제 확인 모달 띄우기
+    const result = await Swal.fire({
+      title: '이 문제집을 삭제하시겠습니까?',
+      text: '삭제하면 복구할 수 없습니다.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#aaa',
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await removeWorkBook(Number(workBookId));
       await fetchWorkBooks();
@@ -404,6 +427,20 @@ export default function List() {
     }
   };
 
+  // 정렬 함수
+  const getSortedWorkbooks = () => {
+    if (!workbooks) return [];
+    if (sortType === 'date') {
+      // 최신순(내림차순)
+      return [...workbooks].sort(
+        (a, b) =>
+          new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+      );
+    }
+    // 제목순(오름차순)
+    return [...workbooks].sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+  };
+
   return (
     <div className='pb-8 flex flex-col gap-0'>
       {/* 인사 및 알림 카드 */}
@@ -427,7 +464,7 @@ export default function List() {
           <span className='text-2xl font-semibold'>
             오늘도{' '}
             <strong className='bg-gradient-to-r from-[#6D6DFF] to-[#B16DFF] text-transparent bg-clip-text '>
-              Q-gen
+              Qgen
             </strong>{' '}
             에서 효율적인 공부를 시작해볼까요!
           </span>
@@ -531,6 +568,16 @@ export default function List() {
               )}
             </div>
             <div className='flex items-center justify-between gap-3'>
+              {/* 정렬 선택 UI */}
+              {!numericWorkBookId && (
+                <div className='flex items-center justify-center '>
+                  <SortDropdown
+                    value={sortType}
+                    options={sortOptions}
+                    onChange={setSortType}
+                  />
+                </div>
+              )}
               {numericWorkBookId && (
                 <div className='flex gap-2'>
                   <Button
@@ -581,7 +628,7 @@ export default function List() {
                 />
               ) : (
                 <WorkBookList
-                  workbooks={workbooks}
+                  workbooks={getSortedWorkbooks()}
                   onWorkBookClick={(id) => handleWorkBookClick(Number(id))}
                   onAddClick={handleOpenAddModal}
                   onWorkBookDelete={handleWorkBookDelete}

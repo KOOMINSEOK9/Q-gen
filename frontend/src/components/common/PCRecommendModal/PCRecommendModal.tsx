@@ -45,8 +45,6 @@ export default function PCRecommendModal({
         </h2>
 
         <p className='text-gray-600 text-center mb-6'>
-          Qgen은 PC 환경에서 더 나은 학습 경험을 제공합니다.
-          <br />
           PC로 접속하시면 더 편리하게 이용하실 수 있습니다.
         </p>
 
@@ -54,13 +52,13 @@ export default function PCRecommendModal({
           <Button variant='filled' className='w-full' onClick={onClose}>
             계속하기
           </Button>
-          <Button
+          {/* <Button
             variant='outlined'
             className='w-full'
             onClick={handlePCVersionClick}
           >
             PC 버전으로 이동
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import { DocumentInfo } from '@/types/document';
 import LinkUploadModal from './LinkUploadModal';
 import Swal from 'sweetalert2';
+import { useModalStore } from '@/stores/modalStore';
 
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
@@ -39,7 +40,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   setUploading,
 }) => {
   const [showLinkModal, setShowLinkModal] = useState(false);
-  const [showTextModal, setShowTextModal] = useState(false);
+  const { showTextModal, setShowTextModal } = useModalStore();
   const { isLoading } = useDocuments();
   const [isDragging, setIsDragging] = useState(false);
   const { workBookId } = useParams();

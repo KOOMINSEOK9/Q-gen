@@ -65,7 +65,7 @@ function TestPaperList({
   };
 
   return (
-    <div className='bg-white flex gap-8 min-h-[calc(100dvh-340px)] rounded-2xl p-4 flex flex-col gap-2 shadow border border-gray-100 min-h-[40vh] overflow-y-auto'>
+    <div className='bg-white flex gap-8 min-h-[calc(100dvh-340px)] rounded-2xl p-4 flex flex-col gap-2 shadow border border-gray-100 min-h-[40vh] overflow-y-auto select-none'>
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
         {papers.map((paper) => (
           <div
@@ -75,7 +75,7 @@ function TestPaperList({
               onSolveClick?.(paper.testPaperId);
             }}
             key={paper.testPaperId}
-            className={`relative cursor-pointer bg-white rounded-2xl px-6 py-5 flex flex-col gap-0 shadow border border-gray-100 transition-all duration-200 ${paper.isCreating ? 'pointer-events-none opacity-50' : ''}`}
+            className={`relative cursor-pointer bg-white rounded-2xl px-6 py-5 flex flex-col gap-0 shadow border border-gray-100 transition-all duration-200 select-none ${paper.isCreating ? 'pointer-events-none opacity-50' : ''}`}
           >
             {/* 블러 처리 */}
             <div className={paper.isCreating ? 'blur-sm' : ''}>
@@ -179,7 +179,7 @@ function TestPaperList({
         <div
           onClick={onAddClick}
           className='flex-1 border-1 border border-gray-200 rounded-2xl 
-                     flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors'
+                     flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors select-none'
         >
           <div className='flex flex-col items-center justify-center gap-2 min-h-[142px]'>
             <div className='rounded-full flex items-center justify-center'>

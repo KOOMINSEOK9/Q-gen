@@ -33,17 +33,17 @@ export default function Footer() {
               {expanded ? (
                 <img
                   src='/images/logo-lg-w.png'
-                  alt='Q-gen'
+                  alt='Qgen'
                   className='h-[54px]'
                 />
               ) : (
                 <img
                   src='/images/logo-lg.png'
-                  alt='Q-gen'
+                  alt='Qgen'
                   className='h-[54px]'
                 />
               )}
-              <h2 className='sr-only'>Q-gen</h2>
+              <h2 className='sr-only'>Qgen</h2>
             </div>
             {expanded && (
               <>
@@ -62,7 +62,7 @@ export default function Footer() {
             {expanded ? (
               <div>
                 <div className='text-right font-bold text-xl mb-2'>
-                  Q-gen
+                  Qgen
                   <span className='font-normal'>
                     은 시험을 준비하는 응시자와 출제자를 위한 AI 기반 학습
                     플랫폼입니다.
@@ -97,7 +97,7 @@ export default function Footer() {
           </div>
           {expanded && (
             <div className='text-gray-400 text-base'>
-              @2025 Q-gen, INC.ALL RIGHTS RESERVED.
+              @2025 Qgen, INC.ALL RIGHTS RESERVED.
             </div>
           )}
         </div>

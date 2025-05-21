@@ -12,7 +12,7 @@ const Login = () => {
         <div className='flex flex-col items-center gap-4'>
           <img
             src='/images/logo-lg.png'
-            alt='Q-gen'
+            alt='Qgen'
             className='h-[54px] mb-6  '
           />
           <h1 className='text-2xl font-bold text-gray-800 mb-0.5 text-center sr-only'>
