@@ -10,6 +10,7 @@ import lombok.Data;
 public class QuestionDto {
     private int number;
     private String text;
+    private String explanationType;
     private List<String> explanations;
     private List<String> options;
     private String type; // "TYPE_CHOICE", "TYPE_OX", "TYPE_SHORT"

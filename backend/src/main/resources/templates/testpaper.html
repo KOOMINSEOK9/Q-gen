@@ -60,6 +60,7 @@
             margin-bottom: 15px;
         }
         .explanations {
+            width: 100%;
             margin-top: 10px;
             border: 1px solid black;
             border-radius: 15px;
@@ -67,6 +68,7 @@
         }
         .explanations ul {
             padding-left: 20px;
+            padding-right: 10px;
         }
         .options {
             margin-left: 10px;
@@ -110,7 +112,7 @@
         <span th:text="'문제수 : ' + ${testPaper.quantity}" style="position: absolute; right: 0; bottom: 0"></span>
     </div>
     <div class="empty-header" th:if="${not stat.first}">
-        <img th:src="'data:image/png;base64,' + ${logo}" style="width: 80px; position: absolute; right: 0; top: 0"/>
+        <img th:src="'data:image/png;base64,' + ${logo}" style="width: 80px; position: absolute; right: 0; top: -5px"/>
     </div>
     <div class="top-line"></div>
         <div class="container" th:style="${stat.first} ? 'height:920px;' : ''">
@@ -119,9 +121,9 @@
                     <div class="question-title" th:text="${q.number} + '. ' + ${q.text}"></div>
 
                     <div class="explanations" th:if="${q.explanations}">
-                        <ul>
+                        <ul th:style="${q.explanationType == 'code'} ? 'list-style-type: none;' : ''">
                             <li th:each="ex : ${q.explanations}">
-                                <span th:text="${ex}"></span>
+                                <span th:text="${ex}" th:style="${q.explanationType == 'code'} ? 'white-space: pre-wrap;' : ''"></span>
                             </li>
                         </ul>
                     </div>
@@ -161,9 +163,9 @@
                     <div class="question-title" th:text="${q.number} + '. ' + ${q.text}"></div>
 
                     <div class="explanations" th:if="${q.explanations}">
-                        <ul>
+                        <ul th:style="${q.explanationType == 'code'} ? 'list-style-type: none;' : ''">
                             <li th:each="ex : ${q.explanations}">
-                                <span th:text="${ex}"></span>
+                                <span th:text="${ex}" th:style="${q.explanationType == 'code'} ? 'white-space: pre-wrap;' : ''"></span>
                             </li>
                         </ul>
                     </div>
@@ -208,7 +210,7 @@
             </div>
         </div>
         <div class="empty-header" th:if="${not stat.first}">
-            <img th:src="'data:image/png;base64,' + ${logo}" style="width: 80px; position: absolute; right: 0; top: 0"/>
+            <img th:src="'data:image/png;base64,' + ${logo}" style="width: 80px; position: absolute; right: 0; top: -5px"/>
         </div>
         <div class="top-line"></div>
         <div class="container" th:style="${stat.first} ? 'height:920px;' : ''">

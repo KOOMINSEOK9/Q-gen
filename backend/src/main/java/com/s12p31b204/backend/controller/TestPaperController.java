@@ -46,6 +46,7 @@ import com.s12p31b204.backend.service.AuthorizationService;
 import com.s12p31b204.backend.service.TestPaperService;
 import com.s12p31b204.backend.service.TestService;
 import com.s12p31b204.backend.util.ApiResponse;
+import com.s12p31b204.backend.util.PdfPagingUtil;
 import com.s12p31b204.backend.util.ResponseData;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -221,6 +222,7 @@ public class TestPaperController {
                     allQuestions.add(new QuestionDto(
                             i + 1,
                             test.getQuestion(),
+                            test.getExplanationType(),
                             explanations,
                             List.of(test.getOption1(), test.getOption2(), test.getOption3(), test.getOption4()),
                             test.getType().toString()
@@ -232,6 +234,7 @@ public class TestPaperController {
                     allQuestions.add(new QuestionDto(
                             i + 1,
                             test.getQuestion(),
+                            null,
                             null,
                             null,
                             test.getType().toString()
@@ -246,34 +249,8 @@ public class TestPaperController {
             }
 
             // 페이징 처리(왼쪽, 오른쪽)
-            List<QuestionToHtmlDto> questions = new ArrayList<>();
-            List<AnswerToHtmlDto> answers = new ArrayList<>();
-            int pageSize = 8;
-            int leftSize = pageSize / 2;
-
-            for (int start = 0; start < allQuestions.size(); start += pageSize) {
-                int end = Math.min(start + pageSize, allQuestions.size());
-                List<QuestionDto> pageQuestions = allQuestions.subList(start, end);
-                List<AnswerDto> pageAnswers = allAnswers.subList(start, end);
-                List<QuestionDto> leftQuestion = new ArrayList<>();
-                List<QuestionDto> rightQuestion = new ArrayList<>();
-                List<AnswerDto> leftAnswer = new ArrayList<>();
-                List<AnswerDto> rightAnswer = new ArrayList<>();
-
-                for (int i = 0; i < pageQuestions.size(); i++) {
-                    if (i < leftSize) {
-                        leftQuestion.add(pageQuestions.get(i));
-                        leftAnswer.add(pageAnswers.get(i));
-                    } else {
-                        rightQuestion.add(pageQuestions.get(i));
-                        rightAnswer.add(pageAnswers.get(i));
-                    }
-                }
-                questions.add(new QuestionToHtmlDto(leftQuestion, rightQuestion));
-                answers.add(new AnswerToHtmlDto(leftAnswer, rightAnswer));
-            }
-
-
+            List<QuestionToHtmlDto> questions = PdfPagingUtil.paginateQuestionsLeftThenRight(allQuestions, 110);
+             List<AnswerToHtmlDto> answers = PdfPagingUtil.paginateAnswers(allAnswers, 30);
 
             // Thymeleaf context
             Context context = new Context();
