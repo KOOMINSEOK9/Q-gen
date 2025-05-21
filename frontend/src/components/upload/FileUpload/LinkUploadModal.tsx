@@ -4,6 +4,7 @@ import IconBox from '@/components/common/IconBox/IconBox';
 import { useDocuments } from '@/hooks/useDocument';
 import { DocumentInfo } from '@/types/document';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 interface LinkUploadModalProps {
   onClose: () => void;
@@ -45,9 +46,14 @@ const LinkUploadModal: React.FC<LinkUploadModalProps> = ({
       onClose();
     } catch (e) {
       console.error('API error:', e);
+      let errorMessage = 'URL 업로드에 실패했습니다.';
+      if (axios.isAxiosError(e) && e.response && e.response.status === 400) {
+        // 서버에서 message 필드로 에러 메시지 전달한다고 가정
+        errorMessage = e.response.data?.message || errorMessage;
+      }
       Swal.fire({
         icon: 'error',
-        title: 'URL 업로드에 실패했습니다.',
+        title: errorMessage,
         timer: 2000,
         showConfirmButton: false,
       });

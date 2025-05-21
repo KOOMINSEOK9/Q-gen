@@ -49,7 +49,7 @@ export default function SortDropdown({
         )}
       </button>
       {open && (
-        <div className='absolute left-1/2 -translate-x-1/2 mt-2 w-[120px] bg-white border border-gray-300 rounded-3xl shadow-lg z-50 py-2'>
+        <div className='absolute left-1/2 -translate-x-1/2 mt-2 w-[120px] bg-white border border-gray-300 rounded-3xl shadow-lg z-50 py-2 overflow-hidden'>
           {options.map((opt) => (
             <button
               key={opt.value}

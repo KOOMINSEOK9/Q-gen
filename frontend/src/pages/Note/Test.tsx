@@ -157,7 +157,7 @@ function Test({
   };
 
   return (
-    <div className='w-full h-full min-h-0 bg-white rounded-3xl py-6 pl-6 shadow-sm flex flex-col min-h-[calc(100dvh-114px)]'>
+    <div className='w-full h-full min-h-0 bg-white rounded-3xl py-6 pl-6 shadow-sm flex flex-col'>
       <SimpleBar
         style={{ flex: 1 }}
         className='flex flex-col h-full min-h-0 pr-6'

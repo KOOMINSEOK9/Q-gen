@@ -49,7 +49,7 @@ function ProblemTypeSelector({
                         rounded-3xl
                         ${
                           type.count > 0
-                            ? 'bg-gradient-to-br from-[#754AFF] via-[#8B65FF] to-[#B3ADFF] shadow-[0_0_15px_rgba(117,74,255,0.3)]'
+                            ? 'bg-gradient-to-br from-[#6C2EFF] via-[#7C3AED] to-[#A78BFA] shadow-[0_0_20px_rgba(108,46,255,0.5)]'
                             : 'bg-[#B3ADFF]'
                         }
                         backdrop-blur-[50%]
@@ -68,7 +68,7 @@ function ProblemTypeSelector({
                         cursor-pointer
                         ${
                           type.count > 0
-                            ? 'bg-gradient-to-br from-white/20 via-white/15 to-white/5'
+                            ? 'bg-gradient-to-br from-white/40 via-white/20 to-white/10'
                             : 'bg-gradient-to-b from-white/10 via-white/5 to-transparent'
                         }
                         text-white font-pretendard font-bold text-lg leading-8 text-center
@@ -85,14 +85,14 @@ function ProblemTypeSelector({
                           rounded-3xl
                           ${
                             type.count > 0
-                              ? 'bg-gradient-to-br from-white/80 via-white/50 to-transparent'
+                              ? 'bg-gradient-to-br from-white/60 via-white/30 to-transparent'
                               : 'bg-gradient-to-b from-white/60 to-transparent'
                           }
                           blur-[2.5px]
                           border-[1px] 
                           ${
                             type.count > 0
-                              ? 'border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.4)]'
+                              ? 'border-white/90 shadow-[0_0_24px_rgba(108,46,255,0.4)]'
                               : 'border-white/60'
                           }
                           transition-all duration-300 ease-in-out
