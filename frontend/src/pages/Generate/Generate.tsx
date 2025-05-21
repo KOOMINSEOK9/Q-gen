@@ -16,6 +16,7 @@ import axiosInstance from '@/apis/axiosInstance';
 import { fetchTestPapers } from '@/apis/testpaper/testpaper';
 import { getWorkBooks } from '@/apis/workbook/workbook';
 import { useWorkbookStore } from '@/stores/workbookStore';
+import { saveWorkBookId } from '@/utils/sse';
 
 const Generate = () => {
   const { workBookId } = useParams();
@@ -299,6 +300,9 @@ const Generate = () => {
       });
       return;
     }
+
+    // workBookId 저장 (SSE 이벤트에서 사용)
+    saveWorkBookId(numericWorkBookId);
 
     const validDocumentIds = selectedDocumentIds.filter((id) =>
       uploadedFiles.some((file) => Number(file.id) === id)

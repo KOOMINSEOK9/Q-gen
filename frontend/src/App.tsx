@@ -133,7 +133,7 @@ function App() {
         autoClose={2000}
         hideProgressBar={false}
         newestOnTop
-        closeOnClick
+        closeOnClick={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
