@@ -11,7 +11,6 @@ import ProblemTypeSelector from './TestTypeSelector';
 import GradientTitle from '@/components/common/GradientTitle/GradientTitle';
 import { useDocuments } from '@/hooks/useDocument';
 import Swal from 'sweetalert2';
-import GenerateGuideModal from '@/components/common/GenerateGuideModal/GenerateGuideModal';
 import NoDocumentWarningModal from '@/components/common/NoDocumentWarningModal/NoDocumentWarningModal';
 
 const Generate = () => {
@@ -223,8 +222,7 @@ const Generate = () => {
       const response = await generatePaper(request);
       if (response.success && response.data) {
         setGenerated(response.data);
-        // navigate(`/list/${numericWorkBookId}`);
-        setShowGuideModal(true);
+        navigate(`/list/${numericWorkBookId}`);
       }
     } catch (err) {
       console.error('시험지 생성 실패:', err);
@@ -362,10 +360,6 @@ const Generate = () => {
         isOpen={showNoDocumentWarning}
         // isOpen={true}
         onClose={() => setShowNoDocumentWarning(false)}
-      />
-      <GenerateGuideModal
-        isOpen={showGuideModal}
-        workBookId={numericWorkBookId || ''}
       />
     </div>
   );
