@@ -69,11 +69,14 @@ public class TestService {
 
         // 히스토리 저장
         String correctAnswer = test.getAnswer()
-                .trim()
+                .replaceAll(" ", "")
                 .toLowerCase();
         String userAnswer = solvingTestRequestDto.getUserAnswer()
-                .trim()
+                .replaceAll(" ", "")
                 .toLowerCase();
+
+        log.info("correctAnswer : " + correctAnswer);
+        log.info("userAnswer : " + userAnswer);
 
         List<String> explanations = null;
         if(test.getExplanations() != null) {
@@ -89,7 +92,7 @@ public class TestService {
         } else if(test.getType().equals(Test.Type.TYPE_SHORT)) {
             String[] aliases = test.getAliases().split("///");
             for(String alias : aliases) {
-                alias = alias.trim().toLowerCase();
+                alias = alias.replaceAll(" ", "").toLowerCase();
                 if(alias.equals(userAnswer)) {
                     isCorrect = true;
                     break;
