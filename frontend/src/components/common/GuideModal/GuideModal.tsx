@@ -100,7 +100,7 @@ export default function GuideModal({
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center'>
       <div className='absolute inset-0 bg-black/40' onClick={handleClose} />
-      <div className='relative bg-white rounded-2xl w-[90%] max-w-[440px] py-8 px-12 flex flex-col items-center shadow-lg z-10'>
+      <div className='relative bg-white rounded-2xl w-[90%] max-w-[440px] max-h-[85dvh] py-8 px-12 flex flex-col items-center shadow-lg z-10 '>
         <button
           onClick={handleClose}
           className='absolute right-4 top-4 p-1 rounded-full cursor-pointer'
@@ -112,69 +112,46 @@ export default function GuideModal({
           <img src='/images/logo-lg.png' alt='로고' className='h-10' />
           문제 생성 Guide
         </h2>
-
-        {/* 슬라이드 컨테이너 */}
-        <div className='relative w-full mb-6'>
-          <div className='relative min-h-[400px]'>
-            {guideSlides.map((slide, index) => (
-              <div
-                key={index}
-                className={`absolute inset-0 flex flex-col items-center transition-opacity duration-300 ${
-                  currentSlide === index
-                    ? 'opacity-100'
-                    : 'opacity-0 pointer-events-none'
-                }`}
-              >
-                <div className='w-full mb-4'>
-                  <img
-                    src={slide.image}
-                    alt={slide.title}
-                    className='w-full h-full object-contain rounded-lg'
-                  />
+        <div className='w-full'>
+          {/* 슬라이드 컨테이너 */}
+          <div className='relative w-full mb-6  '>
+            <div className='relative min-h-[300px]'>
+              {guideSlides.map((slide, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 flex flex-col items-center transition-opacity duration-300 ${
+                    currentSlide === index
+                      ? 'opacity-100'
+                      : 'opacity-0 pointer-events-none'
+                  }`}
+                >
+                  <div className='w-full mb-4'>
+                    <img
+                      src={slide.image}
+                      alt={slide.title}
+                      className='w-full h-full object-contain rounded-lg'
+                    />
+                  </div>
+                  <div className='flex flex-col justify-center items-center'>
+                    <h3 className='text-lg font-semibold mb-2'>
+                      {slide.title}
+                    </h3>
+                    <p className='text-gray-600 text-center'>
+                      {slide.description.split('\n').map((line, idx) => (
+                        <span key={idx}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </p>
+                  </div>
                 </div>
-                <div className='h-full flex flex-col justify-center items-center'>
-                  <h3 className='text-lg font-semibold mb-2'>{slide.title}</h3>
-                  <p className='text-gray-600 text-center'>
-                    {slide.description.split('\n').map((line, idx) => (
-                      <span key={idx}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          {/* 네비게이션 버튼 */}
-          <button
-            onClick={handlePrevSlide}
-            disabled={isFading || currentSlide === 0}
-            className='absolute left-[-70px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed'
-          >
-            <IconBox
-              name='chevronDown'
-              size={30}
-              rotate={90}
-              className='text-gray-600 opacity-50'
-            />
-          </button>
-          <button
-            onClick={handleNextSlide}
-            disabled={isFading || currentSlide === guideSlides.length - 1}
-            className='absolute right-[-70px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed'
-          >
-            <IconBox
-              name='chevronDown'
-              size={30}
-              rotate={-90}
-              className='text-gray-600 opacity-50'
-            />
-          </button>
-
           {/* 슬라이드 인디케이터 */}
-          <div className='flex justify-center gap-2 mt-4'>
+          <div className='flex justify-center gap-2 mt-4 mb-4'>
             {guideSlides.map((_, index) => (
               <button
                 key={index}
@@ -232,9 +209,36 @@ export default function GuideModal({
             </p>
           </div>
         )}
-        <Button variant='filled' className='w-full' onClick={handleClose}>
-          확인
-        </Button>
+        <div className='pt-4'>
+          <Button variant='filled' className='w-full ' onClick={handleClose}>
+            확인
+          </Button>
+        </div>
+        {/* 네비게이션 버튼 */}
+        <button
+          onClick={handlePrevSlide}
+          disabled={isFading || currentSlide === 0}
+          className='absolute left-[-70px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed'
+        >
+          <IconBox
+            name='chevronDown'
+            size={30}
+            rotate={90}
+            className='text-gray-600 opacity-50'
+          />
+        </button>
+        <button
+          onClick={handleNextSlide}
+          disabled={isFading || currentSlide === guideSlides.length - 1}
+          className='absolute right-[-70px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed'
+        >
+          <IconBox
+            name='chevronDown'
+            size={30}
+            rotate={-90}
+            className='text-gray-600 opacity-50'
+          />
+        </button>
       </div>
     </div>
   );

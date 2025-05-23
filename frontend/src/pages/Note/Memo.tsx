@@ -98,7 +98,7 @@ const Memo = ({ testId, initialMemo }: MemoProps) => {
   const showPlaceholder = !hasText && !hasListBlock;
 
   return (
-    <div className='bg-white rounded-3xl py-6 pl-6 shadow-sm flex flex-col h-full relative'>
+    <div className='bg-white rounded-3xl py-6 pl-6 shadow-sm flex flex-col h-full'>
       <div className='flex items-center justify-between mb-2'>
         <div className='text-lg font-bold'>문제별 노트</div>
       </div>

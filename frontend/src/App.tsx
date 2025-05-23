@@ -39,9 +39,14 @@ function App() {
     };
   }, [location.pathname]);
 
-  const showGuideButtonPaths = ['/generate', '/list', '/note'];
+  const showGuideButtonPaths = ['/generate', '/list'];
   // 현재 경로가 배열에 포함되는지 체크
   const shouldShowGuideButton = showGuideButtonPaths.some((path) =>
+    location.pathname.startsWith(path)
+  );
+
+  // PC 추천 모달도 같은 경로에서만 보이도록 수정
+  const shouldShowPCRecommend = showGuideButtonPaths.some((path) =>
     location.pathname.startsWith(path)
   );
 
@@ -78,17 +83,19 @@ function App() {
       setShowPCRecommend(false);
       return;
     }
-    checkScreenWidth();
-    window.addEventListener('resize', checkScreenWidth);
+    // 특정 경로에서만 체크하도록 수정
+    if (shouldShowPCRecommend) {
+      checkScreenWidth();
+      window.addEventListener('resize', checkScreenWidth);
+    }
 
     // 클린업
     return () => {
       window.removeEventListener('resize', checkScreenWidth);
     };
-  }, []);
+  }, [shouldShowPCRecommend]); // shouldShowPCRecommend 의존성 추가
 
   // 최초접속 안내 모달(localStorage로 제어)
-  // 최초접속 안내 모달(localStorage로 제어) - 초기 렌더링 시 한 번만 실행
   useEffect(() => {
     const showGuideModalCheck = localStorage.getItem('showGuideModal');
     // 'true'인 경우에만 모달을 표시 (명시적으로 'false'로 설정되지 않은 경우 처음 방문 사용자에게는 표시)
@@ -139,12 +146,12 @@ function App() {
         pauseOnHover
       />
       <PCRecommendModal
-        isOpen={showPCRecommend}
+        isOpen={showPCRecommend && shouldShowPCRecommend}
         onClose={handleClosePCRecommend}
       />
       {/* 최초접속 안내 모달 - null 체크 추가 */}
       <GuideModal
-        isOpen={showGuideModal}
+        isOpen={showGuideModal && shouldShowGuideButton}
         onClose={() => {
           setShowGuideModal(false);
         }}
