@@ -38,6 +38,7 @@ import com.s12p31b204.backend.repository.WorkBookRepository;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
@@ -93,7 +94,7 @@ public class TestPaperService {
                             if(apiResponse.statusCode().is2xxSuccessful()) {
                                 return apiResponse.bodyToMono(CreateTestResponseDto.class);
                             } else {
-                                throw new RuntimeException();
+                                return Mono.error(new RuntimeException("생성 중 오류 발생"));
                             }
                         })
                         .timeout(Duration.ofMinutes(5))
