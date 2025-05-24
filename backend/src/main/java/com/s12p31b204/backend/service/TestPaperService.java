@@ -89,10 +89,17 @@ public class TestPaperService {
                 CreateTestResponseDto response = webClient.post()
                         .uri("/api/ai/search/{testPaperId}/", savedTestPaper.getTestPaperId())
                         .bodyValue(new GenerateTestRequestDto(s3Urls, savedTestPaper.getChoiceAns(), savedTestPaper.getOxAns(), savedTestPaper.getShortAns()))
-                        .retrieve()
-                        .bodyToMono(CreateTestResponseDto.class)
+                        .exchangeToMono((apiResponse) -> {
+                            if(apiResponse.statusCode().is2xxSuccessful()) {
+                                return apiResponse.bodyToMono(CreateTestResponseDto.class);
+                            } else {
+                                throw new RuntimeException();
+                            }
+                        })
                         .timeout(Duration.ofMinutes(5))
                         .block();
+                log.info("questions created");
+                log.info("saving questions...");
                 for(CreateTestResponseDto.Data data : response.getData()) {
                     if(data.getType() == Test.Type.TYPE_CHOICE) {
                         String explanation = null;
