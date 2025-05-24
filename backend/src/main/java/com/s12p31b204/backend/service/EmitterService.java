@@ -58,7 +58,12 @@ public class EmitterService {
                     log.error("failed to send " + eventName, e);
                 }
             }
-            log.info("send " + eventName);
+            if(eventName.equals("testpaper created")) {
+                log.info("send " + eventName + ", Data : " + eventData);
+            }
+            else {
+                log.info("send " + eventName);
+            }
     }
 
     @PostConstruct
