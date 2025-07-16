@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        body {
+            font-family: 'AppleSDGothicNeoB', sans-serif;
+            font-size: 12px;
+            margin: 0 40px;
+        }
+        .header {
+            padding: 0;
+            text-align: center;
+            font-family: 'Pretendard', sans-serif;
+            position: relative;
+            height: 90px;
+        }
+        .empty-header {
+            padding: 0;
+            position: relative;
+            height: 40px;
+        }
+        .page {
+            page-break-after: always;
+        }
+        .top-line {
+            width: 100%;
+            border-bottom: 1px solid black;
+            margin: 0;
+        }
+        .container {
+            width: 100%;
+            overflow: hidden;
+            height: 970px;
+        }
+        .left, .right {
+            width: 50%;
+            padding: 20px 20px 0 20px;
+            float: left;
+            box-sizing: border-box;
+            height: 100%;
+        }
+        .left {
+            border-right: 1px solid black;
+            padding-right: 30px;
+        }
+        .right {
+            padding-left: 30px;
+        }
+        .question {
+            margin-bottom: 50px; /* 문제 사이 여백 */
+            clear: both;
+        }
+        .answer {
+            margin-bottom: 40px;
+            clear: both;
+        }
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .explanations {
+            width: 100%;
+            margin-top: 10px;
+            border: 1px solid black;
+            border-radius: 15px;
+            float: left;
+        }
+        .explanations ul {
+            padding-left: 20px;
+            padding-right: 10px;
+        }
+        .options {
+            margin-left: 10px;
+            margin-top: 15px;
+        }
+        .option-item {
+            width: 100%;
+            float: left;
+            padding: 2px 0;
+            box-sizing: border-box;
+        }
+        .ox-options {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .short-answer-line {
+            margin-top: 35px;
+            border-bottom: 1px solid black;
+            width: 90%;
+            margin-left: 10px;
+            margin-bottom: 20px;
+        }
+        @page {
+            @bottom-center {
+                content: "- " counter(page) " -";
+                font-size: 13px;
+                font-family: sans-serif;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div th:each="page, stat : ${questions}" th:class="${stat.last and answers == null} ? '' : 'page'">
+    <div class="header" th:if="${stat.first}">
+        <div style="padding-bottom: 15px; position: relative">
+            <span th:text="${testPaper.title}" style="font-size: 40px"></span>
+            <img th:src="'data:image/png;base64,' + ${logo}" style="width: 80px; position: absolute; right: 0; top: 0"/>
+        </div>
+        <span th:text="'생성일 : ' + ${testPaper.createAt}" style="position: absolute; left: 0; bottom: 0"></span>
+        <span th:text="'문제수 : ' + ${testPaper.quantity}" style="position: absolute; right: 0; bottom: 0"></span>
+    </div>
+    <div class="empty-header" th:if="${not stat.first}">
+        <img th:src="'data:image/png;base64,' + ${logo}" style="width: 80px; position: absolute; right: 0; top: -5px"/>
+    </div>
+    <div class="top-line"></div>
+        <div class="container" th:style="${stat.first} ? 'height:920px;' : ''">
+            <div class="left">
+                <div th:each="q : ${page.leftQuestions}" class="question">
+                    <div class="question-title" th:text="${q.number} + '. ' + ${q.text}"></div>
+
+                    <div class="explanations" th:if="${q.explanations}">
+                        <ul th:style="${q.explanationType == 'code'} ? 'list-style-type: none;' : ''">
+                            <li th:each="ex : ${q.explanations}">
+                                <span th:text="${ex}" th:style="${q.explanationType == 'code'} ? 'white-space: pre-wrap;' : ''"></span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 객관식 -->
+                    <div class="options" th:if="${q.type == 'TYPE_CHOICE'}" style="float: left; width: 100%">
+                        <div th:each="opt, iterStat : ${q.options}" style="width: 100%; padding: 2px 0;">
+                            <span th:text="${'①②③④'.charAt(iterStat.index)} + ' ' + ${opt}"></span>
+                        </div>
+                    </div>
+
+                    <!-- OX 문제 -->
+                    <div class="ox-options" th:if="${q.type == 'TYPE_OX'}">
+                        <table style="width: 100%">
+                            <tr>
+                                <td>
+                                    <span th:text="'O ('" style="margin-right: 10px"></span>
+                                    <span th:text="')'"></span>
+                                </td>
+                                <td>
+                                    <span th:text="'X ('" style="margin-right: 10px"></span>
+                                    <span th:text="')'"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 주관식 문제 -->
+                    <div th:if="${q.type == 'TYPE_SHORT'}">
+                        <div class="short-answer-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div th:each="q : ${page.rightQuestions}" class="question">
+                    <div class="question-title" th:text="${q.number} + '. ' + ${q.text}"></div>
+
+                    <div class="explanations" th:if="${q.explanations}">
+                        <ul th:style="${q.explanationType == 'code'} ? 'list-style-type: none;' : ''">
+                            <li th:each="ex : ${q.explanations}">
+                                <span th:text="${ex}" th:style="${q.explanationType == 'code'} ? 'white-space: pre-wrap;' : ''"></span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 객관식 -->
+                    <div class="options" th:if="${q.type == 'TYPE_CHOICE'}" style="float: left; width: 100%">
+                        <div th:each="opt, iterStat : ${q.options}" style="width: 100%; padding: 2px 0;">
+                            <span th:text="${'①②③④'.charAt(iterStat.index)} + ' ' + ${opt}"></span>
+                        </div>
+                    </div>
+
+                    <!-- OX 문제 -->
+                    <div class="ox-options" th:if="${q.type == 'TYPE_OX'}">
+                        <table style="width: 100%">
+                            <tr>
+                                <td>
+                                    <span th:text="'O ('" style="margin-right: 10px"></span>
+                                    <span th:text="')'"></span>
+                                </td>
+                                <td>
+                                    <span th:text="'X ('" style="margin-right: 10px"></span>
+                                    <span th:text="')'"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 주관식 문제 -->
+                    <div th:if="${q.type == 'TYPE_SHORT'}">
+                        <div class="short-answer-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:each="page, stat : ${answers}" th:class="${stat.last} ? '' : 'page'">
+        <div class="header" th:if="${stat.first}">
+            <div style="padding-bottom: 15px; position: relative">
+                <span th:text="'정답 & 해설'" style="font-size: 40px"></span>
+                <img th:src="'data:image/png;base64,' + ${logo}" style="width: 80px; position: absolute; right: 0; top: 0"/>
+            </div>
+        </div>
+        <div class="empty-header" th:if="${not stat.first}">
+            <img th:src="'data:image/png;base64,' + ${logo}" style="width: 80px; position: absolute; right: 0; top: -5px"/>
+        </div>
+        <div class="top-line"></div>
+        <div class="container" th:style="${stat.first} ? 'height:920px;' : ''">
+            <div class="left">
+                <div th:each="q : ${page.leftAnswers}" class="answer">
+                    <div class="question-title" th:text="${q.number} + '번 정답 : ' + ${q.answer}"></div>
+                    <div th:text="${q.comment}"></div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div th:each="q : ${page.rightAnswers}" class="answer">
+                    <div class="question-title" th:text="${q.number} + '번 정답 : ' + ${q.answer}"></div>
+                    <div th:text="${q.comment}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

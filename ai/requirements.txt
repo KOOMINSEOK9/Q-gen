@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+openai
+environs
+
+faiss-cpu
+numpy
+
+httpx
+requests
+python-dotenv
+tqdm
+
+pdfplumber
+python-docx
