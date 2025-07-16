@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: backend
+    version: v1
+  config:
+    import: optional:file:.env[.properties]
+
+  # MySQL
+  datasource:
+    driver-class-name: ${MYSQL_DRIVER}
+    url: jdbc:mysql://${MYSQL_URL}/${MYSQL_DATABASE}?serverTimezone=Asia/Seoul
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            client-id: ${OAUTH_GOOGLE_CLIENT_ID}
+            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${OAUTH_GOOGLE_REDIRECT_URI}
+            authorization-grant-type: authorization_code
+            scope:
+              - profile
+              - email
+
+  jwt:
+    secret: ${JWT_SECRET_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+
+server:
+  port: 8080
