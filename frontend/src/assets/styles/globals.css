@@ -1,0 +1,112 @@
+@import './variable.css';
+/* @import './reset.css'; */
+@import './fonts.css';
+
+html,
+body {
+  -webkit-text-size-adjust: none; /* 크롬, 사파리, 오페라 신버전 */
+  -ms-text-size-adjust: none; /* IE */
+  -moz-text-size-adjust: none; /* 파이어폭스 */
+  -o-text-size-adjust: none; /* 오페라 구버전 */
+}
+
+body {
+  font-family: 'Pretendard', sans-serif;
+  color: var(--color-black);
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* align-items: center; */
+}
+
+#root {
+  /* background-color: #fff; */
+  /* overflow-y: scroll; */
+  /* display: flex; */
+  /* flex-direction: column; */
+}
+
+/* input,
+textarea,
+select,
+button {
+  font: inherit;
+  color: inherit;
+} */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  /* padding: 0; */
+  /* margin: 0; */
+}
+
+/* SweetAlert2 font size override */
+.swal2-popup {
+  font-size: 1.2rem !important;
+  padding-bottom: 30px !important;
+}
+
+.swal2-title,
+.swal2-html-container,
+.swal2-content,
+.swal2-actions,
+.swal2-confirm,
+.swal2-cancel {
+  font-size: 1.2rem !important;
+}
+
+/* SweetAlert2 icon color custom */
+.swal2-icon.swal2-success {
+  color: var(--color-main-mint) !important;
+  border-color: var(--color-main-mint) !important;
+}
+.swal2-icon.swal2-error {
+  color: var(--color-main-pink) !important;
+  border-color: var(--color-main-pink) !important;
+}
+.swal2-icon.swal2-warning {
+  color: var(--color-main-yellow) !important;
+  border-color: var(--color-main-yellow) !important;
+}
+.swal2-icon.swal2-info {
+  color: var(--color-main-blue) !important;
+  border-color: var(--color-main-blue) !important;
+}
+.swal2-icon.swal2-question {
+  color: var(--color-main-purple) !important;
+  border-color: var(--color-main-purple) !important;
+}
+
+.swal2-confirm {
+  background-color: #754aff !important;
+  border-color: #754aff !important;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.animate-fade-in-scale-loop {
+  animation: fadeInScale 2.5s ease-in-out infinite;
+}
+
+.animate-fade-in-scale-loop-delayed {
+  animation: fadeInScale 3s ease-in-out infinite;
+  animation-delay: 1.5s;
+}

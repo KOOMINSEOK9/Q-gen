@@ -1,0 +1,154 @@
+.main.check {
+  padding: 30px 40px;
+}
+
+/* simplebar-react 보라색 스크롤바 커스텀 */
+.simplebar-scrollbar:before {
+  background: #754aff !important;
+}
+.simplebar-track.simplebar-vertical {
+  right: 0 !important;
+  left: auto !important;
+  width: 8px !important;
+  background: transparent !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  z-index: 10;
+  pointer-events: auto;
+}
+.simplebar-scrollbar.simplebar-visible:before {
+  opacity: 1 !important;
+}
+.simplebar-content-wrapper {
+  /* 스크롤바가 겹쳐도 컨텐츠 클릭 가능하게 */
+  overflow: auto !important;
+}
+
+@keyframes gradient-move-bg {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+.btn-gradient-move {
+  background: linear-gradient(90deg, #754aff, #b16dff, #754aff);
+  background-size: 200% 100%;
+  animation: gradient-move-bg 2s linear infinite;
+}
+
+.hide-spin::-webkit-inner-spin-button,
+.hide-spin::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.hide-spin {
+  -moz-appearance: textfield;
+}
+
+/* List 돌고래, 말풍선 애니메이션 */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-dolphin {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-speech-bubble {
+  animation: fadeInUp 0.8s ease-out 0.5s forwards;
+  opacity: 0;
+}
+
+/* src/styles/scrolling-ellipsis.css */
+.scrolling-ellipsis {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.scrolling-ellipsis-inner {
+  display: inline-block;
+  transition: transform 2.5s linear;
+  will-change: transform;
+}
+
+.scrolling-ellipsis:hover .scrolling-ellipsis-inner {
+  /* 실제 이동 거리: (텍스트 전체 길이 - 컨테이너 너비)만큼 왼쪽으로 이동 */
+  transform: translateX(calc(min(0px, (100% - var(--scroll-width, 0px)))));
+}
+
+@keyframes scroll-left {
+  0% {
+    text-indent: 0;
+  }
+  90% {
+    text-indent: calc(-1 * (var(--scroll-width, 0px) - 100%));
+  }
+  100% {
+    text-indent: calc(-1 * (var(--scroll-width, 0px) - 100%));
+  }
+}
+
+/* Generate Guide Modal 관련  */
+@keyframes dolphin-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-12px);
+  }
+  40% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-8px);
+  }
+  80% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes spinner-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.dolphin-spinner {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dolphin-spinner .spinner {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: 6px solid #e0e0e0;
+  border-top: 6px solid #754aff;
+  border-radius: 50%;
+  animation: spinner-rotate 1.5s linear infinite;
+  z-index: 1;
+}
+.dolphin-spinner .dolphin-img {
+  width: 60px;
+  height: 60px;
+  z-index: 2;
+  animation: dolphin-bounce 1.2s infinite;
+}
